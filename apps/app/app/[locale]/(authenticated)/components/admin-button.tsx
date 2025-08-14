@@ -23,7 +23,7 @@ export function AdminButton({ locale = 'es', isAdmin, isLoadingAdmin }: AdminBut
                 className="relative hover:bg-gray-100 dark:hover:bg-gray-800"
                 title="Gestión de Productos"
             >
-                <Settings className="h-5 w-5" />
+                <Settings className="h-6 w-6" />
             </Button>
         </Link>
     );

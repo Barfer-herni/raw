@@ -20,7 +20,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
         <AdminPageWrapper
             logo={
                 <Link href={`/${locale}`}>
-                    <Image src={logo} alt="RAW" width={32} height={32} className="cursor-pointer hover:opacity-80 transition-opacity" />
+                    <Image src={logo} alt="RAW" width={48} height={48} className="cursor-pointer hover:opacity-80 transition-opacity" />
                 </Link>
             }
             title=""

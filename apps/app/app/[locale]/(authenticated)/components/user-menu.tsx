@@ -54,10 +54,10 @@ export function UserMenu({ userName, dictionary, locale = 'es' }: UserMenuProps)
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="relative h-10 w-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                    className="relative h-12 w-12 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                     aria-label="Menú de usuario"
                 >
-                    <Avatar className="h-8 w-8">
+                    <Avatar className="h-10 w-10">
                         <AvatarFallback className="text-sm font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
                             {getInitials()}
                         </AvatarFallback>
@@ -75,7 +75,7 @@ export function UserMenu({ userName, dictionary, locale = 'es' }: UserMenuProps)
                 )}
                 <DropdownMenuItem asChild>
                     <Link href={`/${locale}/admin/account`} className="flex items-center cursor-pointer">
-                        <User className="mr-2 h-4 w-4" />
+                        <User className="mr-2 h-5 w-5" />
                         Mi perfil
                     </Link>
                 </DropdownMenuItem>
@@ -85,7 +85,7 @@ export function UserMenu({ userName, dictionary, locale = 'es' }: UserMenuProps)
                     disabled={isPending}
                     className="text-destructive dark:text-red-400 focus:text-destructive dark:focus:text-red-300 cursor-pointer"
                 >
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <LogOut className="mr-2 h-5 w-5" />
                     {isPending ? loggingOutText : logoutText}
                 </DropdownMenuItem>
             </DropdownMenuContent>

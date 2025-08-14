@@ -22,11 +22,11 @@ export function CartButton() {
                 className="relative hover:bg-gray-100 dark:hover:bg-gray-800"
                 title="Carrito de Compras"
             >
-                <ShoppingCart className="h-5 w-5" />
+                <ShoppingCart className="h-6 w-6" />
                 
                 {/* Badge con cantidad de items */}
                 {getTotalItems() > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold">
                         {getTotalItems()}
                     </span>
                 )}
@@ -117,6 +117,7 @@ export function CartButton() {
                                                 console.log('🛒 CartButton: Estado actual del carrito:', cart);
                                                 console.log('🛒 CartButton: Total de items:', getTotalItems());
                                                 console.log('🛒 CartButton: Precio total:', getTotalPrice());
+                                                setIsCartOpen(false); // Cerrar el carrito antes de ir al checkout
                                                 checkout();
                                             }}
                                             className="w-full bg-orange-600 hover:bg-orange-700 text-white"
