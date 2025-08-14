@@ -215,19 +215,45 @@ export async function getProductsForHomeAction(): Promise<{ success: boolean; pr
         
         // Transformar los datos al formato esperado por la página de inicio
         const transformedProducts = result.map(product => {
-            console.log('Transforming product:', { _id: product._id, titulo: product.titulo });
-            return {
+            console.log('🔍 Transforming product:', { 
+                _id: product._id, 
+                titulo: product.titulo, 
+                precioMinorista: product.precioMinorista,
+                precioOferta: product.precioOferta
+            });
+            
+            // Precio normal (solo minorista)
+            const normalPrice = product.precioMinorista?.toString() || 'Consultar precio';
+            
+            // Detectar si tiene oferta
+            const hasOffer = !!product.precioOferta;
+            
+            // Precio de oferta
+            const offerPrice = hasOffer && product.precioOferta ? product.precioOferta.toString() : null;
+            
+            const transformedProduct = {
                 id: product._id,
                 name: product.titulo,
                 description: product.descripcion,
-                priceRange: product.precioMinorista && product.precioMayorista 
-                    ? `${product.precioMinorista} - ${product.precioMayorista}`
-                    : product.precioMinorista?.toString() || 'Consultar precio',
+                priceRange: normalPrice,
                 category: product.categoria,
                 image: (product.imagenes && product.imagenes.length > 0) 
                     ? product.imagenes[0] 
-                    : 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop'
+                    : 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
+                stock: product.stock || 0,
+                // Campos para ofertas (simplificado)
+                isOnOffer: hasOffer,
+                originalPrice: hasOffer ? normalPrice : undefined,
+                offerPrice: hasOffer ? offerPrice : undefined
             };
+            
+            console.log(`✅ Product transformed - ${product.titulo}:`, {
+                isOnOffer: transformedProduct.isOnOffer,
+                originalPrice: transformedProduct.originalPrice,
+                offerPrice: transformedProduct.offerPrice
+            });
+            
+            return transformedProduct;
         });
 
         return {

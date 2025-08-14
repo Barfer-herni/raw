@@ -153,7 +153,11 @@ const SAMPLE_PRODUCTS: Product[] = [
         priceRange: '3000 - 4000',
         category: 'heras',
         image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
-        stock: 50
+        stock: 50,
+        // Producto en oferta
+        isOnOffer: true,
+        originalPrice: '3000 - 4000',
+        offerPrice: '2400 - 3200'
     },
     {
         id: '2',
@@ -171,7 +175,11 @@ const SAMPLE_PRODUCTS: Product[] = [
         priceRange: '2000 - 3000',
         category: 'heras',
         image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop',
-        stock: 30
+        stock: 30,
+        // Producto en oferta
+        isOnOffer: true,
+        originalPrice: '2000 - 3000',
+        offerPrice: '1500 - 2200'
     },
     {
         id: '4',
@@ -189,7 +197,11 @@ const SAMPLE_PRODUCTS: Product[] = [
         priceRange: '1500 - 2500',
         category: 'heras',
         image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop',
-        stock: 60
+        stock: 60,
+        // Producto en oferta
+        isOnOffer: true,
+        originalPrice: '1500 - 2500',
+        offerPrice: '1200 - 2000'
     },
     {
         id: '6',
@@ -198,7 +210,11 @@ const SAMPLE_PRODUCTS: Product[] = [
         priceRange: '15000 - 20000',
         category: 'heras',
         image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
-        stock: 15
+        stock: 15,
+        // Producto en oferta
+        isOnOffer: true,
+        originalPrice: '15000 - 20000',
+        offerPrice: '12000 - 16000'
     },
     {
         id: '7',
@@ -358,16 +374,33 @@ export default function AdminPage() {
     useEffect(() => {
         const loadProducts = async () => {
             try {
+                console.log('🏠 Cargando productos para el home...');
+                
+                // TEMPORAL: Mostrar productos de ejemplo con ofertas para demostración
+                // Cambia esta línea para usar productos reales cuando tengas algunos en la DB
+                const useExampleProducts = false; // Ahora usando productos de DB
+                
+                if (useExampleProducts) {
+                    console.log('🏷️ Usando productos de ejemplo con ofertas');
+                    setProducts(SAMPLE_PRODUCTS);
+                    setIsLoadingProducts(false);
+                    return;
+                }
+                
                 const result = await getProductsForHomeAction();
-                if (result.success && result.products) {
+                if (result.success && result.products && result.products.length > 0) {
+                    console.log('📦 Productos cargados desde la base de datos:', result.products.length);
+                    // Usar productos de la base de datos si existen
                     setProducts(result.products);
                 } else {
-                    console.error('Error cargando productos:', result.message);
-                    // Fallback a productos de ejemplo si falla la carga
+                    console.error('Error cargando productos o no hay productos:', result.message);
+                    console.log('🏷️ Usando productos de ejemplo como fallback');
+                    // Fallback a productos de ejemplo si falla la carga o no hay productos
                     setProducts(SAMPLE_PRODUCTS);
                 }
             } catch (error) {
                 console.error('Error cargando productos:', error);
+                console.log('🏷️ Usando productos de ejemplo por error');
                 // Fallback a productos de ejemplo si falla la carga
                 setProducts(SAMPLE_PRODUCTS);
             } finally {
@@ -494,9 +527,7 @@ export default function AdminPage() {
                 <div className="flex flex-col sm:flex-row gap-4 mt-6">
                     <div className="flex-1 bg-gradient-to-r from-barfer-green to-green-600 text-white p-4 rounded-xl shadow-lg">
                         <div className="flex items-center gap-3">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-                            </svg>
+                            <span className="text-2xl">🚚</span>
                             <span className="font-semibold font-poppins">Envíos a todo el país</span>
                         </div>
                     </div>
@@ -560,25 +591,25 @@ export default function AdminPage() {
                     <p className="text-gray-600 text-lg">Todo lo que tu mascota necesita para ser feliz</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-6">
                     {BENEFITS_DATA.map((benefit) => (
                         <div
                             key={benefit.id}
-                            className="border-2 border-barfer-green rounded-2xl overflow-hidden hover:shadow-xl transition-all bg-barfer-white transform hover:scale-105"
+                            className="border-2 border-barfer-green rounded-2xl overflow-hidden hover:shadow-xl transition-all bg-barfer-white"
                         >
                             {/* Header del beneficio */}
                             <div
-                                className="p-6 cursor-pointer bg-gradient-to-r from-green-50 to-orange-50"
+                                className="p-6 cursor-pointer bg-gradient-to-r from-green-50 to-orange-50 hover:from-green-100 hover:to-orange-100"
                                 onClick={() => toggleBenefit(benefit.id)}
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <span className="text-3xl">{benefit.icon}</span>
-                                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                                        <h3 className="text-xl font-semibold text-gray-900">
                                             {benefit.title}
                                         </h3>
                                     </div>
-                                    <button className="text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors">
+                                    <button className="text-barfer-orange hover:text-orange-600 transition-colors">
                                         <svg
                                             className={`w-6 h-6 transform transition-transform ${expandedBenefit === benefit.id ? 'rotate-45' : 'rotate-0'
                                                 }`}
@@ -594,20 +625,20 @@ export default function AdminPage() {
 
                             {/* Contenido expandible */}
                             {expandedBenefit === benefit.id && (
-                                <div className="p-6 bg-white dark:bg-gray-900 border-t border-sky-200 dark:border-sky-800">
-                                    <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                                <div className="p-6 bg-white border-t border-barfer-green">
+                                    <p className="text-gray-700 mb-4 leading-relaxed">
                                         {benefit.description}
                                     </p>
 
                                     <ul className="space-y-2">
                                         {benefit.details.map((detail, index) => (
                                             <li key={index} className="flex items-start gap-2">
-                                                <span className="text-sky-500 dark:text-sky-400 mt-1">
+                                                <span className="text-barfer-green mt-1">
                                                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                     </svg>
                                                 </span>
-                                                <span className="text-gray-600 dark:text-gray-400">{detail}</span>
+                                                <span className="text-gray-600">{detail}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -626,53 +657,30 @@ export default function AdminPage() {
                     <h2 className="text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-barfer-orange to-barfer-green font-poppins mb-2">
                         🐾 NUESTROS AMIGOS 🐾
                     </h2>
-                    <p className="text-gray-600 text-lg">Conoce a las mascotas que ya disfrutan RAW</p>
+                    <p className="text-gray-600 text-lg">Fotos de nuestros clientes felices</p>
                 </div>
 
-                <div className="relative overflow-hidden rounded-xl shadow-lg bg-gradient-to-r from-green-50 to-orange-50 border-2 border-barfer-green p-8">
-                    {/* Carrusel de animales con productos */}
-                    <div className="relative h-80">
-                        {ANIMAL_PRODUCT_PHOTOS.map((photo, index) => (
-                            <div
-                                key={photo.id}
-                                className={`absolute inset-0 transition-opacity duration-1000 ${index === currentClientPhotoIndex ? 'opacity-100' : 'opacity-0'
-                                    }`}
-                            >
-                                <div className="flex flex-col items-center text-center">
-                                    <div className="mb-6">
-                                        <img
-                                            src={photo.src}
-                                            alt={photo.alt}
-                                            className="w-48 h-48 object-cover rounded-2xl border-4 border-barfer-green shadow-xl"
-                                        />
-                                    </div>
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                {/* Grid de fotos de clientes */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    {ANIMAL_PRODUCT_PHOTOS.map((photo) => (
+                        <div
+                            key={photo.id}
+                            className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                        >
+                            <img
+                                src={photo.src}
+                                alt={photo.alt}
+                                className="w-full h-32 md:h-40 object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div className="absolute bottom-2 left-2 right-2">
+                                    <p className="text-white text-sm font-medium truncate">
                                         {photo.animal}
-                                    </h3>
-                                    <p className="text-barfer-orange font-bold text-lg mb-2">
-                                        usando {photo.product}
-                                    </p>
-                                    <p className="text-gray-600 dark:text-gray-400 max-w-md">
-                                        Descubre la calidad RAW que hace felices a nuestros amigos de cuatro patas
                                     </p>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-
-                    {/* Indicadores de puntos */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
-                        {ANIMAL_PRODUCT_PHOTOS.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => goToClientPhoto(index)}
-                                className={`w-3 h-3 rounded-full transition-all ${index === currentClientPhotoIndex
-                                        ? 'bg-barfer-green scale-125'
-                                        : 'bg-barfer-green/50 hover:bg-barfer-green/75'
-                                    }`}
-                            />
-                        ))}
-                    </div>
+                        </div>
+                    ))}
                 </div>
                 </div>
             </ScrollReveal>
@@ -684,14 +692,13 @@ export default function AdminPage() {
                     <h2 className="text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-barfer-green to-barfer-orange font-poppins mb-2">
                         ❓ PREGUNTAS FRECUENTES ❓
                     </h2>
-                    <p className="text-gray-600 text-lg">Resolvemos todas tus dudas</p>
                 </div>
 
-                <div className="w-full space-y-4">
+                <div className="w-full space-y-6">
                     {FAQ_DATA.map((faq) => (
                         <div
                             key={faq.id}
-                            className="border-2 border-barfer-green rounded-2xl overflow-hidden hover:shadow-xl transition-all bg-barfer-white transform hover:scale-105"
+                            className="border-2 border-barfer-green rounded-2xl overflow-hidden hover:shadow-xl transition-all bg-barfer-white"
                         >
                             {/* Pregunta */}
                             <div
@@ -699,7 +706,7 @@ export default function AdminPage() {
                                 onClick={() => toggleFAQ(faq.id)}
                             >
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white pr-4">
+                                    <h3 className="text-lg font-semibold text-gray-900 pr-4 leading-tight">
                                         {faq.question}
                                     </h3>
                                     <button className="text-barfer-orange hover:text-orange-600 transition-colors flex-shrink-0">
@@ -719,7 +726,7 @@ export default function AdminPage() {
                             {/* Respuesta expandible */}
                             {expandedFAQ === faq.id && (
                                 <div className="p-6 bg-barfer-white border-t border-barfer-green">
-                                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    <p className="text-gray-700 leading-relaxed text-base">
                                         {faq.answer}
                                     </p>
                                 </div>
@@ -728,11 +735,52 @@ export default function AdminPage() {
                     ))}
                 </div>
 
-
                 </div>
             </ScrollReveal>
 
-
+            {/* Formulario de Contacto - Movido aquí después de FAQ */}
+            <ScrollReveal delay={800}>
+                <div className="mb-12">
+                    <div className="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8 border-2 border-barfer-green">
+                        <h3 className="text-3xl font-bold text-center text-barfer-orange mb-6 font-poppins">
+                            ¿Tienes alguna consulta?
+                        </h3>
+                        <p className="text-center text-gray-600 mb-8">
+                            Estamos aquí para ayudarte. Envíanos tu mensaje y te responderemos lo antes posible.
+                        </p>
+                        <form className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <input
+                                    type="text"
+                                    placeholder="Tu nombre"
+                                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg"
+                                />
+                                <input
+                                    type="email"
+                                    placeholder="Tu email"
+                                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg"
+                                />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Asunto"
+                                className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg"
+                            />
+                            <textarea
+                                placeholder="Tu mensaje"
+                                rows={4}
+                                className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg resize-none"
+                            ></textarea>
+                            <button
+                                type="submit"
+                                className="w-full bg-barfer-orange hover:bg-orange-600 text-white py-4 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-nunito"
+                            >
+                                Enviar Mensaje
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </ScrollReveal>
 
             {/* Footer */}
             <footer className="bg-gray-900 dark:bg-black text-white mt-16">
@@ -763,16 +811,16 @@ export default function AdminPage() {
                                     <svg className="w-5 h-5 text-barfer-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                     </svg>
-                                    <a href="mailto:info@barfer.com" className="text-gray-300 hover:text-white transition-colors">
-                                        info@barfer.com
+                                    <a href="mailto:rawfun.info@gmail.com" className="text-gray-300 hover:text-white transition-colors">
+                                    rawfun.info@gmail.com
                                     </a>
                                 </div>
                                 <div className="flex items-center space-x-3">
                                     <svg className="w-5 h-5 text-barfer-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                     </svg>
-                                    <a href="tel:+541123456789" className="text-gray-300 hover:text-white transition-colors">
-                                        +54 11 2345-6789
+                                    <a href="tel:+5411128678999" className="text-gray-300 hover:text-white transition-colors">
+                                        +54 11-2867-8999
                                     </a>
                                 </div>
                                 <div className="flex items-center space-x-3">
@@ -796,60 +844,21 @@ export default function AdminPage() {
                         </div>
                     </div>
 
-                    {/* Formulario de consulta */}
-                    <div className="mt-12 pt-8 border-t border-gray-800">
-                        <div className="w-full max-w-4xl mx-auto">
-                            <h3 className="text-2xl font-bold text-center text-barfer-orange mb-6 font-poppins">
-                                ¿Tenes alguna consulta?
-                            </h3>
-                            <form className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input
-                                        type="text"
-                                        placeholder="Tu nombre"
-                                        className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg"
-                                    />
-                                    <input
-                                        type="email"
-                                        placeholder="Tu email"
-                                        className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg"
-                                    />
-                                </div>
-                                <input
-                                    type="text"
-                                    placeholder="Asunto"
-                                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg"
-                                />
-                                <textarea
-                                    placeholder="Tu mensaje"
-                                    rows={4}
-                                    className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg resize-none"
-                                ></textarea>
-                                <button
-                                    type="submit"
-                                    className="w-full bg-barfer-orange hover:bg-orange-600 text-white py-4 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-nunito"
-                                >
-                                    Enviar Mensaje
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
                     {/* Copyright */}
                     <div className="mt-12 pt-8 border-t border-gray-800 text-center">
                         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                             <p className="text-gray-400">
-                                © 2025 Barfer. Todos los derechos reservados.
+                                © 2025 Raw and Fun. Todos los derechos reservados.
                             </p>
                             <div className="flex space-x-6 text-sm">
                                 <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                                    Política de Cookies
+                                    Política de Privacidad
                                 </a>
                                 <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                                    Mapa del Sitio
+                                    Términos de Servicio
                                 </a>
                                 <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                                    Accesibilidad
+                                    Contacto
                                 </a>
                             </div>
                         </div>

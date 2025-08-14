@@ -11,6 +11,10 @@ export interface Product {
     category: string;
     image: string;
     stock: number;
+    // Campos para precios de oferta
+    originalPrice?: string;  // Precio original (se mostrará tachado)
+    offerPrice?: string;     // Precio de oferta (se mostrará destacado)
+    isOnOffer?: boolean;     // Si el producto está en oferta
 }
 
 interface CartItem extends Product {
@@ -144,7 +148,21 @@ export function CartProvider({ children, locale }: { children: ReactNode; locale
         const total = cart.reduce((total, item) => {
             // Manejar diferentes formatos de precios
             let price = 0;
-            if (item.priceRange) {
+            
+            // Si el producto está en oferta, usar precio de oferta
+            if (item.isOnOffer && item.offerPrice) {
+                if (item.offerPrice.includes(' - ')) {
+                    // Formato "1500 - 2200"
+                    const parts = item.offerPrice.split(' - ');
+                    const min = parseFloat(parts[0]) || 0;
+                    const max = parseFloat(parts[1]) || 0;
+                    price = (min + max) / 2;
+                } else {
+                    // Formato simple "1500" o con texto
+                    price = parseFloat(item.offerPrice.replace(/[^0-9.]/g, '')) || 0;
+                }
+            } else if (item.priceRange) {
+                // Usar precio normal
                 if (item.priceRange.includes(' - ')) {
                     // Formato "3000 - 4000"
                     const parts = item.priceRange.split(' - ');

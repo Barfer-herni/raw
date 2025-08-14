@@ -39,11 +39,13 @@ export interface AdminProduct {
     _id?: string;
     titulo: string;
     descripcion?: string;
-    precioMinorista: number;  // Primer tipo de precio
-    precioMayorista: number;  // Segundo tipo de precio
+    precioMinorista: number;  // Precio normal
     stock: number;
     imagenes?: string[];      // Array de URLs de Cloudinary
     categoria: string;        // ID de la categoría
+    
+    // Precio de oferta
+    precioOferta?: number;    // Precio con descuento
     
     // Medidas del paquete
     dimensiones?: {
@@ -65,10 +67,13 @@ export interface CreateAdminProduct {
     titulo: string;
     descripcion?: string;
     precioMinorista: number;
-    precioMayorista: number;
     stock: number;
     imagenes?: string[];
     categoria: string;
+    
+    // Precio de oferta
+    precioOferta?: number;    // Precio con descuento
+    
     dimensiones?: {
         alto?: number;
         ancho?: number;

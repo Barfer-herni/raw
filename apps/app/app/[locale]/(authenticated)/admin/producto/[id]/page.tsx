@@ -69,14 +69,16 @@ export default function ProductDetailPage() {
             id: product._id!,
             name: product.titulo,
             description: product.descripcion || '',
-            priceRange: product.precioMayorista && product.precioMayorista > 0 
-                ? `${product.precioMayorista} - ${product.precioMinorista}`
-                : product.precioMinorista.toString(),
+            priceRange: product.precioMinorista.toString(),
             category: product.categoria,
             image: (product.imagenes && product.imagenes.length > 0) 
                 ? product.imagenes[0] 
                 : 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
-            stock: product.stock || 0
+            stock: product.stock || 0,
+            // Campos de oferta simplificados
+            isOnOffer: !!product.precioOferta,
+            originalPrice: product.precioOferta ? product.precioMinorista.toString() : undefined,
+            offerPrice: product.precioOferta ? product.precioOferta.toString() : undefined
         };
 
         addToCart(productForCart, quantity);
@@ -276,16 +278,16 @@ export default function ProductDetailPage() {
 
                                 {/* Precios */}
                                 <div className="mb-6">
-                                    {product.precioMayorista && product.precioMayorista > 0 ? (
+                                    {product.precioOferta ? (
                                         <div className="flex items-center gap-3">
-                                            <span className="text-3xl font-bold text-barfer-orange">
-                                                ${product.precioMayorista}
+                                            <span className="text-3xl font-bold text-red-500">
+                                                ${product.precioOferta}
                                             </span>
                                             <span className="text-xl text-gray-500 line-through">
                                                 ${product.precioMinorista}
                                             </span>
                                             <span className="bg-red-100 text-red-800 px-2 py-1 rounded-lg text-sm font-semibold">
-                                                ¡Oferta!
+                                                ¡OFERTA!
                                             </span>
                                         </div>
                                     ) : (

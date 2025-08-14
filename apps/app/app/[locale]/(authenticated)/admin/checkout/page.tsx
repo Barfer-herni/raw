@@ -23,6 +23,11 @@ interface Product {
     priceRange: string;
     category: string;
     image: string;
+    stock?: number;
+    // Campos para precios de oferta
+    originalPrice?: string;  // Precio original (se mostrará tachado)
+    offerPrice?: string;     // Precio de oferta (se mostrará destacado)
+    isOnOffer?: boolean;     // Si el producto está en oferta
 }
 
 interface CartItem extends Product {
@@ -122,7 +127,21 @@ export default function CheckoutPage() {
             
             // Manejar diferentes formatos de precios
             let price = 0;
-            if (item.priceRange) {
+            
+            // Si el producto está en oferta, usar precio de oferta
+            if (item.isOnOffer && item.offerPrice) {
+                if (item.offerPrice.includes(' - ')) {
+                    // Formato "1500 - 2200"
+                    const parts = item.offerPrice.split(' - ');
+                    const min = parseInt(parts[0]) || 0;
+                    const max = parseInt(parts[1]) || 0;
+                    price = (min + max) / 2;
+                } else {
+                    // Formato simple "1500" 
+                    price = parseInt(item.offerPrice.replace(/[^0-9]/g, '')) || 0;
+                }
+            } else if (item.priceRange) {
+                // Usar precio normal
                 if (item.priceRange.includes(' - ')) {
                     // Formato "3000 - 4000"
                     const parts = item.priceRange.split(' - ');
@@ -163,9 +182,13 @@ export default function CheckoutPage() {
         };
 
         // Crear mensaje para WhatsApp
-        const productos = cart.map(item => 
-            `• ${item.name} (x${item.quantity}) - $${item.priceRange}`
-        ).join('\n');
+        const productos = cart.map(item => {
+            if (item.isOnOffer && item.offerPrice) {
+                return `• ${item.name} (x${item.quantity}) - $${item.offerPrice} 🏷️ OFERTA (antes $${item.originalPrice})`;
+            } else {
+                return `• ${item.name} (x${item.quantity}) - $${item.priceRange}`;
+            }
+        }).join('\n');
 
         const mensaje = `¡Hola! Quiero finalizar mi pedido de Barfer:
 
@@ -509,15 +532,38 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
                                             <p className="text-sm text-gray-600 dark:text-gray-400">
                                                 Cantidad: {item.quantity}
                                             </p>
-                                            <p className="text-sm text-barfer-orange font-semibold">
-                                                ${item.priceRange}
-                                            </p>
+                                            {item.isOnOffer && item.originalPrice && item.offerPrice ? (
+                                                <div className="flex flex-col space-y-1">
+                                                    <p className="text-xs text-gray-500 line-through">
+                                                        ${item.originalPrice}
+                                                    </p>
+                                                    <p className="text-sm text-red-500 font-semibold">
+                                                        ${item.offerPrice} 🏷️ OFERTA
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm text-barfer-orange font-semibold">
+                                                    ${item.priceRange}
+                                                </p>
+                                            )}
                                         </div>
                                         <div className="text-right">
                                             <p className="font-semibold text-gray-900 dark:text-white">
                                                 ${(() => {
                                                     let price = 0;
-                                                    if (item.priceRange) {
+                                                    
+                                                    // Si el producto está en oferta, usar precio de oferta
+                                                    if (item.isOnOffer && item.offerPrice) {
+                                                        if (item.offerPrice.includes(' - ')) {
+                                                            const parts = item.offerPrice.split(' - ');
+                                                            const min = parseInt(parts[0]) || 0;
+                                                            const max = parseInt(parts[1]) || 0;
+                                                            price = (min + max) / 2;
+                                                        } else {
+                                                            price = parseInt(item.offerPrice.replace(/[^0-9]/g, '')) || 0;
+                                                        }
+                                                    } else if (item.priceRange) {
+                                                        // Usar precio normal
                                                         if (item.priceRange.includes(' - ')) {
                                                             const parts = item.priceRange.split(' - ');
                                                             const min = parseInt(parts[0]) || 0;

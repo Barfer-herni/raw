@@ -21,13 +21,6 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     // Extraer locale del pathname
     const locale = pathname.split('/')[1] || 'es';
     
-    // Debug: verificar que los valores estén correctos
-    console.log('ProductCard Debug:', {
-        productId: product.id,
-        locale,
-        targetUrl: `/${locale}/admin/producto/${product.id}`
-    });
-    
     // Obtener la cantidad actual de este producto en el carrito
     const cartItem = cart.find(item => item.id === product.id);
     const cartQuantity = cartItem ? cartItem.quantity : 0;
@@ -81,6 +74,12 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
                         alt={product.name}
                         className="w-full h-64 lg:h-80 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
+                    {/* Badge de Oferta */}
+                    {product.isOnOffer && (
+                        <div className="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-pulse">
+                            OFERTA
+                        </div>
+                    )}
                 </div>
             </Link>
 
@@ -88,16 +87,30 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             <div className="p-4 space-y-4">
                 {/* Product Name - Clickeable */}
                 <Link href={`/${locale}/admin/producto/${product.id}`}>
-                    <h3 className="text-base lg:text-lg font-bold text-gray-900 line-clamp-2 min-h-[3rem] flex items-center hover:text-barfer-green transition-colors cursor-pointer">
+                    <h3 className="text-base lg:text-lg font-bold text-gray-900 line-clamp-2 min-h-[3rem] flex items-center justify-center text-center hover:text-barfer-green transition-colors cursor-pointer">
                         {product.name}
                     </h3>
                 </Link>
 
                 {/* Price */}
-                <div className="flex items-center">
-                    <span className="text-lg font-bold text-barfer-orange">
-                        ${product.priceRange}
-                    </span>
+                <div className="flex flex-col items-center justify-center space-y-1">
+                    {product.isOnOffer && product.originalPrice && product.offerPrice ? (
+                        <>
+                            {/* Precio original tachado */}
+                            <span className="text-sm text-gray-500 line-through">
+                                ${product.originalPrice}
+                            </span>
+                            {/* Precio de oferta destacado */}
+                            <span className="text-lg font-bold text-red-500">
+                                ${product.offerPrice}
+                            </span>
+                        </>
+                    ) : (
+                        /* Precio normal */
+                        <span className="text-lg font-bold text-barfer-orange">
+                            ${product.priceRange}
+                        </span>
+                    )}
                 </div>
 
                 {/* Cart Status */}

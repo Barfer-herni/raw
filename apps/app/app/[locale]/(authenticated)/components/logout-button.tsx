@@ -30,7 +30,7 @@ export function LogoutButton({ userName, dictionary, locale = 'es' }: LogoutButt
 
     // Get user initials from name
     const getInitials = () => {
-        if (!userName) return '?';
+        if (!userName) return '👤';
 
         const parts = userName.split(' ');
         if (parts.length === 1) return parts[0].charAt(0).toUpperCase();

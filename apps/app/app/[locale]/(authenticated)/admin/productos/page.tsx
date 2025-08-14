@@ -37,10 +37,10 @@ export default function ProductosAdminPage() {
         titulo: '',
         descripcion: '',
         precioMinorista: 0,
-        precioMayorista: 0,
         stock: 0,
         imagenes: [],
         categoria: '',
+        precioOferta: undefined,
         dimensiones: {
             alto: undefined,
             ancho: undefined,
@@ -263,10 +263,10 @@ export default function ProductosAdminPage() {
             titulo: '',
             descripcion: '',
             precioMinorista: 0,
-            precioMayorista: 0,
             stock: 0,
             imagenes: [],
             categoria: '',
+            precioOferta: undefined,
             dimensiones: {
                 alto: undefined,
                 ancho: undefined,
@@ -287,10 +287,10 @@ export default function ProductosAdminPage() {
             titulo: product.titulo,
             descripcion: product.descripcion || '',
             precioMinorista: product.precioMinorista,
-            precioMayorista: product.precioMayorista,
             stock: product.stock,
             imagenes: product.imagenes || [],
             categoria: product.categoria,
+            precioOferta: product.precioOferta,
             dimensiones: product.dimensiones || {
                 alto: undefined,
                 ancho: undefined,
@@ -522,10 +522,10 @@ export default function ProductosAdminPage() {
                                     <span className="text-sm text-gray-500">Precio:</span>
                                     <span className="font-semibold text-barfer-green">${product.precioMinorista}</span>
                                 </div>
-                                {product.precioMayorista > 0 && (
+                                {product.precioOferta && (
                                     <div className="flex justify-between">
                                         <span className="text-sm text-gray-500">Oferta:</span>
-                                        <span className="font-semibold text-barfer-orange">${product.precioMayorista}</span>
+                                        <span className="font-semibold text-red-500">${product.precioOferta}</span>
                                     </div>
                                 )}
                                 <div className="flex justify-between">
@@ -622,16 +622,16 @@ export default function ProductosAdminPage() {
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Precio de Oferta
+                                                Precio de Oferta (opcional)
                                             </label>
                                             <input
                                                 type="number"
                                                 min="0"
                                                 step="0.01"
-                                                value={productForm.precioMayorista}
-                                                onChange={(e) => setProductForm(prev => ({ ...prev, precioMayorista: parseFloat(e.target.value) || 0 }))}
+                                                value={productForm.precioOferta || ''}
+                                                onChange={(e) => setProductForm(prev => ({ ...prev, precioOferta: e.target.value ? parseFloat(e.target.value) : undefined }))}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-barfer-orange focus:border-barfer-orange"
-                                                placeholder="0.00"
+                                                placeholder="Precio con descuento (opcional)"
                                             />
                                         </div>
                                     </div>
