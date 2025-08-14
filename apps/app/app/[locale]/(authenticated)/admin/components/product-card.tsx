@@ -2,18 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, Minus } from 'lucide-react';
-import { useCart } from '../../components/cart-context';
+import { useCart, type Product } from '../../components/cart-context';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
-interface Product {
-    id: string;
-    name: string;
-    description: string;
-    priceRange: string;
-    category: string;
-    image: string;
-}
+// Usando Product del CartContext que ya incluye stock
 
 interface ProductCardProps {
     product: Product;
@@ -53,8 +46,18 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     const handleAddToCart = () => {
         // Calcular cuánto agregar basado en la diferencia entre el contador local y lo que ya está en el carrito
         const quantityToAdd = localQuantity - cartQuantity;
+        console.log('🛒 ProductCard: Intentando agregar al carrito:', {
+            product,
+            localQuantity,
+            cartQuantity,
+            quantityToAdd
+        });
+        
         if (quantityToAdd > 0) {
+            console.log('🛒 ProductCard: Llamando a onAddToCart con:', { product, quantity: quantityToAdd });
             onAddToCart(product, quantityToAdd);
+        } else {
+            console.log('🛒 ProductCard: No se puede agregar, quantityToAdd <= 0');
         }
     };
 

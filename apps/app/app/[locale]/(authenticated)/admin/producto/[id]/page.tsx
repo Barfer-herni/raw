@@ -75,7 +75,8 @@ export default function ProductDetailPage() {
             category: product.categoria,
             image: (product.imagenes && product.imagenes.length > 0) 
                 ? product.imagenes[0] 
-                : 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop'
+                : 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
+            stock: product.stock || 0
         };
 
         addToCart(productForCart, quantity);

@@ -112,7 +112,13 @@ export function CartButton() {
                                             </span>
                                         </div>
                                         <Button
-                                            onClick={checkout}
+                                            onClick={() => {
+                                                console.log('🛒 CartButton: Botón checkout clickeado');
+                                                console.log('🛒 CartButton: Estado actual del carrito:', cart);
+                                                console.log('🛒 CartButton: Total de items:', getTotalItems());
+                                                console.log('🛒 CartButton: Precio total:', getTotalPrice());
+                                                checkout();
+                                            }}
                                             className="w-full bg-orange-600 hover:bg-orange-700 text-white"
                                         >
                                             Proceder al Checkout

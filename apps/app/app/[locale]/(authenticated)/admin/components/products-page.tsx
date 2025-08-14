@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo
 import { Badge } from '@repo/design-system/components/ui/badge';
 import { ShoppingCart, Plus, Minus, Trash2, Package } from 'lucide-react';
 import { useToast } from '@repo/design-system/hooks/use-toast';
-import { useCartStore, type Product } from '@/store/cartStore';
+import { useCart, type Product } from '../../components/cart-context';
 
 interface CartItem extends Product {
     quantity: number;
@@ -18,7 +18,7 @@ const SAMPLE_PRODUCTS: Product[] = [
         id: '1',
         name: 'Comida Premium para Perros',
         description: 'Alimento de alta calidad con proteínas naturales',
-        price: 29.99,
+        priceRange: '2500 - 3500',
         category: 'Heras',
         image: '/api/placeholder/150/150',
         stock: 50
@@ -27,7 +27,7 @@ const SAMPLE_PRODUCTS: Product[] = [
         id: '2',
         name: 'Juguete Interactivo',
         description: 'Juguete que estimula la mente de tu mascota',
-        price: 19.99,
+        priceRange: '1500 - 2500',
         category: 'Heras',
         image: '/api/placeholder/150/150',
         stock: 30
@@ -36,7 +36,7 @@ const SAMPLE_PRODUCTS: Product[] = [
         id: '3',
         name: 'Cama para Mascotas',
         description: 'Cama cómoda y lavable para perros y gatos',
-        price: 49.99,
+        priceRange: '4000 - 6000',
         category: 'Heras',
         image: '/api/placeholder/150/150',
         stock: 25
@@ -45,7 +45,7 @@ const SAMPLE_PRODUCTS: Product[] = [
         id: '4',
         name: 'Shampoo para Mascotas',
         description: 'Shampoo hipoalergénico con pH balanceado',
-        price: 14.99,
+        priceRange: '1200 - 1800',
         category: 'Heras',
         image: '/api/placeholder/150/150',
         stock: 40
@@ -57,14 +57,13 @@ export function ProductsPage() {
     const { toast } = useToast();
     
     const {
-        items: cart,
-        addItem,
-        removeItem,
+        cart,
+        addToCart,
+        removeFromCart,
         updateQuantity,
-        clearCart,
         getTotalPrice,
         getTotalItems
-    } = useCartStore();
+    } = useCart();
 
     const handleAddToCart = (product: Product) => {
         const existingItem = cart.find(item => item.id === product.id);
@@ -78,7 +77,7 @@ export function ProductsPage() {
             return;
         }
         
-        addItem(product);
+        addToCart(product);
         toast({
             title: "Producto agregado",
             description: `${product.name} se agregó al carrito`,
@@ -86,7 +85,7 @@ export function ProductsPage() {
     };
 
     const handleRemoveFromCart = (productId: string) => {
-        removeItem(productId);
+        removeFromCart(productId);
         toast({
             title: "Producto removido",
             description: "El producto se removió del carrito",
@@ -123,12 +122,12 @@ export function ProductsPage() {
         }
 
         toast({
-            title: "¡Compra exitosa!",
+            title: "Redirigiendo al checkout...",
             description: `Total: $${getTotalPrice().toFixed(2)}`,
         });
 
-        // Aquí iría la lógica real del checkout
-        clearCart();
+        // Aquí iría la lógica real del checkout - redirigir a la página de checkout
+        window.location.href = '/admin/checkout';
     };
 
     return (
@@ -164,7 +163,7 @@ export function ProductsPage() {
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <span className="text-xl font-bold text-green-600">
-                                            ${product.price}
+                                            ${product.priceRange}
                                         </span>
                                         <Button
                                             onClick={() => handleAddToCart(product)}
@@ -205,7 +204,7 @@ export function ProductsPage() {
                                             <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                                 <div className="flex-1 min-w-0">
                                                     <p className="font-medium text-sm truncate">{item.name}</p>
-                                                    <p className="text-sm text-gray-500">${item.price}</p>
+                                                    <p className="text-sm text-gray-500">${item.priceRange}</p>
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <Button

@@ -2,20 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { getProductsForHomeAction } from '@repo/data-services/src/actions';
-import { useCart } from '../components/cart-context';
+import { useCart, type Product } from '../components/cart-context';
 import { ProductCard } from './components/product-card';
 import { CartNotification } from '../components/cart-notification';
 import { ScrollReveal } from '../components/scroll-reveal';
 
 
-interface Product {
-    id: string;
-    name: string;
-    description: string;
-    priceRange: string;
-    category: string;
-    image: string;
-}
+// Usando Product del CartContext que ya incluye stock
 
 interface CartItem extends Product {
     quantity: number;
@@ -159,7 +152,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Alimento balanceado con proteínas de alta calidad, vitaminas y minerales esenciales',
         priceRange: '3000 - 4000',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
+        stock: 50
     },
     {
         id: '2',
@@ -167,7 +161,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Alimento hipoalergénico para gatos con estómagos sensibles',
         priceRange: '3500 - 4500',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop',
+        stock: 40
     },
     {
         id: '3',
@@ -175,7 +170,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Juguete que estimula la mente y reduce la ansiedad por separación',
         priceRange: '2000 - 3000',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop',
+        stock: 30
     },
     {
         id: '4',
@@ -183,7 +179,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Cama con memoria viscoelástica para perros y gatos de todas las edades',
         priceRange: '8000 - 12000',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop',
+        stock: 25
     },
     {
         id: '5',
@@ -191,7 +188,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Shampoo sin perfumes para mascotas con piel sensible',
         priceRange: '1500 - 2500',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop',
+        stock: 60
     },
     {
         id: '6',
@@ -199,7 +197,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Collar inteligente con rastreo GPS y luces LED para visibilidad nocturna',
         priceRange: '15000 - 20000',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
+        stock: 15
     },
     {
         id: '7',
@@ -207,7 +206,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Alimento húmedo premium en lata con carne real y vegetales',
         priceRange: '1000 - 2000',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
+        stock: 80
     },
     {
         id: '8',
@@ -215,7 +215,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Rascador de múltiples niveles con sisal natural y plataforma superior',
         priceRange: '7000 - 10000',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop',
+        stock: 20
     },
     {
         id: '9',
@@ -223,7 +224,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Suplemento vitamínico completo para perros y gatos de todas las edades',
         priceRange: '2500 - 3500',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
+        stock: 45
     },
     {
         id: '10',
@@ -231,7 +233,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Transportín de plástico resistente con ventilación y cierre seguro',
         priceRange: '4000 - 6000',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop',
+        stock: 35
     },
     {
         id: '11',
@@ -239,7 +242,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Cepillo profesional para eliminar pelo muerto y nudos',
         priceRange: '2000 - 3000',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop',
+        stock: 55
     },
     {
         id: '12',
@@ -247,7 +251,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Mezcla de semillas premium para loros, canarios y aves exóticas',
         priceRange: '1500 - 2500',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
+        stock: 70
     },
     {
         id: '13',
@@ -255,7 +260,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Juguete interactivo con hierba gatera natural para estimular el juego',
         priceRange: '1000 - 2000',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop',
+        stock: 65
     },
     {
         id: '14',
@@ -263,7 +269,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Cama suave y acogedora para perros y gatos de razas pequeñas',
         priceRange: '4000 - 6000',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop',
+        stock: 30
     },
     {
         id: '15',
@@ -271,7 +278,8 @@ const SAMPLE_PRODUCTS: Product[] = [
         description: 'Kit completo para el cuidado dental de tu mascota',
         priceRange: '3000 - 4000',
         category: 'heras',
-        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop'
+        image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop',
+        stock: 40
     }
 ];
 
@@ -720,12 +728,7 @@ export default function AdminPage() {
                     ))}
                 </div>
 
-                {/* Información de contacto adicional */}
-                <div className="mt-8 text-center">
-                    <p className="text-gray-600 dark:text-gray-400 mb-2">
-                        ¿No encuentras la respuesta que buscas? Escríbenos abajo.
-                    </p>
-                </div>
+
                 </div>
             </ScrollReveal>
 
@@ -737,7 +740,7 @@ export default function AdminPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Información de la empresa */}
                         <div className="space-y-4">
-                            <h3 className="text-xl font-bold text-barfer-green">Barfer</h3>
+                            <h3 className="text-xl font-bold text-barfer-green">Raw and Fun</h3>
                             <p className="text-gray-300 leading-relaxed">
                                 Tu tienda de confianza para productos premium de mascotas.
                                 Comprometidos con la salud y felicidad de tu compañero peludo.
@@ -797,7 +800,7 @@ export default function AdminPage() {
                     <div className="mt-12 pt-8 border-t border-gray-800">
                         <div className="w-full max-w-4xl mx-auto">
                             <h3 className="text-2xl font-bold text-center text-barfer-orange mb-6 font-poppins">
-                                ¿Tienes alguna consulta?
+                                ¿Tenes alguna consulta?
                             </h3>
                             <form className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -836,7 +839,7 @@ export default function AdminPage() {
                     <div className="mt-12 pt-8 border-t border-gray-800 text-center">
                         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                             <p className="text-gray-400">
-                                © 2024 Barfer. Todos los derechos reservados.
+                                © 2025 Barfer. Todos los derechos reservados.
                             </p>
                             <div className="flex space-x-6 text-sm">
                                 <a href="#" className="text-gray-400 hover:text-white transition-colors">

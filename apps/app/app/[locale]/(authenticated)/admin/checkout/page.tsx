@@ -52,10 +52,42 @@ export default function CheckoutPage() {
     // Cargar carrito del localStorage y datos del usuario después del mount
     useEffect(() => {
         const loadData = async () => {
+            console.log('🛒 Checkout: Iniciando carga de datos...');
+            console.log('🛒 Checkout: localStorage disponible:', typeof window !== 'undefined' && window.localStorage);
+            
+            // Verificar que localStorage esté disponible
+            if (typeof window === 'undefined' || !window.localStorage) {
+                console.error('🛒 Checkout: localStorage no disponible');
+                setIsLoading(false);
+                return;
+            }
+            
             // Cargar carrito
             const savedCart = localStorage.getItem('barfer-cart');
-            if (savedCart) {
-                setCart(JSON.parse(savedCart));
+            console.log('🛒 Checkout: Contenido de localStorage (raw):', savedCart);
+            console.log('🛒 Checkout: Tipo de contenido:', typeof savedCart);
+            
+            if (savedCart && savedCart !== 'undefined' && savedCart !== 'null') {
+                try {
+                    const parsedCart = JSON.parse(savedCart);
+                    console.log('🛒 Checkout: Carrito parseado exitosamente:', parsedCart);
+                    console.log('🛒 Checkout: Es array:', Array.isArray(parsedCart));
+                    console.log('🛒 Checkout: Longitud del carrito:', parsedCart.length);
+                    
+                    if (Array.isArray(parsedCart)) {
+                        setCart(parsedCart);
+                    } else {
+                        console.error('🛒 Checkout: El carrito parseado no es un array:', parsedCart);
+                        setCart([]);
+                    }
+                } catch (error) {
+                    console.error('🛒 Checkout: Error parseando carrito:', error);
+                    console.error('🛒 Checkout: Contenido que causó el error:', savedCart);
+                    setCart([]);
+                }
+            } else {
+                console.log('🛒 Checkout: No hay carrito válido en localStorage');
+                setCart([]);
             }
 
             // Cargar datos del usuario
@@ -78,6 +110,7 @@ export default function CheckoutPage() {
             }
 
             setIsLoading(false);
+            console.log('🛒 Checkout: Carga de datos completada');
         };
 
         loadData();
@@ -85,9 +118,28 @@ export default function CheckoutPage() {
 
     const getTotalPrice = () => {
         return cart.reduce((total, item) => {
-            const [min, max] = item.priceRange.split(' - ').map(p => parseInt(p));
-            const avgPrice = (min + max) / 2;
-            return total + (avgPrice * item.quantity);
+            console.log('🛒 Checkout: Calculando precio para item:', item);
+            
+            // Manejar diferentes formatos de precios
+            let price = 0;
+            if (item.priceRange) {
+                if (item.priceRange.includes(' - ')) {
+                    // Formato "3000 - 4000"
+                    const parts = item.priceRange.split(' - ');
+                    const min = parseInt(parts[0]) || 0;
+                    const max = parseInt(parts[1]) || 0;
+                    price = (min + max) / 2;
+                } else {
+                    // Formato simple "3000" 
+                    price = parseInt(item.priceRange.replace(/[^0-9]/g, '')) || 0;
+                }
+            }
+            
+            console.log('🛒 Checkout: Precio calculado:', price, 'Cantidad:', item.quantity);
+            const itemTotal = price * item.quantity;
+            console.log('🛒 Checkout: Total del item:', itemTotal);
+            
+            return total + itemTotal;
         }, 0);
     };
 
@@ -169,6 +221,8 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
 
     // Carrito vacío
     if (cart.length === 0) {
+        console.log('🛒 Checkout: Carrito detectado como vacío, mostrando mensaje de carrito vacío');
+        console.log('🛒 Checkout: Estado actual del carrito:', cart);
         return (
             <div className="min-h-screen bg-gradient-to-br from-barfer-white to-orange-50 flex items-center justify-center">
                 <div className="text-center">
@@ -462,9 +516,18 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
                                         <div className="text-right">
                                             <p className="font-semibold text-gray-900 dark:text-white">
                                                 ${(() => {
-                                                    const [min, max] = item.priceRange.split(' - ').map(p => parseInt(p));
-                                                    const avgPrice = (min + max) / 2;
-                                                    return (avgPrice * item.quantity).toFixed(0);
+                                                    let price = 0;
+                                                    if (item.priceRange) {
+                                                        if (item.priceRange.includes(' - ')) {
+                                                            const parts = item.priceRange.split(' - ');
+                                                            const min = parseInt(parts[0]) || 0;
+                                                            const max = parseInt(parts[1]) || 0;
+                                                            price = (min + max) / 2;
+                                                        } else {
+                                                            price = parseInt(item.priceRange.replace(/[^0-9]/g, '')) || 0;
+                                                        }
+                                                    }
+                                                    return (price * item.quantity).toFixed(0);
                                                 })()}
                                             </p>
                                         </div>
