@@ -1,0 +1,565 @@
+{
+  "app": {
+    "admin": {
+      "title": "Barfer - Admin Panel",
+      "navigation": {
+        "dashboard": "Dashboard",
+        "users": "Users",
+        "settings": "Settings",
+        "logout": "Logout",
+        "loggingOut": "Logging out...",
+        "account": "My Account",
+        "analytics": "Analytics",
+        "clients": "Clients",
+        "table": "Table",
+        "balance": "Order Balance",
+        "prices": "Prices",
+        "outputs": "Outputs",
+        "accountMobile": "Account",
+        "analyticsMobile": "KPIs",
+        "clientsMobile": "Clients",
+        "tableMobile": "Table",
+        "balanceMobile": "Balance",
+        "pricesMobile": "Prices",
+        "outputsMobile": "Outputs"
+      },
+      "menu": {
+        "title": "Menu Management",
+        "categories": {
+          "title": "Categories",
+          "new": "New Category",
+          "noCategories": "No categories found. Create your first category!",
+          "edit": "Edit",
+          "delete": "Delete",
+          "deleteConfirmation": "Are you sure you want to delete this category?",
+          "form": {
+            "editTitle": "Edit Category",
+            "createTitle": "Create New Category",
+            "name": "Name",
+            "description": "Description",
+            "active": "Active",
+            "cancel": "Cancel",
+            "create": "Create",
+            "update": "Update",
+            "saving": "Saving..."
+          }
+        },
+        "dishes": {
+          "title": "Dishes",
+          "new": "New Dish",
+          "noDishes": "No dishes found. Create your first dish!",
+          "edit": "Edit",
+          "delete": "Delete",
+          "deleteConfirmation": "Are you sure you want to delete this dish?",
+          "status": {
+            "active": "Active",
+            "inactive": "Inactive"
+          },
+          "form": {
+            "editTitle": "Edit Dish",
+            "createTitle": "Create New Dish",
+            "name": "Name",
+            "description": "Description",
+            "price": "Price",
+            "category": "Category",
+            "status": "Status",
+            "cancel": "Cancel",
+            "create": "Create",
+            "update": "Update",
+            "saving": "Saving..."
+          }
+        },
+        "dailySpecials": {
+          "title": "Daily Specials",
+          "new": "New Daily Special",
+          "noSpecials": "No daily specials found.",
+          "edit": "Edit",
+          "delete": "Delete",
+          "deleteConfirmation": "Are you sure you want to delete this daily special?",
+          "form": {
+            "editTitle": "Edit Daily Special",
+            "createTitle": "Create New Daily Special",
+            "date": "Date",
+            "dish": "Dish",
+            "active": "Active",
+            "cancel": "Cancel",
+            "create": "Create",
+            "update": "Update",
+            "saving": "Saving..."
+          }
+        }
+      },
+      "clients": {
+        "title": "Client Management",
+        "subtitle": "Client Behavior Analysis",
+        "description": "Visualize and manage client categories based on their purchasing behavior",
+        "categories": {
+          "title": "Client Categories",
+          "behaviorTitle": "By Purchase Behavior",
+          "spendingTitle": "By Spending Level",
+          "new": "New Client",
+          "newDescription": "Only one purchase made",
+          "possibleActive": "Possible Active",
+          "possibleActiveDescription": "Purchased again within a month of their first purchase",
+          "possibleInactive": "Possible Inactive",
+          "possibleInactiveDescription": "Did not purchase again within a month of their first purchase",
+          "active": "Active Client",
+          "activeDescription": "+2 purchases in the last 2 months",
+          "inactive": "Inactive Client",
+          "inactiveDescription": "No purchases for more than 2 months",
+          "recovered": "Recovered Client",
+          "recoveredDescription": "Was inactive for more than 2 months and purchased again",
+          "lost": "Lost Client",
+          "lostDescription": "Customers who have not made a purchase in more than 4 months.",
+          "tracking": "Tracking",
+          "trackingDescription": "Customers with a single purchase, between 1 and 4 weeks old.",
+          "premium": "Premium (A)",
+          "premiumDescription": "Customers with the highest purchase volume.",
+          "standard": "Standard (B)",
+          "standardDescription": "Customers with regular purchase volume.",
+          "basic": "Basic (C)",
+          "basicDescription": "Customers with low purchase volume.",
+          "spendingCalculationNote": "Calculation based on purchases in the last month.",
+          "kgRange": "KG Range"
+        },
+        "stats": {
+          "totalClients": "Total Clients",
+          "averageSpending": "Average Spending",
+          "repeatRate": "Repeat Rate",
+          "averageOrders": "Average Orders"
+        },
+        "actions": {
+          "sendWhatsApp": "Send WhatsApp",
+          "viewProfile": "View Profile",
+          "viewOrders": "View Orders"
+        },
+        "empty": {
+          "title": "No clients",
+          "description": "You don't have registered clients with orders yet"
+        }
+      },
+      "layout": {
+        "title": "Barfer Administration Panel",
+        "description": "Access Barfer's administrative tools to manage your business efficiently."
+      }
+    },
+    "client": {
+      "title": "Client Portal",
+      "navigation": {
+        "dashboard": "Dashboard",
+        "profile": "Profile",
+        "orders": "Orders",
+        "settings": "Settings",
+        "logout": "Logout",
+        "loggingOut": "Logging out..."
+      }
+    },
+    "pharmacy": {
+      "title": "Pharmacy Management",
+      "navigation": {
+        "dashboard": "Dashboard",
+        "clients": "Clients",
+        "inventory": "Inventory",
+        "orders": "Orders",
+        "settings": "Settings",
+        "logout": "Logout",
+        "loggingOut": "Logging out..."
+      }
+    },
+    "auth": {
+      "signIn": {
+        "title": "Sign in",
+        "email": "Email",
+        "password": "Password",
+        "button": "Sign in",
+        "signing": "Signing in...",
+        "goToSignUp": "Don't have an account? Sign up",
+        "errors": {
+          "emptyFields": "Please complete all fields",
+          "invalidCredentials": "Error signing in",
+          "generic": "An error occurred while signing in"
+        }
+      },
+      "signUp": {
+        "title": "Create account",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "button": "Create account",
+        "creating": "Creating account...",
+        "goToSignIn": "Already have an account? Sign in",
+        "errors": {
+          "emptyFields": "Please complete all fields",
+          "passwordsDoNotMatch": "Passwords do not match",
+          "accountCreation": "Error creating account",
+          "generic": "An error occurred while creating the account"
+        }
+      },
+      "layout": {
+        "title": "Barfer Administration Panel",
+        "description": "Access Barfer's administrative tools to manage your business efficiently."
+      }
+    },
+    "tablePage": {
+      "title": "Orders Table",
+      "description": "A list of all the orders."
+    },
+    "prices": {
+      "title": "Price Management",
+      "description": "Manage prices for all products by section and sale type",
+      "sections": {
+        "perro": "Dog Products",
+        "gato": "Cat Products",
+        "otros": "Other Products"
+      },
+      "priceTypes": {
+        "EFECTIVO": "Cash",
+        "TRANSFERENCIA": "Transfer",
+        "MAYORISTA": "Wholesale"
+      },
+      "table": {
+        "product": "Product",
+        "priceType": "Price Type",
+        "price": "Price ($)",
+        "status": "Status",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "actions": {
+        "initialize": "Initialize Default Prices",
+        "update": "Update Price",
+        "updateSuccess": "Price updated successfully",
+        "initializeSuccess": "Prices initialized successfully",
+        "error": "Error processing operation"
+      },
+      "empty": {
+        "title": "No prices configured",
+        "description": "Would you like to initialize the table with the default structure?"
+      }
+    },
+    "layout": {
+      "title": "Barfer Administration Panel",
+      "description": "Access Barfer's administrative tools to manage your business efficiently."
+    }
+  },
+  "web": {
+    "global": {
+      "primaryCta": "Contact us",
+      "secondaryCta": "Get started now"
+    },
+    "menu": {
+      "title": "Our Services",
+      "todaySpecial": "Featured Service",
+      "featuredDish": "Featured Service",
+      "specialDescription": "Discover our featured service of the month, designed to boost your business.",
+      "todayOnly": "This month only",
+      "comingSoon": "Coming soon... We're preparing our services.",
+      "address": "Address",
+      "phone": "Phone",
+      "hours": "Hours",
+      "contact": "Contact",
+      "searchPlaceholder": "Search services...",
+      "allCategories": "All categories",
+      "specialsOnly": "Featured only",
+      "filters": "Filters",
+      "noResults": "No services found with the applied filters.",
+      "clearFilters": "Clear filters",
+      "currency": "$",
+      "closed": "Closed",
+      "categories": {
+        "noDishes": "No services available in this category"
+      },
+      "dish": {
+        "outOfStock": "Not available",
+        "available": "Available"
+      },
+      "footer": {
+        "poweredBy": "Platform created with",
+        "businessInfo": "Business information"
+      }
+    },
+    "header": {
+      "home": "Home",
+      "features": "Features",
+      "pricing": "Pricing",
+      "about": "About Us",
+      "contact": "Contact",
+      "logIn": "Log In",
+      "getStarted": "Get Started",
+      "navigation": "Navigation"
+    },
+    "home": {
+      "meta": {
+        "title": "Barfer - Business Metrics for Client Retention",
+        "description": "The platform to understand your clients and boost your business. In-depth metrics, client retention and total control of your company."
+      },
+      "hero": {
+        "heading": "Understand your clients, grow your business",
+        "paragraph": "Barfer gives you the necessary tools to analyze your business metrics, understand your clients' behavior and make strategic decisions to increase retention and sales.",
+        "primaryCta": "Get started now",
+        "secondaryCta": "Learn more"
+      },
+      "features": {
+        "title": "All the tools you need in one place",
+        "paragraph": "From detailed analytics to communication tools, Barfer has everything you need to take your business to the next level.",
+        "featureOne": {
+          "title": "Advanced Analytics",
+          "paragraph": "Visualize your sales, clients and products like never before. Identify patterns and opportunities for growth."
+        },
+        "featureTwo": {
+          "title": "Client Segmentation",
+          "paragraph": "Classify your clients automatically based on their purchase behavior. Create personalized strategies for each segment."
+        },
+        "featureThree": {
+          "title": "Direct Communication",
+          "paragraph": "Contact your clients via WhatsApp or Email directly from the platform to build loyalty and boost sales."
+        }
+      },
+      "stats": {
+        "title": "How Barfer works",
+        "description": "Follow these simple steps to start understanding your customers and boosting your business.",
+        "process": [
+          {
+            "title": "Connect your data",
+            "description": "Connect your sales system or upload your data securely."
+          },
+          {
+            "title": "Analyze your metrics",
+            "description": "Visualize your most important KPIs in an intuitive dashboard."
+          },
+          {
+            "title": "Segment your customers",
+            "description": "Classify your customers and understand their purchasing behavior."
+          },
+          {
+            "title": "Take action",
+            "description": "Use the information to create marketing and loyalty campaigns."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "What our users say",
+        "description": "Discover how Barfer is helping businesses like yours to grow.",
+        "items": [
+          {
+            "title": "My sales have increased by 20%!",
+            "description": "Since I started using Barfer, I understand my customers much better. I have been able to create personalized marketing campaigns that have increased my sales and customer loyalty.",
+            "author": {
+              "name": "Ana Pérez",
+              "location": "Entrepreneur"
+            }
+          },
+          {
+            "title": "Now I make data-driven decisions",
+            "description": "Barfer has given me the visibility I needed over my business. Now I can make strategic decisions based on real data, not intuition.",
+            "author": {
+              "name": "Juan López",
+              "location": "SME Owner"
+            }
+          },
+          {
+            "title": "The best tool to retain customers",
+            "description": "With Barfer's customer segmentation, I have been able to identify my most valuable customers and create loyalty programs that work. My retention rate has improved a lot!",
+            "author": {
+              "name": "Sofía Gómez",
+              "location": "Marketing Manager"
+            }
+          },
+          {
+            "title": "Easy to use and very powerful",
+            "description": "I was surprised how easy it is to use Barfer. In a few minutes I had my dashboards configured and I began to see super valuable information. I recommend it!",
+            "author": {
+              "name": "Carlos Fernández",
+              "location": "Business Consultant"
+            }
+          }
+        ]
+      },
+      "cta": {
+        "heading": "Ready to boost your business?",
+        "paragraph": "Start using Barfer today and discover everything you can achieve.",
+        "primaryCta": "Get started for free"
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "description": "Have questions? We have answers. If you can't find what you are looking for, please contact us.",
+        "questions": [
+          {
+            "question": "What is Barfer?",
+            "answer": "Barfer is a platform that helps small and medium-sized businesses analyze their business data to make better decisions, with a focus on client retention."
+          },
+          {
+            "question": "How does it work?",
+            "answer": "You connect your sales system (or upload your data) and Barfer automatically processes it to generate key metrics and reports."
+          },
+          {
+            "question": "Is it secure?",
+            "answer": "Yes, we take security very seriously. All your data is encrypted and protected with the highest security standards."
+          },
+          {
+            "question": "What is the price?",
+            "answer": "We have different plans that adapt to the needs of your business. You can check them on our pricing page."
+          }
+        ],
+        "contact": {
+          "title": "Still have questions?",
+          "description": "Don't worry. Contact our team and we will be happy to help you.",
+          "cta": "Contact Us"
+        },
+        "newsletter": {
+          "title": "Get insights for your business",
+          "description": "Subscribe to our newsletter to receive tips, case studies, and updates on how to leverage your data to grow.",
+          "placeholder": "Your email address",
+          "subscribe": "Subscribe",
+          "subscribing": "Subscribing...",
+          "success": "Thank you for subscribing!",
+          "error": "Something went wrong. Please try again.",
+          "validation": "Please enter a valid email",
+          "privacy": "We respect your privacy. No spam."
+        }
+      },
+      "cases": {
+        "title": "Success Stories",
+        "description": "Discover how Barfer has helped businesses like yours to grow.",
+        "quote": "Data is the new oil. Barfer helps you refine it.",
+        "projectsTitle": "Our Clients' Results",
+        "subtitle": "We are proud of the impact we have on our clients' businesses. Here are some of their stories.",
+        "projectStatus": {
+          "finished": "Finished",
+          "inProgress": "In Progress"
+        },
+        "modal": {
+          "description": "Description",
+          "technologies": "Technologies",
+          "features": "Features"
+        }
+      }
+    },
+    "pricing": {
+      "meta": {
+        "title": "Pricing - Barfer",
+        "description": "Find the perfect plan for your business. Start for free."
+      },
+      "title": "Flexible plans for businesses of all sizes",
+      "paragraph": "Choose the plan that best suits your needs and start growing with Barfer.",
+      "primaryCta": "Get started now",
+      "plans": {
+        "monthly": "Monthly",
+        "annually": "Annually",
+        "save": "Save",
+        "free": {
+          "title": "Free",
+          "price": "Free",
+          "frequency": "forever",
+          "description": "For businesses that are just starting.",
+          "features": [
+            "Up to 100 clients",
+            "Basic analytics",
+            "Email support"
+          ]
+        },
+        "pro": {
+          "title": "Pro",
+          "price": "$49",
+          "frequency": "/month",
+          "description": "For growing businesses.",
+          "features": [
+            "Up to 1,000 clients",
+            "Advanced analytics",
+            "Client segmentation",
+            "Priority support"
+          ]
+        },
+        "enterprise": {
+          "title": "Enterprise",
+          "price": "Custom",
+          "frequency": "",
+          "description": "For large businesses and corporations.",
+          "features": [
+            "Unlimited clients",
+            "Custom integrations",
+            "Dedicated account manager",
+            "24/7 support"
+          ]
+        }
+      }
+    },
+    "blog": {
+      "meta": {
+        "title": "Sustainable Food Blog",
+        "description": "Tips, recipes, and articles on how to reduce food waste and promote more sustainable consumption."
+      }
+    },
+    "contact": {
+      "meta": {
+        "title": "Contact - Barfer",
+        "description": "Get in touch with us. We are here to help you."
+      },
+      "title": "Contact us",
+      "paragraph": "Have questions or want more information? Send us a message and we will get back to you as soon as possible.",
+      "form": {
+        "name": "Name",
+        "email": "Email",
+        "message": "Message",
+        "send": "Send message",
+        "sending": "Sending...",
+        "success": "Message sent successfully!",
+        "error": "There was an error sending the message.",
+        "success_message": "Message sent successfully!",
+        "error_message": "There was an error sending the message.",
+        "name_placeholder": "Your name",
+        "email_placeholder": "Your email",
+        "message_placeholder": "Your message",
+        "send_button": "Send Message",
+        "subtitleInfo": "Get in touch with us",
+        "title": "Send us a message",
+        "subtitle": "We'll get back to you as soon as possible"
+      },
+      "hero": {
+        "benefits": [
+          {
+            "title": "Direct Support",
+            "description": "Talk to a real person who can help you with your needs."
+          },
+          {
+            "title": "Fast Response",
+            "description": "We'll get back to you in less than 24 hours."
+          },
+          {
+            "title": "Personalized Solutions",
+            "description": "We'll help you find the right solution for your business."
+          }
+        ]
+      }
+    },
+    "footer": {
+      "product": {
+        "title": "Product",
+        "features": "Features",
+        "pricing": "Pricing",
+        "about": "About Us",
+        "contact": "Contact"
+      },
+      "company": {
+        "title": "Company",
+        "about": "About Us",
+        "blog": "Blog",
+        "careers": "Careers"
+      },
+      "legal": {
+        "title": "Legal",
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy"
+      },
+      "copy": "All rights reserved.",
+      "companyDescription": "Barfer is the platform that helps you understand your customers and boost your business. In-depth metrics, customer retention, and total control of your company.",
+      "menuCreation": "Digital Menu Creation",
+      "mobileFirst": "Mobile-First Design",
+      "analytics": "Analytics and Insights",
+      "getStarted": "Get Started",
+      "rights": "All rights reserved"
+    }
+  }
+}

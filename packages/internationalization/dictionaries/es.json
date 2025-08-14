@@ -1,0 +1,751 @@
+{
+  "app": {
+    "admin": {
+      "title": "Barfer - Panel de Administración",
+      "navigation": {
+        "dashboard": "Inicio",
+        "users": "Usuarios",
+        "settings": "Configuración",
+        "logout": "Cerrar Sesión",
+        "loggingOut": "Cerrando sesión...",
+        "account": "Mi Cuenta",
+        "analytics": "Estadísticas",
+        "clients": "Clientes",
+        "table": "Tabla",
+        "balance": "Balance de Pedidos",
+        "prices": "Precios",
+        "outputs": "Salidas",
+        "accountMobile": "Cuenta",
+        "analyticsMobile": "KPIs",
+        "clientsMobile": "Clientes",
+        "tableMobile": "Tabla",
+        "balanceMobile": "Balance",
+        "pricesMobile": "Precios",
+        "outputsMobile": "Salidas"
+      },
+      "menu": {
+        "title": "Gestión de Menú",
+        "categories": {
+          "title": "Categorías",
+          "new": "Nueva Categoría",
+          "noCategories": "No se encontraron categorías. ¡Crea tu primera categoría!",
+          "edit": "Editar",
+          "delete": "Eliminar",
+          "deleteConfirmation": "¿Estás seguro de que deseas eliminar esta categoría?",
+          "form": {
+            "editTitle": "Editar Categoría",
+            "createTitle": "Crear Nueva Categoría",
+            "name": "Nombre",
+            "description": "Descripción",
+            "active": "Activa",
+            "cancel": "Cancelar",
+            "create": "Crear",
+            "update": "Actualizar",
+            "saving": "Guardando..."
+          }
+        },
+        "dishes": {
+          "title": "Platos",
+          "new": "Nuevo Plato",
+          "noDishes": "No se encontraron platos. ¡Crea tu primer plato!",
+          "edit": "Editar",
+          "delete": "Eliminar",
+          "deleteConfirmation": "¿Estás seguro de que deseas eliminar este plato?",
+          "status": {
+            "active": "Activo",
+            "inactive": "Inactivo"
+          },
+          "form": {
+            "editTitle": "Editar Plato",
+            "createTitle": "Crear Nuevo Plato",
+            "name": "Nombre",
+            "description": "Descripción",
+            "price": "Precio",
+            "category": "Categoría",
+            "status": "Estado",
+            "cancel": "Cancelar",
+            "create": "Crear",
+            "update": "Actualizar",
+            "saving": "Guardando..."
+          }
+        },
+        "dailySpecials": {
+          "title": "Platos del Día",
+          "new": "Nuevo Plato del Día",
+          "noSpecials": "No se encontraron platos del día.",
+          "edit": "Editar",
+          "delete": "Eliminar",
+          "deleteConfirmation": "¿Estás seguro de que deseas eliminar este plato del día?",
+          "form": {
+            "editTitle": "Editar Plato del Día",
+            "createTitle": "Crear Nuevo Plato del Día",
+            "date": "Fecha",
+            "dish": "Plato",
+            "active": "Activo",
+            "cancel": "Cancelar",
+            "create": "Crear",
+            "update": "Actualizar",
+            "saving": "Guardando..."
+          }
+        }
+      },
+      "clients": {
+        "title": "Gestión de Clientes",
+        "subtitle": "Análisis de Comportamiento de Clientes",
+        "description": "Visualiza y gestiona las categorías de clientes basadas en su comportamiento de compra",
+        "categories": {
+          "title": "Categorías de Clientes",
+          "behaviorTitle": "Por Comportamiento de Compra",
+          "spendingTitle": "Por Nivel de Gasto",
+          "new": "Cliente Nuevo",
+          "newDescription": "Solo una compra realizada",
+          "possibleActive": "Posible Activo",
+          "possibleActiveDescription": "Volvió a comprar al mes de su primera compra",
+          "possibleInactive": "Posible Inactivo",
+          "possibleInactiveDescription": "No volvió a comprar al mes de su primera compra",
+          "active": "Cliente Activo",
+          "activeDescription": "+2 compras en los últimos 2 meses",
+          "inactive": "Cliente Inactivo",
+          "inactiveDescription": "No compra hace más de 2 meses",
+          "recovered": "Cliente Recuperado",
+          "recoveredDescription": "Inactivo por más de 2 meses y volvió a comprar",
+          "lost": "Cliente Perdido",
+          "lostDescription": "Clientes que no han realizado compras en más de 4 meses.",
+          "tracking": "En Seguimiento",
+          "trackingDescription": "Clientes con una sola compra, entre 1 y 4 semanas de antigüedad.",
+          "premium": "Premium (A)",
+          "premiumDescription": "Clientes con mayor volumen de compra.",
+          "standard": "Estándar (B)",
+          "standardDescription": "Clientes con volumen de compra regular.",
+          "basic": "Básico (C)",
+          "basicDescription": "Clientes con bajo volumen de compra.",
+          "spendingCalculationNote": "Cálculo por compras del último mes.",
+          "kgRange": "Rango KG"
+        },
+        "stats": {
+          "totalClients": "Clientes Totales",
+          "averageSpending": "Gasto Promedio",
+          "repeatRate": "Tasa de Repetición",
+          "averageOrders": "Pedidos Promedio"
+        },
+        "actions": {
+          "sendWhatsApp": "Enviar WhatsApp",
+          "viewProfile": "Ver Perfil",
+          "viewOrders": "Ver Pedidos"
+        },
+        "empty": {
+          "title": "No hay clientes",
+          "description": "Aún no tienes clientes registrados con pedidos"
+        }
+      },
+      "users": {
+        "title": "Gestión de Usuarios",
+        "subtitle": "Usuarios del Sistema",
+        "description": "Gestiona los usuarios y sus permisos",
+        "newUser": "Nuevo Usuario",
+        "noUsers": "No hay usuarios registrados",
+        "status": {
+          "active": "Activo",
+          "inactive": "Inactivo"
+        },
+        "roles": {
+          "admin": "Administrador",
+          "user": "Usuario"
+        },
+        "actions": {
+          "edit": "Editar",
+          "delete": "Eliminar",
+          "confirmDelete": "¿Estás seguro de que deseas eliminar este usuario?"
+        },
+        "form": {
+          "createTitle": "Crear Nuevo Usuario",
+          "editTitle": "Editar Usuario",
+          "name": "Nombre",
+          "lastName": "Apellido",
+          "email": "Email",
+          "password": "Contraseña",
+          "role": "Rol",
+          "cancel": "Cancelar",
+          "create": "Crear Usuario",
+          "update": "Actualizar Usuario",
+          "creating": "Creando...",
+          "updating": "Actualizando...",
+          "errors": {
+            "emptyFields": "Todos los campos son requeridos",
+            "invalidEmail": "Email inválido",
+            "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+            "emailExists": "Ya existe un usuario con este email",
+            "createFailed": "Error al crear el usuario",
+            "updateFailed": "Error al actualizar el usuario"
+          },
+          "success": {
+            "userCreated": "Usuario creado exitosamente",
+            "userUpdated": "Usuario actualizado exitosamente"
+          }
+        }
+      }
+    },
+    "client": {
+      "title": "Portal del Cliente",
+      "navigation": {
+        "dashboard": "Tablero",
+        "profile": "Perfil",
+        "orders": "Pedidos",
+        "settings": "Configuración",
+        "logout": "Cerrar Sesión",
+        "loggingOut": "Cerrando sesión..."
+      }
+    },
+    "pharmacy": {
+      "title": "Gestión de Farmacia",
+      "navigation": {
+        "dashboard": "Tablero",
+        "clients": "Clientes",
+        "inventory": "Inventario",
+        "orders": "Pedidos",
+        "settings": "Configuración",
+        "logout": "Cerrar Sesión",
+        "loggingOut": "Cerrando sesión..."
+      }
+    },
+    "auth": {
+      "signIn": {
+        "title": "Iniciar sesión",
+        "email": "Correo electrónico",
+        "password": "Contraseña",
+        "button": "Iniciar sesión",
+        "signing": "Iniciando sesión...",
+        "goToSignUp": "¿No tienes cuenta? Crear cuenta",
+        "errors": {
+          "emptyFields": "Por favor complete todos los campos",
+          "invalidCredentials": "Error al iniciar sesión",
+          "generic": "Ha ocurrido un error al iniciar sesión"
+        }
+      },
+      "signUp": {
+        "title": "Crear cuenta",
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "email": "Correo electrónico",
+        "password": "Contraseña",
+        "confirmPassword": "Confirmar contraseña",
+        "button": "Crear cuenta",
+        "creating": "Creando cuenta...",
+        "goToSignIn": "¿Ya tienes cuenta? Inicia sesión",
+        "errors": {
+          "emptyFields": "Por favor complete todos los campos",
+          "passwordsDoNotMatch": "Las contraseñas no coinciden",
+          "accountCreation": "Error al crear la cuenta",
+          "generic": "Ha ocurrido un error al crear la cuenta"
+        }
+      },
+      "layout": {
+        "title": "Panel de Administración Barfer",
+        "description": "Accede a las herramientas administrativas de Barfer para gestionar tu negocio de manera eficiente."
+      },
+      "account": {
+        "title": "Gestión de Cuenta",
+        "subtitle": "Configuración y usuarios",
+        "profile": {
+          "title": "Mi Perfil",
+          "personalInfo": "Información Personal",
+          "personalInfoDescription": "Actualiza tu información personal y configuración de cuenta",
+          "name": "Nombre",
+          "lastName": "Apellido",
+          "email": "Email",
+          "phone": "Teléfono",
+          "currentRole": "Rol actual",
+          "saveChanges": "Guardar Cambios"
+        },
+        "security": {
+          "title": "Seguridad",
+          "description": "Gestiona tu contraseña y configuración de seguridad",
+          "currentPassword": "Contraseña Actual",
+          "newPassword": "Nueva Contraseña",
+          "confirmPassword": "Confirmar Nueva Contraseña",
+          "updatePassword": "Actualizar Contraseña",
+          "updatingPassword": "Actualizando...",
+          "errors": {
+            "emptyFields": "Todos los campos son requeridos",
+            "passwordsDoNotMatch": "Las contraseñas no coinciden",
+            "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+            "invalidCurrentPassword": "La contraseña actual no es correcta",
+            "updateFailed": "Error al actualizar la contraseña"
+          },
+          "success": {
+            "passwordUpdated": "Contraseña actualizada exitosamente"
+          }
+        },
+        "clients": {
+          "title": "Gestión de Clientes",
+          "subtitle": "Análisis de Comportamiento de Clientes",
+          "description": "Visualiza y gestiona las categorías de clientes basadas en su comportamiento de compra",
+          "categories": {
+            "title": "Categorías de Clientes",
+            "behaviorTitle": "Por Comportamiento de Compra",
+            "spendingTitle": "Por Nivel de Gasto",
+            "new": "Cliente Nuevo",
+            "newDescription": "Solo una compra realizada",
+            "possibleActive": "Posible Activo",
+            "possibleActiveDescription": "Volvió a comprar al mes de su primera compra",
+            "possibleInactive": "Posible Inactivo",
+            "possibleInactiveDescription": "No volvió a comprar al mes de su primera compra",
+            "active": "Cliente Activo",
+            "activeDescription": "+2 compras en los últimos 2 meses",
+            "inactive": "Cliente Inactivo",
+            "inactiveDescription": "No compra hace más de 2 meses",
+            "recovered": "Cliente Recuperado",
+            "recoveredDescription": "Inactivo por más de 2 meses y volvió a comprar",
+            "lost": "Cliente Perdido",
+            "lostDescription": "Clientes que no han realizado compras en más de 4 meses.",
+            "tracking": "En Seguimiento",
+            "trackingDescription": "Clientes con una sola compra, entre 1 y 4 semanas de antigüedad.",
+            "premium": "Premium (A)",
+            "premiumDescription": "Clientes con mayor volumen de compra.",
+            "standard": "Estándar (B)",
+            "standardDescription": "Clientes con volumen de compra regular.",
+            "basic": "Básico (C)",
+            "basicDescription": "Clientes con bajo volumen de compra.",
+            "spendingCalculationNote": "Cálculo por compras del último mes.",
+            "kgRange": "Rango KG"
+          },
+          "stats": {
+            "totalClients": "Clientes Totales",
+            "averageSpending": "Gasto Promedio",
+            "repeatRate": "Tasa de Repetición",
+            "averageOrders": "Pedidos Promedio"
+          },
+          "actions": {
+            "sendWhatsApp": "Enviar WhatsApp",
+            "viewProfile": "Ver Perfil",
+            "viewOrders": "Ver Pedidos"
+          },
+          "empty": {
+            "title": "No hay clientes",
+            "description": "Aún no tienes clientes registrados con pedidos"
+          }
+        },
+        "users": {
+          "title": "Gestión de Usuarios",
+          "subtitle": "Usuarios del Sistema",
+          "description": "Gestiona los usuarios y sus permisos",
+          "newUser": "Nuevo Usuario",
+          "noUsers": "No hay usuarios registrados",
+          "status": {
+            "active": "Activo",
+            "inactive": "Inactivo"
+          },
+          "roles": {
+            "admin": "Administrador",
+            "user": "Usuario"
+          },
+          "actions": {
+            "edit": "Editar",
+            "delete": "Eliminar",
+            "confirmDelete": "¿Estás seguro de que deseas eliminar este usuario?"
+          },
+          "form": {
+            "createTitle": "Crear Nuevo Usuario",
+            "editTitle": "Editar Usuario",
+            "name": "Nombre",
+            "lastName": "Apellido",
+            "email": "Email",
+            "password": "Contraseña",
+            "role": "Rol",
+            "cancel": "Cancelar",
+            "create": "Crear Usuario",
+            "update": "Actualizar Usuario",
+            "creating": "Creando...",
+            "updating": "Actualizando...",
+            "errors": {
+              "emptyFields": "Todos los campos son requeridos",
+              "invalidEmail": "Email inválido",
+              "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+              "emailExists": "Ya existe un usuario con este email",
+              "createFailed": "Error al crear el usuario",
+              "updateFailed": "Error al actualizar el usuario"
+            },
+            "success": {
+              "userCreated": "Usuario creado exitosamente",
+              "userUpdated": "Usuario actualizado exitosamente"
+            }
+          }
+        }
+      }
+    },
+    "tablePage": {
+      "title": "Tabla de Órdenes",
+      "description": "Una lista de todas las órdenes."
+    },
+    "menu": {
+      "title": "Gestión de Menú",
+      "categories": {
+        "noDishes": "No hay platos disponibles en esta categoría"
+      },
+      "dish": {
+        "outOfStock": "Agotado",
+        "available": "Disponible"
+      },
+      "footer": {
+        "poweredBy": "Menú digital creado con",
+        "businessInfo": "Información del negocio"
+      }
+    },
+    "prices": {
+      "title": "Gestión de Precios",
+      "description": "Administra los precios de todos los productos por sección y tipo de venta",
+      "sections": {
+        "perro": "Productos para Perros",
+        "gato": "Productos para Gatos", 
+        "otros": "Otros Productos"
+      },
+      "priceTypes": {
+        "EFECTIVO": "Efectivo",
+        "TRANSFERENCIA": "Transferencia",
+        "MAYORISTA": "Mayorista"
+      },
+      "table": {
+        "product": "Producto",
+        "priceType": "Tipo de Precio",
+        "price": "Precio ($)",
+        "status": "Estado",
+        "active": "Activo",
+        "inactive": "Inactivo"
+      },
+      "actions": {
+        "initialize": "Inicializar Precios por Defecto",
+        "update": "Actualizar Precio",
+        "updateSuccess": "Precio actualizado correctamente",
+        "initializeSuccess": "Precios inicializados correctamente",
+        "error": "Error al procesar la operación"
+      },
+      "empty": {
+        "title": "No hay precios configurados",
+        "description": "¿Deseas inicializar la tabla con la estructura por defecto?"
+      }
+    },
+    "layout": {
+      "title": "Panel de Administración Barfer",
+      "description": "Accede a las herramientas administrativas de Barfer para gestionar tu negocio de manera eficiente."
+    }
+  },
+  "web": {
+    "global": {
+      "primaryCta": "Contáctanos",
+      "secondaryCta": "Comienza ahora"
+    },
+    "menu": {
+      "title": "Nuestros Servicios",
+      "todaySpecial": "Servicio Destacado",
+      "featuredDish": "Servicio Destacado",
+      "specialDescription": "Descubre nuestro servicio destacado del mes, diseñado para potenciar tu negocio.",
+      "todayOnly": "Solo este mes",
+      "comingSoon": "Próximamente... Estamos preparando nuestros servicios.",
+      "address": "Dirección",
+      "phone": "Teléfono",
+      "hours": "Horario",
+      "contact": "Contacto",
+      "searchPlaceholder": "Buscar servicios...",
+      "allCategories": "Todas las categorías",
+      "specialsOnly": "Solo destacados",
+      "filters": "Filtros",
+      "noResults": "No se encontraron servicios con los filtros aplicados.",
+      "clearFilters": "Limpiar filtros",
+      "currency": "$",
+      "closed": "Cerrado",
+      "categories": {
+        "noDishes": "No hay servicios disponibles en esta categoría"
+      },
+      "dish": {
+        "outOfStock": "No disponible",
+        "available": "Disponible"
+      },
+      "footer": {
+        "poweredBy": "Plataforma creada con",
+        "businessInfo": "Información del negocio"
+      }
+    },
+    "header": {
+      "home": "Inicio",
+      "features": "Características",
+      "pricing": "Precios",
+      "about": "Nosotros",
+      "contact": "Contacto",
+      "logIn": "Iniciar Sesión",
+      "getStarted": "Comenzar",
+      "navigation": "Navegación"
+    },
+    "home": {
+      "meta": {
+        "title": "Barfer - Métricas de Negocio para Retención de Clientes",
+        "description": "La plataforma para entender a tus clientes e impulsar tu negocio. Métricas a fondo, retención de clientes y control total de tu empresa."
+      },
+      "hero": {
+        "heading": "Entiende a tus clientes, haz crecer tu negocio",
+        "paragraph": "Barfer te da las herramientas necesarias para analizar las métricas de tu negocio, entender el comportamiento de tus clientes y tomar decisiones estratégicas para aumentar la retención y las ventas.",
+        "primaryCta": "Comienza ahora",
+        "secondaryCta": "Saber más"
+      },
+      "features": {
+        "title": "Todas las herramientas que necesitas en un solo lugar",
+        "paragraph": "Desde analíticas detalladas hasta herramientas de comunicación, Barfer tiene todo lo que necesitas para llevar tu negocio al siguiente nivel.",
+        "featureOne": {
+          "title": "Analíticas Avanzadas",
+          "paragraph": "Visualiza tus ventas, clientes y productos como nunca antes. Identifica patrones y oportunidades de crecimiento."
+        },
+        "featureTwo": {
+          "title": "Segmentación de Clientes",
+          "paragraph": "Clasifica a tus clientes automáticamente según su comportamiento de compra. Crea estrategias personalizadas para cada segmento."
+        },
+        "featureThree": {
+          "title": "Comunicación Directa",
+          "paragraph": "Contacta a tus clientes por WhatsApp o Email directamente desde la plataforma para fidelizarlos e impulsar ventas."
+        }
+      },
+      "stats": {
+        "title": "Cómo funciona Barfer",
+        "description": "Sigue estos sencillos pasos para empezar a entender a tus clientes y potenciar tu negocio.",
+        "process": [
+          {
+            "title": "Conecta tus datos",
+            "description": "Conecta tu sistema de ventas o sube tus datos de forma segura."
+          },
+          {
+            "title": "Analiza tus métricas",
+            "description": "Visualiza tus KPIs más importantes en un dashboard intuitivo."
+          },
+          {
+            "title": "Segmenta tus clientes",
+            "description": "Clasifica a tus clientes y entiende su comportamiento de compra."
+          },
+          {
+            "title": "Toma acción",
+            "description": "Usa la información para crear campañas de marketing y fidelización."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Lo que dicen nuestros usuarios",
+        "description": "Descubre cómo Barfer está ayudando a negocios como el tuyo a crecer.",
+        "items": [
+          {
+            "title": "¡Mis ventas han aumentado un 20%!",
+            "description": "Desde que uso Barfer, entiendo mucho mejor a mis clientes. He podido crear campañas de marketing personalizadas que han aumentado mis ventas y la fidelidad de mis clientes.",
+            "author": {
+              "name": "Ana Pérez",
+              "location": "Emprendedora"
+            }
+          },
+          {
+            "title": "Ahora tomo decisiones basadas en datos",
+            "description": "Barfer me ha dado la visibilidad que necesitaba sobre mi negocio. Ahora puedo tomar decisiones estratégicas basadas en datos reales, no en intuiciones.",
+            "author": {
+              "name": "Juan López",
+              "location": "Dueño de Pyme"
+            }
+          },
+          {
+            "title": "La mejor herramienta para retener clientes",
+            "description": "Con la segmentación de clientes de Barfer, he podido identificar a mis clientes más valiosos y crear programas de fidelización que funcionan. ¡Mi tasa de retención ha mejorado muchísimo!",
+            "author": {
+              "name": "Sofía Gómez",
+              "location": "Gerente de Marketing"
+            }
+          },
+          {
+            "title": "Fácil de usar y muy potente",
+            "description": "Me sorprendió lo fácil que es de usar Barfer. En pocos minutos ya tenía mis dashboards configurados y empecé a ver información súper valiosa. ¡La recomiendo!",
+            "author": {
+              "name": "Carlos Fernández",
+              "location": "Consultor de Negocios"
+            }
+          }
+        ]
+      },
+      "cta": {
+        "heading": "¿Listo para potenciar tu negocio?",
+        "paragraph": "Empieza a usar Barfer hoy mismo y descubre todo lo que puedes lograr.",
+        "primaryCta": "Comienza gratis"
+      },
+      "faq": {
+        "title": "Preguntas Frecuentes",
+        "description": "¿Tienes preguntas? Tenemos respuestas. Si no encuentras lo que buscas, contáctanos.",
+        "questions": [
+          {
+            "question": "¿Qué es Barfer?",
+            "answer": "Barfer es una plataforma que ayuda a pequeñas y medianas empresas a analizar sus datos de negocio para tomar mejores decisiones, con foco en la retención de clientes."
+          },
+          {
+            "question": "¿Cómo funciona?",
+            "answer": "Conectas tu sistema de ventas (o subes tus datos) y Barfer los procesa automáticamente para generar métricas e informes clave."
+          },
+          {
+            "question": "¿Es seguro?",
+            "answer": "Sí, nos tomamos la seguridad muy en serio. Todos tus datos están encriptados y protegidos con los más altos estándares de seguridad."
+          },
+          {
+            "question": "¿Cuál es el precio?",
+            "answer": "Tenemos diferentes planes que se adaptan a las necesidades de tu negocio. Puedes consultarlos en nuestra página de precios."
+          }
+        ],
+        "contact": {
+          "title": "¿Aún tienes dudas?",
+          "description": "No te preocupes. Contacta con nuestro equipo y estaremos encantados de ayudarte.",
+          "cta": "Contáctanos"
+        },
+        "newsletter": {
+          "title": "Obtén ideas para tu negocio",
+          "description": "Suscríbete a nuestro boletín para recibir consejos, casos de estudio y actualizaciones sobre cómo aprovechar tus datos para crecer.",
+          "placeholder": "Tu dirección de correo electrónico",
+          "subscribe": "Suscribirse",
+          "subscribing": "Suscribiendo...",
+          "success": "¡Gracias por suscribirte!",
+          "error": "Algo salió mal. Por favor, inténtalo de nuevo.",
+          "validation": "Por favor, introduce un correo electrónico válido",
+          "privacy": "Respetamos tu privacidad. No spam."
+        }
+      },
+      "cases": {
+        "title": "Casos de Éxito",
+        "description": "Descubre cómo Barfer ha ayudado a negocios como el tuyo a crecer.",
+        "quote": "Los datos son el nuevo petróleo. Barfer te ayuda a refinarlo.",
+        "projectsTitle": "Resultados de Nuestros Clientes",
+        "subtitle": "Estamos orgullosos del impacto que tenemos en los negocios de nuestros clientes. Aquí te presentamos algunas de sus historias.",
+        "projectStatus": {
+          "finished": "Finalizado",
+          "inProgress": "En Progreso"
+        },
+        "modal": {
+          "description": "Descripción",
+          "technologies": "Tecnologías",
+          "features": "Características"
+        }
+      }
+    },
+    "pricing": {
+      "meta": {
+        "title": "Precios - Barfer",
+        "description": "Encuentra el plan perfecto para tu negocio. Comienza gratis."
+      },
+      "title": "Planes flexibles para negocios de todos los tamaños",
+      "paragraph": "Elige el plan que mejor se adapte a tus necesidades y empieza a crecer con Barfer.",
+      "primaryCta": "Comienza ahora",
+      "plans": {
+        "monthly": "Mensual",
+        "annually": "Anual",
+        "save": "Ahorra",
+        "free": {
+          "title": "Gratis",
+          "price": "Gratis",
+          "frequency": "para siempre",
+          "description": "Para negocios que recién comienzan.",
+          "features": [
+            "Hasta 100 clientes",
+            "Analíticas básicas",
+            "Soporte por email"
+          ]
+        },
+        "pro": {
+          "title": "Pro",
+          "price": "$49",
+          "frequency": "/mes",
+          "description": "Para negocios en crecimiento.",
+          "features": [
+            "Hasta 1.000 clientes",
+            "Analíticas avanzadas",
+            "Segmentación de clientes",
+            "Soporte prioritario"
+          ]
+        },
+        "enterprise": {
+          "title": "Empresarial",
+          "price": "Personalizado",
+          "frequency": "",
+          "description": "Para grandes negocios y corporaciones.",
+          "features": [
+            "Clientes ilimitados",
+            "Integraciones a medida",
+            "Gestor de cuenta dedicado",
+            "Soporte 24/7"
+          ]
+        }
+      }
+    },
+    "blog": {
+      "meta": {
+        "title": "Blog sobre Alimentación Sostenible",
+        "description": "Consejos, recetas y artículos sobre cómo reducir el desperdicio alimentario y promover un consumo más sostenible."
+      }
+    },
+    "contact": {
+      "meta": {
+        "title": "Contacto - Barfer",
+        "description": "Ponte en contacto con nosotros. Estamos aquí para ayudarte."
+      },
+      "title": "Contáctanos",
+      "paragraph": "¿Tienes preguntas o quieres más información? Envíanos un mensaje y te responderemos lo antes posible.",
+      "form": {
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "message": "Mensaje",
+        "send": "Enviar mensaje",
+        "sending": "Enviando...",
+        "success": "¡Mensaje enviado con éxito!",
+        "error": "Hubo un error al enviar el mensaje.",
+        "success_message": "¡Mensaje enviado con éxito!",
+        "error_message": "Hubo un error al enviar el mensaje.",
+        "name_placeholder": "Tu nombre",
+        "email_placeholder": "Tu correo electrónico",
+        "message_placeholder": "Tu mensaje",
+        "send_button": "Enviar Mensaje",
+        "subtitleInfo": "Ponte en contacto con nosotros",
+        "title": "Envíanos un mensaje",
+        "subtitle": "Te responderemos lo antes posible"
+      },
+      "hero": {
+        "benefits": [
+          {
+            "title": "Soporte Directo",
+            "description": "Habla con una persona real que puede ayudarte con tus necesidades."
+          },
+          {
+            "title": "Respuesta Rápida",
+            "description": "Te responderemos en menos de 24 horas."
+          },
+          {
+            "title": "Soluciones Personalizadas",
+            "description": "Te ayudaremos a encontrar la solución adecuada para tu negocio."
+          }
+        ]
+      }
+    },
+    "footer": {
+      "product": {
+        "title": "Producto",
+        "features": "Características",
+        "pricing": "Precios",
+        "about": "Nosotros",
+        "contact": "Contacto"
+      },
+      "company": {
+        "title": "Empresa",
+        "about": "Nosotros",
+        "blog": "Blog",
+        "careers": "Carreras"
+      },
+      "legal": {
+        "title": "Legal",
+        "terms": "Términos de Servicio",
+        "privacy": "Política de Privacidad"
+      },
+      "copy": "Todos los derechos reservados.",
+      "companyDescription": "Barfer es la plataforma que te ayuda a entender a tus clientes e impulsar tu negocio. Métricas a fondo, retención de clientes y control total de tu empresa.",
+      "navigation": "Navegación",
+      "menuCreation": "Creación de Menús Digitales",
+      "mobileFirst": "Diseño Mobile-First",
+      "analytics": "Análisis e Insights",
+      "getStarted": "Comenzar",
+      "rights": "Todos los derechos reservados"
+    }
+  }
+}

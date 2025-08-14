@@ -1,0 +1,384 @@
+{
+  "app": {
+    "admin": {
+      "title": "Administrationsbereich",
+      "navigation": {
+        "dashboard": "Dashboard",
+        "users": "Benutzer",
+        "settings": "Einstellungen",
+        "logout": "Abmelden",
+        "loggingOut": "Abmelden...",
+        "account": "Mein Konto",
+        "analytics": "Analytik",
+        "clients": "Kunden",
+        "table": "Tabelle",
+        "balance": "Bestellbilanz",
+        "prices": "Preise",
+        "outputs": "Ausgänge",
+        "accountMobile": "Konto",
+        "analyticsMobile": "KPIs",
+        "clientsMobile": "Kunden",
+        "tableMobile": "Tabelle",
+        "balanceMobile": "Bilanz",
+        "pricesMobile": "Preise",
+        "outputsMobile": "Ausgänge"
+      },
+      "products": {
+        "title": "Produkt-Dashboard",
+        "newProduct": "Neues Produkt",
+        "noProducts": "Keine Produkte gefunden. Erstellen Sie Ihr erstes Produkt!",
+        "technologies": "Technologien",
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "deleteConfirmation": "Sind Sie sicher, dass Sie dieses Produkt löschen möchten?",
+        "status": {
+          "published": "Veröffentlicht",
+          "draft": "Entwurf",
+          "archived": "Archiviert"
+        },
+        "form": {
+          "editTitle": "Produkt bearbeiten",
+          "createTitle": "Neues Produkt erstellen",
+          "productTitle": "Titel",
+          "status": "Status",
+          "size": "Größe",
+          "statusDescription": "Statusbeschreibung",
+          "description": "Beschreibung",
+          "detailedDescription": "Detaillierte Beschreibung",
+          "productImages": "Produktbilder",
+          "addImages": "Klicken Sie, um weitere Bilder hinzuzufügen",
+          "imageRequirements": "PNG, JPG, GIF bis zu 5MB",
+          "features": "Funktionen",
+          "addFeature": "Funktion hinzufügen",
+          "technologies": "Technologien",
+          "addTechnology": "Technologie hinzufügen",
+          "cancel": "Abbrechen",
+          "create": "Erstellen",
+          "update": "Aktualisieren",
+          "saving": "Speichern..."
+        }
+      }
+    },
+    "client": {
+      "title": "Kundenportal",
+      "navigation": {
+        "dashboard": "Dashboard",
+        "profile": "Profil",
+        "orders": "Bestellungen",
+        "settings": "Einstellungen",
+        "logout": "Abmelden",
+        "loggingOut": "Abmelden..."
+      }
+    },
+    "pharmacy": {
+      "title": "Apothekenverwaltung",
+      "navigation": {
+        "dashboard": "Dashboard",
+        "clients": "Kunden",
+        "inventory": "Bestand",
+        "orders": "Bestellungen",
+        "settings": "Einstellungen",
+        "logout": "Abmelden",
+        "loggingOut": "Abmelden..."
+      }
+    },
+    "auth": {
+      "signIn": {
+        "title": "Anmelden",
+        "email": "E-Mail",
+        "password": "Passwort",
+        "button": "Anmelden",
+        "signing": "Anmeldung läuft...",
+        "goToSignUp": "Noch kein Konto? Registrieren",
+        "errors": {
+          "emptyFields": "Bitte füllen Sie alle Felder aus",
+          "invalidCredentials": "Fehler bei der Anmeldung",
+          "generic": "Bei der Anmeldung ist ein Fehler aufgetreten"
+        }
+      },
+      "signUp": {
+        "title": "Konto erstellen",
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "email": "E-Mail",
+        "password": "Passwort",
+        "confirmPassword": "Passwort bestätigen",
+        "button": "Konto erstellen",
+        "creating": "Konto wird erstellt...",
+        "goToSignIn": "Bereits ein Konto? Anmelden",
+        "errors": {
+          "emptyFields": "Bitte füllen Sie alle Felder aus",
+          "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+          "accountCreation": "Fehler beim Erstellen des Kontos",
+          "generic": "Beim Erstellen des Kontos ist ein Fehler aufgetreten"
+        }
+      },
+      "layout": {
+        "title": "Interne Tools für AppWise",
+        "description": "Interne Tools für AppWise, die Ihnen bei der Verwaltung unserer Produkte und Dienstleistungen helfen."
+      }
+    }
+  },
+  "web": {
+    "global": {
+      "primaryCta": "Kontaktieren Sie uns",
+      "secondaryCta": "Jetzt loslegen"
+    },
+    "header": {
+      "home": "Startseite",
+      "projects": "Projekte",
+      "services": "Dienstleistungen",
+      "servicesDescription": "Unsere Dienstleistungen für Softwareentwicklung",
+      "process": "Prozess",
+      "processDescription": "Wie wir mit unseren Kunden arbeiten",
+      "product": {
+        "title": "Produkt",
+        "description": "Individuelle Softwareentwicklung erfordert Fachwissen und bewährte Methoden.",
+        "pricing": "Preise"
+      },
+      "blog": "Blog",
+      "docs": "Dokumente",
+      "contact": "Kontakt",
+      "signIn": "Anmelden",
+      "signUp": "Loslegen",
+      "app": "DIE APP",
+      "business": "GESCHÄFTSLÖSUNGEN",
+      "about": "ÜBER UNS",
+      "foodWaste": "Über Lebensmittelverschwendung",
+      "downloadApp": "APP HERUNTERLADEN",
+      "registerBusiness": "REGISTRIEREN SIE IHR UNTERNEHMEN",
+      "myStore": "MyStore Zugang"
+    },
+    "home": {
+      "meta": {
+        "title": "AppWise - Individuelle Softwareentwicklung",
+        "description": "Die Plattform, die Innovatoren mit Entwicklern verbindet, um hochwertige digitale Lösungen, Web- und Mobile-Anwendungen zu erstellen."
+      },
+      "hero": {
+        "announcement": "Lesen Sie unser neuestes Technologie-Update",
+        "title": "RETTE GUTES ESSEN VOR DER VERSCHWENDUNG",
+        "subtitle": "Unsere App ist der größte Marktplatz zum Retten von überschüssigen Lebensmitteln. Wir helfen Nutzern, die Verschwendung von guten Lebensmitteln zu vermeiden und bieten ihnen ein ausgezeichnetes Preis-Leistungs-Verhältnis in lokalen Geschäften, Cafés und Restaurants.",
+        "cta": "Lass uns jetzt anfangen!",
+        "location": "Standort",
+        "date": "Abholdatum",
+        "search": "ÜBERRASCHUNGSPAKETE SUCHEN",
+        "results": "Ergebnisse in der Nähe:"
+      },
+      "cases": {
+        "title": "Vertrauenswürdig für Unternehmen und Unternehmer",
+        "subtitle": "Entdecken Sie, wie wir anderen Unternehmern helfen, ihre Ideen Wirklichkeit werden zu lassen.",
+        "quote": "Jedes Projekt ist eine Erfolgsgeschichte in der Entwicklung",
+        "projectsTitle": "Projekte",
+        "projectStatus": {
+          "finished": "Abgeschlossen",
+          "inProgress": "In Bearbeitung"
+        }
+      },
+      "features": {
+        "title": "WARUM GANGAÑAM NUTZEN",
+        "description": "Werde Teil der Gemeinschaft, die Lebensmittelverschwendung bekämpft und gleichzeitig qualitativ hochwertige Lebensmittel zu reduzierten Preisen genießt",
+        "items": [
+          {
+            "title": "Genieße gutes Essen für die Hälfte des Originalpreises",
+            "description": "Spare Geld und genieße hochwertiges Essen von deinen Lieblingsgeschäften vor Ort."
+          },
+          {
+            "title": "Rette Lebensmittel in deiner Nähe",
+            "description": "Entdecke und rette überschüssige Lebensmittel aus Restaurants, Cafés, Bäckereien und Supermärkten in deiner Umgebung."
+          },
+          {
+            "title": "Hilf der Umwelt",
+            "description": "Reduziere Lebensmittelverschwendung und trage zum Kampf gegen den Klimawandel bei."
+          },
+          {
+            "title": "Probiere neue Cafés und Restaurants",
+            "description": "Entdecke neue lokale Geschäfte und leiste gleichzeitig einen Beitrag zu einer guten Sache."
+          },
+          {
+            "title": "Schnelle und einfache Abholung",
+            "description": "Hole dein Essen zur festgelegten Zeit ab, indem du einfach deinen Beleg in der App vorweist."
+          },
+          {
+            "title": "Überraschungspaket zum guten Preis",
+            "description": "Erhalte eine Überraschungsauswahl an Produkten zu einem deutlich niedrigeren Preis als ihrem Originalwert."
+          }
+        ]
+      },
+      "stats": {
+        "title": "WIE MAN DIE APP BENUTZT",
+        "description": "Folge diesen einfachen Schritten, um mit Gangañam Lebensmittel zu retten",
+        "process": [
+          {
+            "title": "Entdecke Überraschungspakete",
+            "description": "Finde verfügbare Überraschungspakete in Geschäften und Restaurants in deiner Nähe."
+          },
+          {
+            "title": "Reservieren und bezahlen",
+            "description": "Reserviere dein Essen und bezahle sicher und schnell über die App."
+          },
+          {
+            "title": "Hole dein Essen ab",
+            "description": "Gehe zum angegebenen Abholzeitpunkt zum Geschäft und zeige deine Quittung in der App vor."
+          },
+          {
+            "title": "Genieße dein Essen!",
+            "description": "Genieße dein Essen und sei stolz darauf, etwas Gutes für den Planeten getan zu haben."
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "Stimmen Unserer Kunden",
+        "description": "Was unsere Kunden über unsere Arbeit und Zusammenarbeit sagen",
+        "items": [
+          {
+            "title": "Ein Wendepunkt für mein Geschäft",
+            "description": "Die Zusammenarbeit mit diesem Team hat unsere digitale Präsenz komplett verändert. Ihre Liebe zum Detail und technische Expertise haben den gesamten Prozess reibungslos und effektiv gestaltet.",
+            "author": {
+              "name": "Maria Schmidt",
+              "image": "https://github.com/haydenbleasel.png"
+            }
+          },
+          {
+            "title": "Übertraf alle Erwartungen",
+            "description": "Sie haben das Projekt nicht nur pünktlich geliefert, sondern bei jedem Schritt durch aufschlussreiche Vorschläge einen Mehrwert geschaffen, die unser ursprüngliches Konzept erheblich verbessert haben.",
+            "author": {
+              "name": "Johannes Meyer",
+              "image": "https://github.com/haydenbleasel.png"
+            }
+          }
+        ]
+      },
+      "faq": {
+        "title": "Häufig gestellte Fragen",
+        "description": "Erhalten Sie schnelle Antworten auf Ihre dringendsten Fragen zu unseren Softwareentwicklungsdienstleistungen bei AppWise Innovation.",
+        "cta": "Noch Fragen? Kontaktieren Sie uns",
+        "needMore": "Benötigen Sie weitere Informationen?",
+        "contactDescription": "Wenn Sie die Antwort auf Ihre Frage nicht gefunden haben, steht unser Entwicklungsteam bereit, Ihnen zu helfen, Ihre Idee in die Realität umzusetzen.",
+        "items": [
+          {
+            "question": "Welche Dienstleistungen bietet AppWise Innovation an?",
+            "answer": "AppWise Innovation bietet umfassende Softwareentwicklungsdienste, einschließlich Web- und Mobile-App-Entwicklung, UI/UX-Design, maßgeschneiderte Softwarelösungen und kontinuierliche Wartungs- und Supportservices."
+          },
+          {
+            "question": "Wie funktioniert Ihr Entwicklungsprozess?",
+            "answer": "Unser Entwicklungsprozess folgt der agilen Methodik mit iterativen Zyklen. Wir beginnen mit der Erkundungsphase, um Ihre Anforderungen zu verstehen, gehen zu Design- und Entwicklungsphasen über, führen umfassende Tests durch und stellen schließlich Ihre Lösung mit kontinuierlicher Unterstützung bereit."
+          },
+          {
+            "question": "Wie lange dauert die Entwicklung einer Softwarelösung typischerweise?",
+            "answer": "Entwicklungszeiten variieren je nach Projektkomplexität. Einfache Anwendungen können einige Wochen dauern, während umfassendere Unternehmenslösungen mehrere Monate in Anspruch nehmen können. Wir stellen detaillierte Zeitpläne während unserer ersten Beratung zur Verfügung."
+          },
+          {
+            "question": "Bieten Sie Support nach der Einführung an?",
+            "answer": "Auf jeden Fall! Wir bieten umfassende Wartungs- und Support-Pakete, um sicherzustellen, dass Ihre Software nach der Einführung weiterhin optimal funktioniert. Unser Team kümmert sich um Updates, Fehlerbehebungen und Funktionsverbesserungen, damit Ihre Lösung reibungslos läuft."
+          }
+        ]
+      },
+      "cta": {
+        "title": "Verwandeln Sie Ihre Idee noch heute in Realität",
+        "description": "Schließen Sie sich Hunderten von Unternehmern und Unternehmen an, die ihre Ideen bereits in erfolgreiche digitale Produkte umgewandelt haben. AppWise bietet die Tools, die Unterstützung und die Technologie, die Sie benötigen, um auf dem digitalen Markt zu glänzen. Starten Sie in wenigen Minuten.",
+        "calendly": {
+          "title": "Einen Termin vereinbaren",
+          "subtitle": "30 Minuten · Kostenlos",
+          "benefits": [
+            "Lernen Sie unseren Prozess kennen",
+            "Lösen Sie Ihre Zweifel",
+            "Definieren Sie den Umfang Ihres Projekts"
+          ]
+        }
+      },
+      "newsletter": {
+        "title": "Bleiben Sie auf dem Laufenden",
+        "description": "Abonnieren Sie, um die neuesten Nachrichten über digitale Produktentwicklung und MVPs zu erhalten",
+        "placeholder": "Ihre E-Mail-Adresse",
+        "subscribe": "Abonnieren",
+        "subscribing": "Wird abonniert...",
+        "success": "Vielen Dank für Ihr Abonnement! Sie erhalten unser nächstes Update.",
+        "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+        "validation": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+        "privacy": "Wir versprechen, keinen Spam zu senden, nur relevante Inhalte"
+      }
+    },
+    "pricing": {
+      "title": "Preise, die für Ihre Praxis sinnvoll sind",
+      "description": "Wählen Sie den Plan, der zu den Bedürfnissen Ihrer Buchhaltungspraxis passt",
+      "monthly": "Monat",
+      "popular": "BELIEBT",
+      "tryIt": "Testen Sie es",
+      "contactUs": "Kontaktieren Sie uns",
+      "plans": [
+        {
+          "name": "Startup",
+          "description": "Perfekt für kleine Buchhaltungspraxen, die gerade anfangen",
+          "price": "40"
+        },
+        {
+          "name": "Wachstum",
+          "description": "Ideal für etablierte Unternehmen, die ihre Dienstleistungen erweitern möchten",
+          "price": "80"
+        },
+        {
+          "name": "Unternehmen",
+          "description": "Komplettlösung für große Buchhaltungsfirmen mit komplexen Anforderungen",
+          "price": "160"
+        }
+      ],
+      "features": {
+        "sso": "Single Sign-On (SSO)",
+        "ai": "KI-Assistent",
+        "version": "Versionskontrolle",
+        "members": "{count} Teammitglieder"
+      }
+    },
+    "blog": {
+      "meta": {
+        "title": "Steuerliche Einblicke Blog",
+        "description": "Expertenmeinungen, Tipps und Updates zum Thema Steuermanagement für Buchhalter und Finanzfachleute."
+      }
+    },
+    "contact": {
+      "meta": {
+        "title": "Kontaktieren Sie uns",
+        "description": "Kontaktieren Sie unser Team, um zu besprechen, wie AppWise Ihnen helfen kann, Ihre Ideen in erfolgreiche digitale Lösungen umzuwandeln und Ihr Unternehmen zu vergrößern."
+      },
+      "hero": {
+        "title": "Wir sind hier, um zu helfen",
+        "description": "Unser Team steht Ihnen bei jedem Schritt Ihres Entwicklungsprojekts zur Verfügung.",
+        "cta": "Nachricht senden",
+        "benefits": [
+          {
+            "title": "Schnelle Antwort",
+            "description": "Unsere Experten helfen Ihnen, Ihre Idee mit maßgeschneiderten digitalen Lösungen auf die nächste Stufe zu heben."
+          },
+          {
+            "title": "Kontinuierliche Unterstützung",
+            "description": "Wir bieten technische Hilfe und kontinuierliche Verbesserungen, damit Ihre Anwendung einwandfrei funktioniert."
+          },
+          {
+            "title": "Maßgeschneiderte Lösungen",
+            "description": "Jedes Projekt ist einzigartig, deshalb entwickeln wir maßgeschneiderte Lösungen, die sich an Ihre spezifischen Bedürfnisse anpassen."
+          }
+        ],
+        "form": {
+          "title": "Lassen Sie uns über Ihr Projekt sprechen",
+          "firstName": "Vorname",
+          "lastName": "Nachname",
+          "date": "Bevorzugtes Datum",
+          "resume": "Relevante Dateien anhängen",
+          "cta": "Senden"
+        }
+      },
+      "form": {
+        "title": "Kontaktiere uns",
+        "subtitle": "Wir antworten innerhalb von 24 Stunden",
+        "subtitleInfo": "Transformieren Sie Ideen in digitale Lösungen",
+        "name_placeholder": "Vollständiger Name",
+        "email_placeholder": "E-Mail-Adresse",
+        "message_placeholder": "Erzählen Sie uns von Ihrem Projekt",
+        "sending": "Senden...",
+        "send_button": "Nachricht senden",
+        "success_message": "Ihre Nachricht wurde erfolgreich gesendet!",
+        "error_message": "Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es später erneut."
+      }
+    }
+  }
+}

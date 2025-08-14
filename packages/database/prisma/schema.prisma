@@ -1,0 +1,240 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  admin
+  user
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  name        String
+  lastName    String
+  role        UserRole @default(user)
+  password    String
+  permissions Json     @default("[]")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  emailTemplates             EmailTemplate[]
+  whatsappTemplates          WhatsAppTemplate[]
+  scheduledEmailCampaigns    ScheduledEmailCampaign[]
+  scheduledWhatsAppCampaigns ScheduledWhatsAppCampaign[]
+  productos                  Producto[] // Productos creados por el usuario
+}
+
+model EmailTemplate {
+  id          String  @id @default(uuid())
+  name        String // Nombre del template para identificarlo
+  subject     String // Asunto del email
+  content     String // Contenido del email
+  description String? // Descripción opcional del template
+  isDefault   Boolean @default(false) // Si es un template por defecto del sistema
+
+  // Metadatos
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  user               User                     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  scheduledCampaigns ScheduledEmailCampaign[]
+
+  @@map("email_templates")
+}
+
+model WhatsAppTemplate {
+  id          String  @id @default(uuid())
+  name        String // Nombre del template para identificarlo
+  content     String // Contenido del mensaje de WhatsApp
+  description String? // Descripción opcional del template
+  isDefault   Boolean @default(false) // Si es un template por defecto del sistema
+
+  // Metadatos
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  user               User                        @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  scheduledCampaigns ScheduledWhatsAppCampaign[]
+
+  @@map("whatsapp_templates")
+}
+
+enum CampaignStatus {
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+model ScheduledEmailCampaign {
+  id             String         @id @default(uuid())
+  name           String
+  status         CampaignStatus @default(ACTIVE)
+  targetAudience Json // { type: 'behavior' | 'spending', category: string }
+  scheduleCron   String // Cron string for schedule, e.g., '0 9 * * 1'
+
+  // Relations
+  emailTemplateId String
+  emailTemplate   EmailTemplate @relation(fields: [emailTemplateId], references: [id], onDelete: Cascade)
+  createdBy       String
+  user            User          @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("scheduled_email_campaigns")
+}
+
+model ScheduledWhatsAppCampaign {
+  id             String         @id @default(uuid())
+  name           String
+  status         CampaignStatus @default(ACTIVE)
+  targetAudience Json // { type: 'behavior' | 'spending', category: string }
+  scheduleCron   String // Cron string for schedule, e.g., '0 9 * * *'
+
+  // Relations
+  whatsAppTemplateId String
+  whatsAppTemplate   WhatsAppTemplate @relation(fields: [whatsAppTemplateId], references: [id], onDelete: Cascade)
+  createdBy          String
+  user               User             @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("scheduled_whatsapp_campaigns")
+}
+
+enum PriceSection {
+  PERRO
+  GATO
+  OTROS
+}
+
+enum PriceType {
+  EFECTIVO
+  TRANSFERENCIA
+  MAYORISTA
+}
+
+enum TipoSalida {
+  ORDINARIO
+  EXTRAORDINARIO
+}
+
+// FormaPago eliminado - ahora usamos tabla MetodoPago
+
+enum TipoRegistro {
+  BLANCO
+  NEGRO
+}
+
+model Price {
+  id          String       @id @default(uuid())
+  section     PriceSection // PERRO, GATO, OTROS
+  product     String       // POLLO, VACA, CERDO, CORDERO, BIG DOG VACA, etc.
+  weight      String?      // 5KG, 10KG (opcional para algunos productos)
+  priceType   PriceType    // EFECTIVO, TRANSFERENCIA, MAYORISTA
+  price       Float        // Precio actual
+  isActive    Boolean      @default(true)
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  @@map("prices")
+  @@unique([section, product, weight, priceType])
+}
+
+model Categoria {
+  id          String   @id @default(uuid())
+  nombre      String   @unique
+  descripcion String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relaciones
+  salidas     Salida[]
+  productos   Producto[] // Relación con productos
+  
+  @@map("categorias")
+}
+
+// Nuevo modelo para productos
+model Producto {
+  id                String    @id @default(uuid())
+  titulo            String
+  descripcion       String?
+  precioMinorista   Float     // Primer tipo de precio
+  precioMayorista   Float     // Segundo tipo de precio
+  stock             Int       @default(0)
+  imagen            String?   // URL de Cloudinary
+  
+  // Medidas del paquete
+  alto              Float?    // en cm
+  ancho             Float?    // en cm
+  profundidad       Float?    // en cm
+  peso              Float?    // en kg
+  
+  // Estado y metadatos
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relaciones
+  categoriaId       String
+  categoria         Categoria @relation(fields: [categoriaId], references: [id])
+  createdBy         String
+  user              User      @relation(fields: [createdBy], references: [id])
+  
+  @@map("productos")
+}
+
+model MetodoPago {
+  id          String   @id @default(uuid())
+  nombre      String   @unique
+  descripcion String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relaciones
+  salidas     Salida[]
+  
+  @@map("metodos_pago")
+}
+
+model Salida {
+  id            String        @id @default(uuid())
+  fecha         DateTime      @default(now())
+  detalle       String
+  tipo          TipoSalida    // ORDINARIO o EXTRAORDINARIO
+  marca         String?       // Opcional
+  monto         Float
+  tipoRegistro  TipoRegistro  // BLANCO o NEGRO
+  
+  // Relaciones con las nuevas tablas
+  categoriaId   String
+  categoria     Categoria     @relation(fields: [categoriaId], references: [id])
+  
+  metodoPagoId  String
+  metodoPago    MetodoPago    @relation(fields: [metodoPagoId], references: [id])
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  @@map("salidas")
+}
