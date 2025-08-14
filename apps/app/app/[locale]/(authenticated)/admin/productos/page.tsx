@@ -8,6 +8,7 @@ import {
     createCategoryAction,
     uploadImageAction,
     validateImageFile,
+    compressImage,
     checkAdminRoleAction,
     updateProductAction,
     deleteProductAction,
@@ -159,16 +160,32 @@ export default function ProductosAdminPage() {
                 try {
                     const uploadedUrls: string[] = [];
                     
-                    // Subir cada imagen
+                    // Subir cada imagen con compresión automática
                     for (const file of selectedImageFiles) {
+                        console.log(`📸 Procesando imagen: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+                        
+                        // Comprimir imagen antes de subir si es muy grande
+                        let processedFile = file;
+                        if (file.size > 2 * 1024 * 1024) { // Si es mayor a 2MB
+                            console.log('🔄 Comprimiendo imagen...');
+                            try {
+                                processedFile = await compressImage(file, 0.8, 1920, 1080);
+                                console.log(`✅ Imagen comprimida: ${(processedFile.size / 1024 / 1024).toFixed(2)}MB`);
+                            } catch (compressionError) {
+                                console.warn('⚠️ Error al comprimir, usando archivo original:', compressionError);
+                            }
+                        }
+                        
                         const formData = new FormData();
-                        formData.append('file', file);
+                        formData.append('file', processedFile);
                         formData.append('folder', 'productos');
                         
                         const uploadResult = await uploadImageAction(formData);
                         if (uploadResult.success && uploadResult.url) {
                             uploadedUrls.push(uploadResult.url);
+                            console.log(`✅ Imagen subida exitosamente: ${uploadResult.url}`);
                         } else {
+                            console.error(`❌ Error al subir ${file.name}:`, uploadResult.message);
                             alert(`Error al subir ${file.name}: ${uploadResult.message}`);
                             return;
                         }

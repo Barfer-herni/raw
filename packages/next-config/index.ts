@@ -9,7 +9,7 @@ const otelRegex = /@opentelemetry\/instrumentation/;
 export const config: NextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: '10mb',
+      bodySizeLimit: '20mb',
     },
   },
   images: {
