@@ -5,6 +5,7 @@ export * from './services/productosActions';
 export * from './services/categoriasActions';
 export * from './services/cloudinaryActions';
 export * from './services/authActions';
+export * from './actions/enviaActions';
 
 // Tipos necesarios
 export type { AdminProduct, CreateAdminProduct } from './types/barfer';

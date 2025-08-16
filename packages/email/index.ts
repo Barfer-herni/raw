@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import { keys } from './keys';
+import { gmailService } from './gmail-service';
 
 // Create a conditional Resend instance that may be null if token is not available
 const createResendInstance = () => {
@@ -19,6 +20,9 @@ const createResendInstance = () => {
 const resend = createResendInstance();
 
 export default resend;
+
+// Export Gmail service as alternative
+export { gmailService };
 
 export * from './templates/contact';
 export * from './templates/BulkEmailTemplate';

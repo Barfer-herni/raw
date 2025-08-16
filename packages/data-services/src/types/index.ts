@@ -25,3 +25,4 @@ export {
     type ClientAnalytics
 } from './barfer';
 export * from './template';
+export * from './envia';

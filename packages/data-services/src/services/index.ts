@@ -65,6 +65,9 @@ export * from './authActions';
 // ==========================================
 export * from './mongoService';
 
+// Servicio de Envía para opciones de envío
+export * from './enviaService';
+
 // Exportar servicios de Barfer - Solo Analytics que se usan
 export {
     // Analytics (desde barfer/analytics/)

@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getProductsForHomeAction } from '@repo/data-services/src/actions';
+import { getProductsForHomeAction } from '@repo/data-services/src/client-safe';
 import { useCart, type Product } from '../components/cart-context';
 import { ProductCard } from './components/product-card';
 import { CartNotification } from '../components/cart-notification';
 import { ScrollReveal } from '../components/scroll-reveal';
+import emailjs from '@emailjs/browser';
+import { env } from '@/env';
 
 
 // Usando Product del CartContext que ya incluye stock
@@ -466,6 +468,19 @@ export default function AdminPage() {
     const [currentClientPhotoIndex, setCurrentClientPhotoIndex] = useState(0);
     const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
 
+    // Contact form state
+    const [contactForm, setContactForm] = useState({
+        nombre: '',
+        email: '',
+        asunto: '',
+        mensaje: ''
+    });
+    const [isSubmittingContact, setIsSubmittingContact] = useState(false);
+    const [contactStatus, setContactStatus] = useState<{
+        type: 'success' | 'error' | '';
+        message: string;
+    }>({ type: '', message: '' });
+
     
     // Notification state
     const [notification, setNotification] = useState<{
@@ -493,7 +508,114 @@ export default function AdminPage() {
         setNotification(prev => ({ ...prev, isVisible: false }));
     };
 
+    // Contact form handlers
+    const handleContactInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setContactForm(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
+    const handleContactSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        // Validación básica
+        if (!contactForm.nombre || !contactForm.email || !contactForm.mensaje) {
+            setContactStatus({
+                type: 'error',
+                message: 'Por favor completa todos los campos obligatorios.'
+            });
+            return;
+        }
+
+        // Validar email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(contactForm.email)) {
+            setContactStatus({
+                type: 'error',
+                message: 'Por favor ingresa un email válido.'
+            });
+            return;
+        }
+
+        setIsSubmittingContact(true);
+        setContactStatus({ type: '', message: '' });
+
+        try {
+            // Configuración EmailJS desde variables de entorno
+            const serviceId = env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_ysko2ec';
+            const templateId = env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+            const publicKey = env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+            // Verificar que las variables estén configuradas
+            if (!templateId || !publicKey) {
+                console.error('❌ EmailJS no configurado completamente:', {
+                    serviceId: serviceId ? 'OK' : 'MISSING',
+                    templateId: templateId ? 'OK' : 'MISSING',
+                    publicKey: publicKey ? 'OK' : 'MISSING'
+                });
+                setContactStatus({
+                    type: 'error',
+                    message: 'EmailJS no está configurado. Revisa las variables de entorno.'
+                });
+                return;
+            }
+
+            // Log para debugging
+            console.log('📧 Enviando email con EmailJS:', {
+                serviceId: serviceId.slice(0, 10) + '...',
+                templateId: templateId.slice(0, 10) + '...',
+                publicKey: publicKey.slice(0, 10) + '...',
+                datos: {
+                    nombre: contactForm.nombre,
+                    email: contactForm.email,
+                    asunto: contactForm.asunto,
+                    mensaje: contactForm.mensaje.substring(0, 50) + '...'
+                }
+            });
+
+            // Inicializar EmailJS
+            emailjs.init(publicKey);
+
+            // Preparar parámetros del template
+            const templateParams = {
+                from_name: contactForm.nombre,
+                from_email: contactForm.email,
+                subject: contactForm.asunto || 'Consulta desde Admin',
+                message: contactForm.mensaje,
+                to_email: 'nicolascaliari28@gmail.com',
+                reply_to: contactForm.email
+            };
+
+            // Enviar email
+            const response = await emailjs.send(serviceId, templateId, templateParams);
+            
+            console.log('✅ Email enviado exitosamente:', response.status, response.text);
+
+            setContactStatus({
+                type: 'success',
+                message: '¡Mensaje enviado exitosamente! Te responderemos pronto.'
+            });
+
+            // Limpiar formulario
+            setContactForm({
+                nombre: '',
+                email: '',
+                asunto: '',
+                mensaje: ''
+            });
+
+        } catch (error) {
+            console.error('❌ Error enviando mensaje:', error);
+            setContactStatus({
+                type: 'error',
+                message: 'Error al enviar el mensaje. Por favor intenta nuevamente.'
+            });
+        } finally {
+            setIsSubmittingContact(false);
+        }
+    };
 
     // Cargar productos reales desde la base de datos
     useEffect(() => {
@@ -853,34 +975,64 @@ export default function AdminPage() {
                         <p className="text-center text-gray-600 mb-8">
                             Estamos aquí para ayudarte. Envíanos tu mensaje y te responderemos lo antes posible.
                         </p>
-                        <form className="space-y-6">
+                        <form onSubmit={handleContactSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <input
                                     type="text"
-                                    placeholder="Tu nombre"
+                                    name="nombre"
+                                    value={contactForm.nombre}
+                                    onChange={handleContactInputChange}
+                                    placeholder="Tu nombre *"
+                                    required
                                     className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg"
                                 />
                                 <input
                                     type="email"
-                                    placeholder="Tu email"
+                                    name="email"
+                                    value={contactForm.email}
+                                    onChange={handleContactInputChange}
+                                    placeholder="Tu email *"
+                                    required
                                     className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg"
                                 />
                             </div>
                             <input
                                 type="text"
-                                placeholder="Asunto"
+                                name="asunto"
+                                value={contactForm.asunto}
+                                onChange={handleContactInputChange}
+                                placeholder="Asunto (opcional)"
                                 className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg"
                             />
                             <textarea
-                                placeholder="Tu mensaje"
+                                name="mensaje"
+                                value={contactForm.mensaje}
+                                onChange={handleContactInputChange}
+                                placeholder="Tu mensaje *"
                                 rows={4}
+                                required
                                 className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg resize-none"
                             ></textarea>
+
+                            {/* Mensaje de estado */}
+                            {contactStatus.type && (
+                                <div
+                                    className={`p-4 rounded-xl text-center ${
+                                        contactStatus.type === 'success'
+                                            ? 'bg-green-100 text-green-800 border border-green-300'
+                                            : 'bg-red-100 text-red-800 border border-red-300'
+                                    }`}
+                                >
+                                    {contactStatus.message}
+                                </div>
+                            )}
+
                             <button
                                 type="submit"
-                                className="w-full bg-barfer-orange hover:bg-orange-600 text-white py-4 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-nunito"
+                                disabled={isSubmittingContact}
+                                className="w-full bg-barfer-orange hover:bg-orange-600 text-white py-4 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-nunito disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                             >
-                                Enviar Mensaje
+                                {isSubmittingContact ? 'Enviando...' : 'Enviar Mensaje'}
                             </button>
                         </form>
                     </div>
