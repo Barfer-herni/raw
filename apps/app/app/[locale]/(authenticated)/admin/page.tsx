@@ -20,27 +20,52 @@ interface CartItem extends Product {
 const CAROUSEL_IMAGES = [
     {
         id: 1,
-        src: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=1200&h=400&fit=crop',
-        alt: 'Perro Golden Retriever feliz',
-        title: 'Mascotas Felices'
+        src: '/home1.jpeg',
+        alt: 'Imagen de mascota feliz',
+        title: 'Mascotas Felices',
+        objectPosition: 'center 30%'
     },
     {
         id: 2,
-        src: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&h=400&fit=crop',
-        alt: 'Perro Husky jugando',
-        title: 'Juguetes Divertidos'
+        src: '/home2.jpeg',
+        alt: 'Imagen de mascota jugando',
+        title: 'Juguetes Divertidos',
+        objectPosition: 'center 80%'
     },
     {
         id: 3,
-        src: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&h=400&fit=crop',
-        alt: 'Perro durmiendo en cama',
-        title: 'Descanso Tranquilo'
+        src: '/home3.jpeg',
+        alt: 'Imagen de mascota descansando',
+        title: 'Descanso Tranquilo',
+        objectPosition: 'center 50%'
     },
     {
         id: 4,
-        src: 'https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=1200&h=400&fit=crop',
-        alt: 'Perro Labrador en el parque',
-        title: 'Aventuras al Aire Libre'
+        src: '/home4.jpeg',
+        alt: 'Imagen de mascota en el parque',
+        title: 'Aventuras al Aire Libre',
+        objectPosition: 'center 35%'
+    },
+    {
+        id: 5,
+        src: '/home5.jpeg',
+        alt: 'Imagen de mascota activa',
+        title: 'Actividad y Ejercicio',
+        objectPosition: 'center 35%'
+    },
+    {
+        id: 6,
+        src: '/home6.jpeg',
+        alt: 'Imagen de mascota saludable',
+        title: 'Salud y Bienestar',
+        objectPosition: 'center 40%'
+    },
+    {
+        id: 7,
+        src: '/home7.jpeg',
+        alt: 'Imagen de mascota contenta',
+        title: 'Felicidad Completa',
+        objectPosition: 'center 70%'
     }
 ];
 
@@ -721,7 +746,7 @@ export default function AdminPage() {
                 <div className="mb-8">
                 <div className="relative overflow-hidden rounded-xl shadow-2xl">
                     {/* Imágenes del carrusel */}
-                    <div className="relative h-96">
+                    <div className="relative h-[450px] md:h-[500px] lg:h-[550px]">
                         {CAROUSEL_IMAGES.map((image, index) => (
                             <div
                                 key={image.id}
@@ -732,6 +757,7 @@ export default function AdminPage() {
                                     src={image.src}
                                     alt={image.alt}
                                     className="w-full h-full object-cover"
+                                    style={{ objectPosition: image.objectPosition }}
                                 />
                                 {/* Overlay con título */}
                                 <div className="absolute inset-0 bg-black bg-opacity-30 flex items-end">

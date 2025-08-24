@@ -3,7 +3,7 @@ import { getDictionary } from '@repo/internationalization';
 import { AdminPageWrapper } from './components/admin-page-wrapper';
 import Image from 'next/image';
 import Link from 'next/link';
-import logo from '@/app/public/barfer.png';
+import logo from '@/public/barfer.png';
 
 type AdminLayoutProps = {
     readonly children: ReactNode;
