@@ -94,9 +94,8 @@ const ANIMAL_PRODUCT_PHOTOS = [
 const BENEFITS_DATA = [
     {
         id: 1,
-        title: 'Salud Mental',
-        icon: '🧠',
-        description: 'Los productos para mascotas contribuyen significativamente a la salud mental tanto de los animales como de sus dueños. Los juguetes interactivos estimulan la cognición, reducen la ansiedad y previenen problemas de comportamiento. La interacción regular con mascotas libera endorfinas y reduce los niveles de estrés.',
+        title: 'Salud Dental',
+        icon: '🦷',
         details: [
             'Estimulación cognitiva y mental',
             'Reducción de ansiedad y estrés',
@@ -109,7 +108,6 @@ const BENEFITS_DATA = [
         id: 2,
         title: 'Relajación',
         icon: '😌',
-        description: 'Nuestros productos están diseñados para crear un ambiente de calma y tranquilidad para tu mascota. Desde camas ortopédicas hasta aromaterapia natural, cada elemento está pensado para proporcionar el máximo confort y relajación.',
         details: [
             'Camas ortopédicas con memoria viscoelástica',
             'Ambientes tranquilos y confortables',
@@ -122,7 +120,6 @@ const BENEFITS_DATA = [
         id: 3,
         title: 'Entretenimiento',
         icon: '🎾',
-        description: 'El entretenimiento es fundamental para el bienestar de las mascotas. Nuestros juguetes y accesorios están diseñados para mantener a tu compañero activo, estimulado y feliz, evitando el aburrimiento y promoviendo un estilo de vida saludable.',
         details: [
             'Juguetes interactivos y educativos',
             'Actividades físicas y mentales',
@@ -135,7 +132,6 @@ const BENEFITS_DATA = [
         id: 4,
         title: '100% Natural',
         icon: '🌿',
-        description: 'Comprometidos con la salud y el medio ambiente, todos nuestros productos están elaborados con ingredientes naturales y materiales sostenibles. Sin químicos dañinos, sin conservantes artificiales, solo lo mejor de la naturaleza para tu mascota.',
         details: [
             'Ingredientes orgánicos certificados',
             'Materiales biodegradables',
@@ -305,33 +301,28 @@ const SAMPLE_PRODUCTS: Product[] = [
 const FAQ_DATA = [
     {
         id: 1,
-        question: '¿Los productos son seguros para todas las razas de mascotas?',
-        answer: 'Sí, todos nuestros productos están formulados y diseñados para ser seguros para todas las razas de perros y gatos. Hemos realizado extensas pruebas de seguridad y seguimos estrictos estándares de calidad. Sin embargo, si tu mascota tiene alguna condición médica específica o alergias conocidas, recomendamos consultar con tu veterinario antes de usar cualquier producto nuevo.'
+        question: '¿Cómo conservarlos?',
+        answer: 'Para una mayor duración se deben conservar en su envase cerrado en un lugar fresco, seco y sin humedad.'
     },
     {
         id: 2,
-        question: '¿Cuánto tiempo tarda en llegar mi pedido?',
-        answer: 'Los tiempos de entrega varían según tu ubicación. En general, los pedidos se procesan en 1-2 días hábiles y la entrega toma entre 3-7 días hábiles. Ofrecemos envío express para entregas en 1-2 días hábiles por un costo adicional. Recibirás un número de seguimiento por email para rastrear tu pedido en tiempo real.'
+        question: '¿Cuánto demora el envío?',
+        answer: 'Los días de despacho son los martes y viernes y desde esa fecha su demora dependerá de la opción de envío seleccionada.'
     },
     {
         id: 3,
-        question: '¿Qué hago si mi mascota no le gusta el producto?',
-        answer: 'Ofrecemos una garantía de satisfacción de 30 días. Si tu mascota no está completamente satisfecha con cualquier producto, puedes devolverlo dentro de los 30 días posteriores a la compra para obtener un reembolso completo o cambio. El producto debe estar en su empaque original y en condiciones de reventa. Nuestro equipo de servicio al cliente te ayudará con el proceso de devolución.'
+        question: '¿Son aptos para perros y gatos?',
+        answer: 'Los treats sí son aptos para ambos, pero los mordedores son únicamente para perros.'
     },
     {
         id: 4,
-        question: '¿Los ingredientes son realmente 100% naturales?',
-        answer: 'Absolutamente. Nos comprometemos con la transparencia total en nuestros ingredientes. Todos nuestros productos alimenticios contienen ingredientes orgánicos certificados sin conservantes artificiales, colorantes o saborizantes. Nuestros juguetes y accesorios están hechos con materiales sostenibles y no tóxicos. Puedes encontrar la lista completa de ingredientes en cada producto y tenemos certificaciones disponibles bajo solicitud.'
+        question: '¿Hacen ventas mayoristas?',
+        answer: 'Para ventas mayoristas comunicarse al: 11 2867-8999'
     },
     {
         id: 5,
-        question: '¿Ofrecen descuentos por compras al por mayor?',
-        answer: 'Sí, ofrecemos descuentos especiales para compras al por mayor y clientes frecuentes. Los descuentos comienzan a partir de 5 unidades del mismo producto (5% de descuento), 10 unidades (10% de descuento) y 20 unidades o más (15% de descuento). También tenemos un programa de fidelidad donde acumulas puntos con cada compra que puedes canjear por descuentos futuros.'
-    },
-    {
-        id: 6,
-        question: '¿Puedo cambiar o cancelar mi pedido después de realizarlo?',
-        answer: 'Puedes cambiar o cancelar tu pedido sin costo alguno dentro de las primeras 2 horas después de realizarlo, siempre que no haya sido procesado aún. Después de este tiempo, si el pedido ya está en preparación, se aplicará una tarifa de cambio del 10%. Una vez que el pedido ha sido enviado, no se pueden realizar cambios, pero puedes usar nuestra política de devolución de 30 días si es necesario.'
+        question: '¿Son 100% naturales?',
+        answer: 'Sí, los productos son solo sometidos a un proceso de deshidratación, no tienen ningún tipo de químicos, conservantes o saborizantes.'
     }
 ];
 
@@ -873,10 +864,6 @@ export default function AdminPage() {
                             {/* Contenido expandible */}
                             {expandedBenefit === benefit.id && (
                                 <div className="p-6 bg-white border-t border-barfer-green">
-                                    <p className="text-gray-700 mb-4 leading-relaxed">
-                                        {benefit.description}
-                                    </p>
-
                                     <ul className="space-y-2">
                                         {benefit.details.map((detail, index) => (
                                             <li key={index} className="flex items-start gap-2">
