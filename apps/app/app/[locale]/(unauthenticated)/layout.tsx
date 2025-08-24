@@ -2,7 +2,7 @@ import { ModeToggle } from '@repo/design-system/components/mode-toggle';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import Image from 'next/image';
-import logo from '@/app/public/logo.png';
+import logo from '@/public/logo.png';
 import { getDictionary } from '@repo/internationalization';
 
 type AuthLayoutProps = {
