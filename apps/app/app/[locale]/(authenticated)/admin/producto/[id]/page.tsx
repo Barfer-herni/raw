@@ -65,6 +65,10 @@ export default function ProductDetailPage() {
     const handleAddToCart = () => {
         if (!product) return;
 
+        console.log('🔍 Producto completo:', product);
+        console.log('🔍 Dimensiones del producto:', product.dimensiones);
+        console.log('🔍 Peso del producto:', product.dimensiones?.peso);
+
         const productForCart = {
             id: product._id!,
             name: product.titulo,
@@ -78,7 +82,14 @@ export default function ProductDetailPage() {
             // Campos de oferta simplificados
             isOnOffer: !!product.precioOferta,
             originalPrice: product.precioOferta ? product.precioMinorista.toString() : undefined,
-            offerPrice: product.precioOferta ? product.precioOferta.toString() : undefined
+            offerPrice: product.precioOferta ? product.precioOferta.toString() : undefined,
+            // Campos para envío
+            dimensions: product.dimensiones ? {
+                alto: product.dimensiones.alto || 10,
+                ancho: product.dimensiones.ancho || 15,
+                profundidad: product.dimensiones.profundidad || 20,
+                peso: product.dimensiones.peso || 500
+            } : undefined
         };
 
         addToCart(productForCart, quantity);

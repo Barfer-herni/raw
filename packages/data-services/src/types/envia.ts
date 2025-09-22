@@ -22,11 +22,11 @@ export interface EnviaPackage {
     content: string;
     amount: number;
     type: 'box' | 'envelope' | 'pak';
-    weight: number;
     dimensions: {
-        large: number; // cm
+        length: number; // cm
         width: number; // cm
         height: number; // cm
+        weight: number; // kg
     };
 }
 
@@ -57,5 +57,5 @@ export interface EnviaShippingRateResponse {
 export interface EnviaConfig {
     apiKey: string;
     baseUrl: string;
-    environment: 'sandbox' | 'production';
+    environment: 'sandbox';
 }

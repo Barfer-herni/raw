@@ -244,13 +244,23 @@ export async function getProductsForHomeAction(): Promise<{ success: boolean; pr
                 // Campos para ofertas (simplificado)
                 isOnOffer: hasOffer,
                 originalPrice: hasOffer ? normalPrice : undefined,
-                offerPrice: hasOffer ? offerPrice : undefined
+                offerPrice: hasOffer ? offerPrice : undefined,
+                // Campos para envío
+                weight: product.dimensiones?.peso || 0.5, // Usar peso del producto en gramos o 500g por defecto
+                dimensions: product.dimensiones ? {
+                    alto: product.dimensiones.alto,
+                    ancho: product.dimensiones.ancho,
+                    profundidad: product.dimensiones.profundidad
+                } : undefined
             };
             
             console.log(`✅ Product transformed - ${product.titulo}:`, {
                 isOnOffer: transformedProduct.isOnOffer,
                 originalPrice: transformedProduct.originalPrice,
-                offerPrice: transformedProduct.offerPrice
+                offerPrice: transformedProduct.offerPrice,
+                weight: transformedProduct.weight,
+                dimensions: transformedProduct.dimensions,
+                originalDimensions: product.dimensiones
             });
             
             return transformedProduct;

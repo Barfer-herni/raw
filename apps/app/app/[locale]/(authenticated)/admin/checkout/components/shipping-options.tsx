@@ -7,7 +7,12 @@ interface CartItem {
     id: string;
     name: string;
     quantity: number;
-    weight?: number;
+    dimensions?: {
+        alto: number;
+        ancho: number;
+        profundidad: number;
+        peso: number;
+    };
 }
 
 interface ShippingAddress {

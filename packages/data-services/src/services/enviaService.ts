@@ -29,40 +29,29 @@ class EnviaService {
         this.config = config;
     }
 
-    /**
-     * Normaliza el formato de teléfono para Argentina
-     */
     private formatPhoneNumber(phone: string): string {
-        // Remover espacios y caracteres especiales
         const cleaned = phone.replace(/[\s\-\(\)]/g, '');
 
-        // Si ya tiene código de país, devolverlo
         if (cleaned.startsWith('+54')) {
             return cleaned;
         }
-
-        // Si empieza con 54, agregar +
         if (cleaned.startsWith('54')) {
             return `+${cleaned}`;
         }
 
-        // Si es número local argentino, agregar código de país
         if (cleaned.length >= 10) {
             return `+54${cleaned}`;
         }
 
-        return phone; // Devolver original si no se puede formatear
+        return phone;
     }
 
-    /**
-     * Normaliza códigos de estado/provincia para Argentina
-     */
     private normalizeArgentinaState(state: string): string {
         const stateMap: { [key: string]: string } = {
             'buenos aires': 'BA',
-            'ciudad autónoma de buenos aires': 'CABA',
-            'ciudad de buenos aires': 'CABA',
-            'capital federal': 'CABA',
+            'ciudad autónoma de buenos aires': 'CF',
+            'ciudad de buenos aires': 'CF',
+            'capital federal': 'CF',
             'córdoba': 'CB',
             'santa fe': 'SF',
             'mendoza': 'MZ',
@@ -88,13 +77,10 @@ class EnviaService {
         };
 
         const normalized = state.toLowerCase().trim();
-        return stateMap[normalized] || state.toUpperCase();
+        const result = stateMap[normalized] || state.toUpperCase();
+        return result;
     }
-
-    /**
-     * Obtiene las tarifas de envío disponibles
-     */
-    async getShippingRates(request: EnviaShippingRateRequest): Promise<EnviaShippingRateResponse> {
+    async getShippingRates(request: EnviaShippingRateRequest, carriers?: string[]): Promise<EnviaShippingRateResponse> {
         try {
             // Validar configuración
             if (!this.config.apiKey) {
@@ -103,106 +89,58 @@ class EnviaService {
                     message: 'API Key de Envía no configurada. Revisa la variable ENVIA_API_KEY.',
                 };
             }
-    
-            // Validar que ambos países sean iguales
+
             if (request.origin.country !== request.destination.country) {
                 return {
                     success: false,
                     message: `Error de configuración: País de origen (${request.origin.country}) y destino (${request.destination.country}) deben ser iguales para Envía Argentina.`,
                 };
             }
-    
-            console.log('🚚 Envía API Request (HARDCODE):', {
-                url: `${this.config.baseUrl}/ship/rate`,
-                environment: this.config.environment,
-                hasApiKey: !!this.config.apiKey,
-                apiKeyLength: this.config.apiKey.length
-            });
-    
-            const hardcodedRequest = {
-                origin: {
-                    name: "Raw and Fun",
-                    company: "Raw and Fun",
-                    email: "rawfun.info@gmail.com",
-                    phone: "+5411128678999",
-                    street: "Piñeyro",
-                    number: "59",
-                    district: "Avellaneda",
-                    city: "Avellaneda",
-                    state: "BA",
-                    country: "AR",
-                    postalCode: "1868",
-                    reference: "",
-                    coordinates: {
-                        latitude: "-34.6746",
-                        longitude: "-58.3731"
-                    }
-                },
-                destination: {
-                    name: "Admin",
-                    company: "",
-                    email: "admin@example.com",
-                    phone: "+541234567890",
-                    street: "Rodriguez Peña",
-                    number: "100",
-                    district: "Centro",
-                    city: "Buenos Aires",
-                    state: "BA",
-                    country: "AR",
-                    postalCode: "1020",
-                    reference: "",
-                    coordinates: {
-                        latitude: "-34.6037",
-                        longitude: "-58.3816"
-                    }
-                },
-                packages: [
-                    {
-                        content: "Productos para mascotas",
-                        amount: 1,
-                        type: "box",
-                        weight: 1, // peso en KG
-                        insurance: 0,
-                        declaredValue: 0,
-                        weightUnit: "KG",
-                        lengthUnit: "CM",
-                        dimensions: {
-                            length: 30,
-                            width: 25,
-                            height: 15
-                        }
-                    }
-                ],
-                shipment: {
-                    carrier: "", // Se reemplazará dinámicamente
-                    type: 1
-                },
-                settings: {
-                    currency: "ARS"
+
+            console.dir({
+                '🚚 Envía API Request (DATOS REALES)': {
+                    url: `https://ship-test.envia.com/ship/rate`,
+                    environment: this.config.environment,
+                    hasApiKey: !!this.config.apiKey,
+                    apiKeyLength: this.config.apiKey.length,
+                    origin: request.origin,
+                    destination: request.destination,
+                    packages: request.packages
                 }
-            };
-    
-            const carriers = ["oca", "andreani", "correo", "correo-argentino", "ca"];
+            }, { depth: null });
+
+            const carriersToUse = carriers || ["oca", "andreani"];
             let allRates: EnviaShippingOption[] = [];
-    
-            for (const carrier of carriers) {
+
+            for (const carrier of carriersToUse) {
                 const requestPerCarrier = {
-                    ...hardcodedRequest,
+                    ...request,
                     shipment: {
-                        ...hardcodedRequest.shipment,
-                        carrier: carrier
+                        carrier: carrier,
+                        type: 1
+                    },
+                    settings: {
+                        currency: "ARS"
+                    },
+                    origin: {
+                        ...request.origin,
+                        company: request.origin.company || request.origin.name
+                    },
+                    destination: {
+                        ...request.destination,
+                        company: request.destination.company || request.destination.name
                     }
                 };
-    
-                const response = await fetch(`${this.config.baseUrl}/ship/rate`, {
+
+                const response = await fetch(`https://api.envia.com/ship/rate`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${this.config.apiKey}`,
+                        'Authorization': 'Bearer 2295e529c604bdfe031bed210952f35ea19e64aaf0e3076e4341df4eb07753dd',
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(requestPerCarrier),
                 });
-    
+
                 let data = null;
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
@@ -215,19 +153,12 @@ class EnviaService {
                     continue;
                 } else {
                     data = await response.json();
-                    console.log(`🚚 Envía API Response para ${carrier}:`, data);
-                    
-                    // Log adicional para debug
-                    if (data.data && data.data.length > 0) {
-                        console.log(`🚚 ${carrier} devolvió ${data.data.length} opciones`);
-                        data.data.forEach((option: any, index: number) => {
-                            console.log(`   ${index + 1}. ${option.carrierDescription || option.carrier} - ${option.serviceDescription || option.service} - $${option.totalPrice}`);
-                        });
-                    } else {
-                        console.log(`🚚 ${carrier} no devolvió opciones`);
+                    if (data.meta === 'error') {
+                        console.warn(`🚚 ${carrier} devolvió error:`, data.error?.message || 'Error desconocido');
+                        continue;
                     }
                 }
-    
+
                 const shippingOptions: EnviaShippingOption[] = data.data?.map((option: any) => ({
                     carrier: option.carrierDescription || option.carrier,
                     service: option.serviceDescription || option.service,
@@ -239,10 +170,23 @@ class EnviaService {
                         max_days: option.delivery_time.max_days || 7,
                     } : undefined,
                 })) || [];
-    
+
                 allRates = allRates.concat(shippingOptions);
             }
-    
+            /// all states
+            const response = await fetch('https://queries-test.envia.com/state?country_code=AR', {
+                headers: {
+                    'Authorization': '4c9edb0dbcd779e7d6dba37d48ed02031c80e6ffdf4c0421f699b16c39cb7d1c', // sin Bearer
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                const text = await response.text();
+                console.error('🚚 Respuesta de Envía:', text);
+                throw new Error(`No se pudo obtener estados de Argentina, status: ${response.status}`);
+            }
+
+            const data = await response.json();
             return {
                 success: true,
                 data: allRates,
@@ -260,8 +204,17 @@ class EnviaService {
      * Obtiene tarifas para el checkout basadas en el carrito y dirección
      */
     async getCheckoutShippingRates(
-        items: Array<{ weight: number; quantity: number }>,
-        destinationAddress: Partial<EnviaAddress>
+        items: Array<{
+            quantity: number;
+            dimensions?: {
+                alto: number;
+                ancho: number;
+                profundidad: number;
+                peso: number;
+            }
+        }>,
+        destinationAddress: Partial<EnviaAddress>,
+        carriers?: string[]
     ): Promise<EnviaShippingRateResponse> {
         // Dirección de origen por defecto (configurable)
         const origin: EnviaAddress = {
@@ -269,34 +222,50 @@ class EnviaService {
             company: process.env.STORE_ORIGIN_NAME || 'Raw and Fun',
             email: process.env.STORE_ORIGIN_EMAIL || 'rawfun.info@gmail.com',
             phone: process.env.STORE_ORIGIN_PHONE || '+5411128678999',
-            street: process.env.STORE_ORIGIN_STREET || 'Av. Corrientes',
-            number: process.env.STORE_ORIGIN_NUMBER || '1234',
-            district: process.env.STORE_ORIGIN_DISTRICT || 'Centro',
-            city: process.env.STORE_ORIGIN_CITY || 'Buenos Aires',
-            state: process.env.STORE_ORIGIN_STATE || 'CABA',
+            street: process.env.STORE_ORIGIN_STREET || 'Piñeyro',
+            number: process.env.STORE_ORIGIN_NUMBER || '59',
+            district: process.env.STORE_ORIGIN_DISTRICT || 'Avellaneda',
+            city: process.env.STORE_ORIGIN_CITY || 'Avellaneda',
+            // state: process.env.STORE_ORIGIN_STATE || 'CABA',
+            state: 'BA',
             country: process.env.STORE_ORIGIN_COUNTRY || 'AR',
-            postalCode: process.env.STORE_ORIGIN_POSTAL_CODE || '1000',
+            postalCode: process.env.STORE_ORIGIN_POSTAL_CODE || '1868',
         };
 
-        // Calcular peso total y crear paquete
-        const totalWeight = items.reduce((total, item) => {
-            return total + (item.weight * item.quantity);
-        }, 0);
+        // Crear un paquete individual para cada producto con sus dimensiones específicas
+        const packages: EnviaPackage[] = items.map((item, index) => {
+            console.log(`📦 Procesando item ${index + 1}:`, {
+                weight: item.dimensions?.peso,
+                dimensions: item.dimensions,
+                quantity: item.quantity
+            });
 
-        // Si no hay peso especificado, usar peso promedio por artículo
-        const defaultWeight = totalWeight > 0 ? totalWeight : items.length * 0.5; // 500g por artículo por defecto
+            // Usar las dimensiones del producto si están disponibles, sino usar valores por defecto
+            const dimensions = item.dimensions ? {
+                length: Math.max(item.dimensions.profundidad, 1), // profundidad como length
+                width: Math.max(item.dimensions.ancho, 1),
+                height: Math.max(item.dimensions.alto, 1)
+            } : {
+                length: 20,
+                width: 15,
+                height: 10
+            };
 
-        const packages: EnviaPackage[] = [{
-            content: 'Productos para mascotas',
-            amount: 1,
-            type: 'box',
-            weight: Math.max(defaultWeight, 0.1), // Mínimo 100g
-            dimensions: {
-                large: 30,
-                width: 25,
-                height: 15,
-            },
-        }];
+            console.log(`📦 Peso del producto ${index + 1}:`, item.dimensions?.peso); 
+            const packageData = {
+                content: `Producto ${index + 1}`,
+                amount: item.quantity,
+                type: 'box' as const,
+                dimensions: {
+                    ...dimensions,
+                    weight: item.dimensions?.peso || 500 // Peso directamente en gramos, 500g por defecto
+                },
+            };
+
+            console.log(`📦 Paquete creado ${index + 1}:`, packageData);
+
+            return packageData;
+        });
 
         // Crear dirección de destino completa
         const destination: EnviaAddress = {
@@ -304,7 +273,7 @@ class EnviaService {
             email: destinationAddress.email || 'cliente@email.com',
             phone: this.formatPhoneNumber(destinationAddress.phone || '+541112345678'),
             street: destinationAddress.street || '',
-            number: '100', // Envía requiere number, usar valor por defecto
+            number: destinationAddress.number || '100', // Usar el número real si está disponible
             district: destinationAddress.district || 'Centro',
             city: destinationAddress.city || '',
             state: this.normalizeArgentinaState(destinationAddress.state || ''),
@@ -317,23 +286,29 @@ class EnviaService {
             origin,
             destination,
             packages,
-        });
+        }, carriers);
     }
 }
 
-// Configuración por defecto
 const defaultConfig: EnviaConfig = {
     apiKey: process.env.ENVIA_API_KEY || '',
     baseUrl: process.env.ENVIA_BASE_URL || 'https://api.envia.com',
-    environment: (process.env.ENVIA_ENVIRONMENT as 'sandbox' | 'production') || 'sandbox',
+    environment: 'sandbox',
 };
 
-// Instancia singleton del servicio
 export const enviaService = new EnviaService(defaultConfig);
 
 // Función helper para uso en Server Actions
 export async function getShippingRatesForCheckout(
-    cartItems: Array<{ weight?: number; quantity: number }>,
+    cartItems: Array<{
+        quantity: number;
+        dimensions?: {
+            alto: number;
+            ancho: number;
+            profundidad: number;
+            peso: number;
+        }
+    }>,
     address: {
         street: string;
         city: string;
@@ -342,11 +317,14 @@ export async function getShippingRatesForCheckout(
         name?: string;
         email?: string;
         phone?: string;
-    }
+        number?: string;
+    },
+    carriers?: string[]
 ): Promise<EnviaShippingRateResponse> {
+    // Mapear cada item del carrito manteniendo sus dimensiones y peso individuales
     const items = cartItems.map(item => ({
-        weight: item.weight || 0.5, // Peso por defecto si no se especifica
         quantity: item.quantity,
+        dimensions: item.dimensions // Mantener las dimensiones específicas del producto (incluye peso)
     }));
 
     const destinationAddress: Partial<EnviaAddress> = {
@@ -354,13 +332,14 @@ export async function getShippingRatesForCheckout(
         email: address.email,
         phone: address.phone,
         street: address.street,
+        number: address.number, // Incluir número de dirección
         city: address.city,
         state: address.state,
         country: 'AR',
         postalCode: address.postalCode,
     };
 
-    return enviaService.getCheckoutShippingRates(items, destinationAddress);
+    return enviaService.getCheckoutShippingRates(items, destinationAddress, carriers);
 }
 
 export { EnviaService };

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ShippingOptions } from './components/shipping-options';
 import type { EnviaShippingOption } from '@repo/data-services/src/client-safe';
+import { useCart, type Product } from '../../components/cart-context';
 // Función para obtener datos del usuario desde el servidor
 async function fetchUserData() {
     try {
@@ -18,19 +19,6 @@ async function fetchUserData() {
     }
 }
 
-interface Product {
-    id: string;
-    name: string;
-    description: string;
-    priceRange: string;
-    category: string;
-    image: string;
-    stock?: number;
-    // Campos para precios de oferta
-    originalPrice?: string;  // Precio original (se mostrará tachado)
-    offerPrice?: string;     // Precio de oferta (se mostrará destacado)
-    isOnOffer?: boolean;     // Si el producto está en oferta
-}
 
 interface CartItem extends Product {
     quantity: number;
@@ -369,7 +357,7 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
                                         id: item.id,
                                         name: item.name,
                                         quantity: item.quantity,
-                                        weight: 0.5 // Peso por defecto en kg
+                                        dimensions: item.dimensions // Pasar dimensiones reales del producto (incluye peso)
                                     }))}
                                     address={{
                                         name: userData.name || '',

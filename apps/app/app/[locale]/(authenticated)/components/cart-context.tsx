@@ -15,6 +15,13 @@ export interface Product {
     originalPrice?: string;  // Precio original (se mostrará tachado)
     offerPrice?: string;     // Precio de oferta (se mostrará destacado)
     isOnOffer?: boolean;     // Si el producto está en oferta
+    // Campos para envío        // Peso en kg
+    dimensions?: {           // Dimensiones en cm
+        alto: number;
+        ancho: number;
+        profundidad: number;
+        peso: number;
+    };
 }
 
 interface CartItem extends Product {
