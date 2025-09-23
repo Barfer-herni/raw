@@ -68,6 +68,8 @@ export default function ProductDetailPage() {
         console.log('🔍 Producto completo:', product);
         console.log('🔍 Dimensiones del producto:', product.dimensiones);
         console.log('🔍 Peso del producto:', product.dimensiones?.peso);
+        console.log('🔍 ¿Tiene dimensiones?', !!product.dimensiones);
+        console.log('🔍 ¿Tiene peso?', !!product.dimensiones?.peso);
 
         const productForCart = {
             id: product._id!,

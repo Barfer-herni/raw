@@ -141,6 +141,8 @@ class EnviaService {
                     body: JSON.stringify(requestPerCarrier),
                 });
 
+                console.log(`🚚 Envía API Response para ${carrier}:`, response);
+
                 let data = null;
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
@@ -180,6 +182,7 @@ class EnviaService {
                     'Content-Type': 'application/json'
                 }
             });
+            console.log('🚚 Respuesta de Envía:', response);
             if (!response.ok) {
                 const text = await response.text();
                 console.error('🚚 Respuesta de Envía:', text);
@@ -256,10 +259,8 @@ class EnviaService {
                 content: `Producto ${index + 1}`,
                 amount: item.quantity,
                 type: 'box' as const,
-                dimensions: {
-                    ...dimensions,
-                    weight: item.dimensions?.peso || 500 // Peso directamente en gramos, 500g por defecto
-                },
+                weight: (item.dimensions?.peso || 50) / 1000, // Convertir gramos a kg
+                dimensions: dimensions,
             };
 
             console.log(`📦 Paquete creado ${index + 1}:`, packageData);

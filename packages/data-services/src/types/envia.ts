@@ -22,11 +22,11 @@ export interface EnviaPackage {
     content: string;
     amount: number;
     type: 'box' | 'envelope' | 'pak';
+    weight: number; // kg
     dimensions: {
         length: number; // cm
         width: number; // cm
         height: number; // cm
-        weight: number; // kg
     };
 }
 

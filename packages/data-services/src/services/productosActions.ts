@@ -250,7 +250,8 @@ export async function getProductsForHomeAction(): Promise<{ success: boolean; pr
                 dimensions: product.dimensiones ? {
                     alto: product.dimensiones.alto,
                     ancho: product.dimensiones.ancho,
-                    profundidad: product.dimensiones.profundidad
+                    profundidad: product.dimensiones.profundidad,
+                    peso: product.dimensiones.peso || 0.5 // Incluir peso en las dimensiones
                 } : undefined
             };
             
@@ -260,7 +261,8 @@ export async function getProductsForHomeAction(): Promise<{ success: boolean; pr
                 offerPrice: transformedProduct.offerPrice,
                 weight: transformedProduct.weight,
                 dimensions: transformedProduct.dimensions,
-                originalDimensions: product.dimensiones
+                originalDimensions: product.dimensiones,
+                pesoFromDB: product.dimensiones?.peso
             });
             
             return transformedProduct;
