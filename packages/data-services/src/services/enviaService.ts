@@ -97,17 +97,17 @@ class EnviaService {
                 };
             }
 
-            console.dir({
-                '🚚 Envía API Request (DATOS REALES)': {
-                    url: `https://ship-test.envia.com/ship/rate`,
-                    environment: this.config.environment,
-                    hasApiKey: !!this.config.apiKey,
-                    apiKeyLength: this.config.apiKey.length,
-                    origin: request.origin,
-                    destination: request.destination,
-                    packages: request.packages
-                }
-            }, { depth: null });
+            // console.dir({
+            //     '🚚 Envía API Request (DATOS REALES)': {
+            //         url: `https://ship-test.envia.com/ship/rate`,
+            //         environment: this.config.environment,
+            //         hasApiKey: !!this.config.apiKey,
+            //         apiKeyLength: this.config.apiKey.length,
+            //         origin: request.origin,
+            //         destination: request.destination,
+            //         packages: request.packages
+            //     }
+            // }, { depth: null });
 
             const carriersToUse = carriers || ["oca", "andreani"];
             let allRates: EnviaShippingOption[] = [];
@@ -132,6 +132,8 @@ class EnviaService {
                     }
                 };
 
+                console.dir( requestPerCarrier , { depth: null });
+
                 const response = await fetch(`https://api.envia.com/ship/rate`, {
                     method: 'POST',
                     headers: {
@@ -141,7 +143,9 @@ class EnviaService {
                     body: JSON.stringify(requestPerCarrier),
                 });
 
-                console.log(`🚚 Envía API Response para ${carrier}:`, response);
+                console.log(response)
+
+                // console.log(`🚚 Envía API Response para ${carrier}:`, response);
 
                 let data = null;
                 if (!response.ok) {
@@ -182,7 +186,7 @@ class EnviaService {
                     'Content-Type': 'application/json'
                 }
             });
-            console.log('🚚 Respuesta de Envía:', response);
+            // console.log('🚚 Respuesta de Envía:', response);
             if (!response.ok) {
                 const text = await response.text();
                 console.error('🚚 Respuesta de Envía:', text);
@@ -237,11 +241,11 @@ class EnviaService {
 
         // Crear un paquete individual para cada producto con sus dimensiones específicas
         const packages: EnviaPackage[] = items.map((item, index) => {
-            console.log(`📦 Procesando item ${index + 1}:`, {
-                weight: item.dimensions?.peso,
-                dimensions: item.dimensions,
-                quantity: item.quantity
-            });
+            // console.log(`📦 Procesando item ${index + 1}:`, {
+            //     weight: item.dimensions?.peso,
+            //     dimensions: item.dimensions,
+            //     quantity: item.quantity
+            // });
 
             // Usar las dimensiones del producto si están disponibles, sino usar valores por defecto
             const dimensions = item.dimensions ? {
@@ -254,7 +258,7 @@ class EnviaService {
                 height: 10
             };
 
-            console.log(`📦 Peso del producto ${index + 1}:`, item.dimensions?.peso); 
+            // console.log(`📦 Peso del producto ${index + 1}:`, item.dimensions?.peso); 
             const packageData = {
                 content: `Producto ${index + 1}`,
                 amount: item.quantity,
@@ -263,7 +267,7 @@ class EnviaService {
                 dimensions: dimensions,
             };
 
-            console.log(`📦 Paquete creado ${index + 1}:`, packageData);
+            // console.log(`📦 Paquete creado ${index + 1}:`, packageData);
 
             return packageData;
         });

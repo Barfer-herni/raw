@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ShippingOptions } from './components/shipping-options';
 import type { EnviaShippingOption } from '@repo/data-services/src/client-safe';
 import { useCart, type Product } from '../../components/cart-context';
+import { createOrderAction } from './actions';
 // Función para obtener datos del usuario desde el servidor
 async function fetchUserData() {
     try {
@@ -157,38 +158,120 @@ export default function CheckoutPage() {
         e.preventDefault();
         setIsProcessing(true);
 
-        // Obtener datos del formulario
-        const formData = new FormData(e.target as HTMLFormElement);
-        const customerData = {
-            nombre: formData.get('nombre'),
-            apellido: formData.get('apellido'),
-            email: formData.get('email'),
-            telefono: formData.get('telefono'),
-            direccion: formData.get('direccion'),
-            piso: formData.get('piso'),
-            codigoPostal: formData.get('codigoPostal'),
-            ciudad: formData.get('ciudad'),
-            provincia: formData.get('provincia'),
-            notas: formData.get('notas')
-        };
+        try {
+            // Obtener datos del formulario
+            const formData = new FormData(e.target as HTMLFormElement);
+            const customerData = {
+                nombre: formData.get('nombre') as string,
+                apellido: formData.get('apellido') as string,
+                email: formData.get('email') as string,
+                telefono: formData.get('telefono') as string,
+                direccion: formData.get('direccion') as string,
+                piso: formData.get('piso') as string,
+                codigoPostal: formData.get('codigoPostal') as string,
+                ciudad: formData.get('ciudad') as string,
+                provincia: formData.get('provincia') as string,
+                notas: formData.get('notas') as string
+            };
 
-        // Crear mensaje para WhatsApp
-        const productos = cart.map(item => {
-            if (item.isOnOffer && item.offerPrice) {
-                return `• ${item.name} (x${item.quantity}) - $${item.offerPrice} 🏷️ OFERTA (antes $${item.originalPrice})`;
-            } else {
-                return `• ${item.name} (x${item.quantity}) - $${item.priceRange}`;
+            // Preparar los items para la orden
+            const orderItems = cart.map(item => {
+                let price = 0;
+                
+                // Calcular precio del item
+                if (item.isOnOffer && item.offerPrice) {
+                    if (item.offerPrice.includes(' - ')) {
+                        const parts = item.offerPrice.split(' - ');
+                        const min = parseInt(parts[0]) || 0;
+                        const max = parseInt(parts[1]) || 0;
+                        price = (min + max) / 2;
+                    } else {
+                        price = parseInt(item.offerPrice.replace(/[^0-9]/g, '')) || 0;
+                    }
+                } else if (item.priceRange) {
+                    if (item.priceRange.includes(' - ')) {
+                        const parts = item.priceRange.split(' - ');
+                        const min = parseInt(parts[0]) || 0;
+                        const max = parseInt(parts[1]) || 0;
+                        price = (min + max) / 2;
+                    } else {
+                        price = parseInt(item.priceRange.replace(/[^0-9]/g, '')) || 0;
+                    }
+                }
+
+                return {
+                    id: item.id,
+                    name: item.name,
+                    description: item.description || '',
+                    images: item.image ? [item.image] : [],
+                    options: [{
+                        name: item.category || 'Estándar',
+                        price: price,
+                        quantity: item.quantity
+                    }],
+                    price: price * item.quantity,
+                    salesCount: 0,
+                    discountApllied: 0
+                };
+            });
+
+            const subTotal = getTotalPrice();
+            const shippingPrice = selectedShipping?.cost || 0;
+            const total = subTotal + shippingPrice;
+
+            // Crear la orden en la base de datos
+            const orderData = {
+                total,
+                subTotal,
+                shippingPrice,
+                notes: customerData.notas || '',
+                paymentMethod: 'WhatsApp',
+                orderType: 'minorista' as const,
+                address: {
+                    address: customerData.direccion,
+                    city: customerData.ciudad,
+                    phone: customerData.telefono,
+                    floorNumber: customerData.piso || '',
+                    departmentNumber: '',
+                },
+                user: {
+                    name: customerData.nombre,
+                    lastName: customerData.apellido,
+                    email: customerData.email,
+                },
+                items: orderItems,
+                deliveryDay: new Date(),
+            };
+
+            console.log('🛒 Checkout: Creando orden en la base de datos...', orderData);
+            const result = await createOrderAction(orderData);
+
+            if (!result.success) {
+                console.error('🛒 Checkout: Error creando orden:', result.message);
+                alert('Error al crear la orden. Por favor, inténtalo de nuevo.');
+                setIsProcessing(false);
+                return;
             }
-        }).join('\n');
 
-        const mensaje = `¡Hola! Quiero finalizar mi pedido de Barfer:
+            console.log('🛒 Checkout: Orden creada exitosamente:', result.order);
+
+            // Crear mensaje para WhatsApp
+            const productos = cart.map(item => {
+                if (item.isOnOffer && item.offerPrice) {
+                    return `• ${item.name} (x${item.quantity}) - $${item.offerPrice} 🏷️ OFERTA (antes $${item.originalPrice})`;
+                } else {
+                    return `• ${item.name} (x${item.quantity}) - $${item.priceRange}`;
+                }
+            }).join('\n');
+
+            const mensaje = `¡Hola! Quiero finalizar mi pedido de Barfer:
 
 📦 *PRODUCTOS:*
 ${productos}
 
-💰 *SUBTOTAL: $${getTotalPrice().toFixed(0)}*
-${selectedShipping ? `🚚 *ENVÍO: ${selectedShipping.cost === 0 ? 'GRATIS' : '$' + selectedShipping.cost.toFixed(0)} (${selectedShipping.service})*` : ''}
-💰 *TOTAL FINAL: $${(getTotalPrice() + (selectedShipping?.cost || 0)).toFixed(0)}*
+💰 *SUBTOTAL: $${subTotal.toFixed(0)}*
+${selectedShipping ? `🚚 *ENVÍO: ${shippingPrice === 0 ? 'GRATIS' : '$' + shippingPrice.toFixed(0)} (${selectedShipping.service})*` : ''}
+💰 *TOTAL FINAL: $${total.toFixed(0)}*
 
 👤 *DATOS DEL CLIENTE:*
 Nombre: ${customerData.nombre} ${customerData.apellido}
@@ -204,12 +287,10 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
 
 ¡Gracias!`;
 
-        // Número de WhatsApp (reemplaza con el número real)
-        const numeroWhatsApp = '5491123456789'; // Cambia por el número real
-        const whatsappUrl = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+            // Número de WhatsApp de Barfer
+            const numeroWhatsApp = '5491128678999';
+            const whatsappUrl = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
 
-        // Simular un breve procesamiento y luego redirigir
-        setTimeout(() => {
             // Limpiar carrito
             localStorage.removeItem('barfer-cart');
             setCart([]);
@@ -220,7 +301,11 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
             
             // Redirigir de vuelta a la tienda
             router.push('/admin');
-        }, 1000);
+        } catch (error) {
+            console.error('🛒 Checkout: Error en el proceso de checkout:', error);
+            alert('Error al procesar el pedido. Por favor, inténtalo de nuevo.');
+            setIsProcessing(false);
+        }
     };
 
     // Estado de carga

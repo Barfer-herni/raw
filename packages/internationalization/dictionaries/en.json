@@ -15,13 +15,17 @@
         "balance": "Order Balance",
         "prices": "Prices",
         "outputs": "Outputs",
+        "products": "Products",
+        "orders": "Orders",
         "accountMobile": "Account",
         "analyticsMobile": "KPIs",
         "clientsMobile": "Clients",
         "tableMobile": "Table",
         "balanceMobile": "Balance",
         "pricesMobile": "Prices",
-        "outputsMobile": "Outputs"
+        "outputsMobile": "Outputs",
+        "productsMobile": "Products",
+        "ordersMobile": "Orders"
       },
       "menu": {
         "title": "Menu Management",

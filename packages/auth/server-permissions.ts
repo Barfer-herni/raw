@@ -318,6 +318,14 @@ export const SIDEBAR_CONFIG: SidebarItem[] = [
         href: '/admin',
         icon: 'Package',
         requiredPermissions: ['admin:full_access'],
+    },
+    {
+        label: 'orders',
+        mobileLabel: 'ordersMobile',
+        href: '/admin/orders',
+        icon: 'ShoppingCart',
+        requiredPermissions: ['admin:full_access'],
+        adminOnly: true,
     }
 ];
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { Settings } from 'lucide-react';
+import { Settings, PackageCheck } from 'lucide-react';
 import { Button } from '@repo/design-system/components/ui/button';
 import Link from 'next/link';
 
@@ -16,15 +16,27 @@ export function AdminButton({ locale = 'es', isAdmin, isLoadingAdmin }: AdminBut
     }
 
     return (
-        <Link href={`/${locale}/admin/productos`}>
-            <Button
-                variant="ghost"
-                size="icon"
-                className="relative hover:bg-gray-100 dark:hover:bg-gray-800"
-                title="Gestión de Productos"
-            >
-                <Settings className="h-6 w-6" />
-            </Button>
-        </Link>
+        <>
+            <Link href={`/${locale}/admin/productos`}>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative hover:bg-gray-100 dark:hover:bg-gray-800"
+                    title="Gestión de Productos"
+                >
+                    <Settings className="h-6 w-6" />
+                </Button>
+            </Link>
+            <Link href={`/${locale}/admin/orders`}>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative hover:bg-gray-100 dark:hover:bg-gray-800"
+                    title="Gestión de Órdenes"
+                >
+                    <PackageCheck className="h-6 w-6" />
+                </Button>
+            </Link>
+        </>
     );
 }

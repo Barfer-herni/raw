@@ -33,6 +33,7 @@ export * from './analytics/getQuantityStatsByMonth';
 
 // ===== ORDERS =====
 export { getOrders } from './getOrders';
+export { getAllOrders } from './getAllOrders';
 export { updateOrder } from './updateOrder';
 export { deleteOrder } from './deleteOrder';
 export { createOrder } from './createOrder';
