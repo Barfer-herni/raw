@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@repo/design-system/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@repo/design-system/components/ui/alert-dialog';
 import { useToast } from '@repo/design-system/hooks/use-toast';
-import { Package, Search, Edit, Trash2, Calendar, DollarSign, User, MapPin, Filter, Plus, Check, X } from 'lucide-react';
+import { Package, Search, Edit, Trash2, Calendar, DollarSign, User, MapPin, Filter, Plus, Check, X, Table, Download, Copy } from 'lucide-react';
 import { getAllOrdersAction, updateOrderAction, deleteOrderAction } from './actions';
 import { createOrderAction } from '../checkout/actions';
 import { getAllProductsAction, type AdminProduct } from '@repo/data-services/src/actions';
@@ -42,7 +42,6 @@ export default function OrdersAdminPage() {
         status: '',
         paymentMethod: '',
         orderType: '' as 'minorista' | 'mayorista',
-        notesOwn: '',
         userName: '',
         userLastName: '',
         userEmail: '',
@@ -64,7 +63,7 @@ export default function OrdersAdminPage() {
         status: '',
         paymentMethod: '',
         orderType: '' as 'minorista' | 'mayorista',
-        notesOwn: '',
+        notes: '',
     });
 
     // Estados del formulario de creación
@@ -85,7 +84,7 @@ export default function OrdersAdminPage() {
         paymentMethod: 'Efectivo',
         orderType: 'minorista' as 'minorista' | 'mayorista',
         notes: '',
-        notesOwn: '',
+        deliveryDay: '',
         // Precios
         subTotal: 0,
         shippingPrice: 0,
@@ -174,7 +173,7 @@ export default function OrdersAdminPage() {
             status: order.status,
             paymentMethod: order.paymentMethod,
             orderType: order.orderType,
-            notesOwn: order.notesOwn || '',
+            notes: order.notes || '',
         });
         setIsEditDialogOpen(true);
     };
@@ -185,7 +184,6 @@ export default function OrdersAdminPage() {
             status: order.status,
             paymentMethod: order.paymentMethod,
             orderType: order.orderType,
-            notesOwn: order.notesOwn || '',
             userName: order.user.name,
             userLastName: order.user.lastName || '',
             userEmail: order.user.email,
@@ -213,7 +211,6 @@ export default function OrdersAdminPage() {
             status: '',
             paymentMethod: '',
             orderType: 'minorista',
-            notesOwn: '',
             userName: '',
             userLastName: '',
             userEmail: '',
@@ -316,7 +313,7 @@ export default function OrdersAdminPage() {
                 status: inlineEditForm.status as 'pending' | 'confirmed' | 'delivered' | 'cancelled',
                 paymentMethod: inlineEditForm.paymentMethod,
                 orderType: inlineEditForm.orderType,
-                notesOwn: inlineEditForm.notesOwn,
+                notes: inlineEditForm.notes,
                 items: updatedItems as any,
                 total: inlineEditForm.total,
                 subTotal: inlineEditForm.subTotal,
@@ -395,6 +392,7 @@ export default function OrdersAdminPage() {
     };
 
     const handleCreateOrder = () => {
+        const today = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
         setCreateForm({
             userName: '',
             userLastName: '',
@@ -409,7 +407,7 @@ export default function OrdersAdminPage() {
             paymentMethod: 'Efectivo',
             orderType: 'minorista',
             notes: '',
-            notesOwn: '',
+            deliveryDay: today,
             subTotal: 0,
             shippingPrice: 0,
             total: 0,
@@ -469,7 +467,6 @@ export default function OrdersAdminPage() {
                 subTotal: createForm.subTotal,
                 shippingPrice: createForm.shippingPrice,
                 notes: createForm.notes,
-                notesOwn: createForm.notesOwn,
                 paymentMethod: createForm.paymentMethod,
                 orderType: createForm.orderType,
                 address: {
@@ -485,7 +482,7 @@ export default function OrdersAdminPage() {
                     email: createForm.userEmail,
                 },
                 items: orderItems,
-                deliveryDay: new Date(),
+                deliveryDay: new Date(createForm.deliveryDay),
             };
 
             const result = await createOrderAction(orderData);
@@ -574,11 +571,231 @@ export default function OrdersAdminPage() {
         }).format(amount);
     };
 
+    const handleDuplicateOrder = (order: Order) => {
+        const today = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+        
+        // Preparar los items del pedido original
+        const duplicatedItems = order.items?.map(item => ({
+            productId: item.id || '',
+            quantity: (item.options?.[0] as any)?.quantity || 1,
+            price: item.options?.[0]?.price || item.price
+        })) || [{
+            productId: '',
+            quantity: 1,
+            price: 0
+        }];
+
+        setCreateForm({
+            // Datos del cliente
+            userName: order.user.name,
+            userLastName: order.user.lastName || '',
+            userEmail: order.user.email,
+            userPhone: order.user.phoneNumber || order.address?.phone || '',
+            // Dirección
+            address: order.address?.address || '',
+            city: order.address?.city || '',
+            province: '',
+            postalCode: '',
+            floor: order.address?.floorNumber || '',
+            // Orden
+            status: 'pending',
+            paymentMethod: order.paymentMethod,
+            orderType: order.orderType,
+            notes: 'DUPLICADO',
+            deliveryDay: today,
+            // Precios
+            subTotal: order.subTotal,
+            shippingPrice: order.shippingPrice,
+            total: order.total,
+            // Items
+            items: duplicatedItems
+        });
+        
+        setIsCreateDialogOpen(true);
+        
+        toast({
+            title: 'Pedido duplicado',
+            description: 'Los datos del pedido se han copiado al formulario de creación',
+        });
+    };
+
+    const generateRemitoPDF = () => {
+        // Crear el contenido HTML para el PDF
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Remito - Pedido Mayorista</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        margin: 20px;
+                        color: #333;
+                    }
+                    .header {
+                        text-align: center;
+                        border-bottom: 2px solid #333;
+                        padding-bottom: 20px;
+                        margin-bottom: 30px;
+                    }
+                    .header h1 {
+                        margin: 0;
+                        font-size: 24px;
+                        color: #2563eb;
+                    }
+                    .header p {
+                        margin: 5px 0;
+                        color: #666;
+                    }
+                    .section {
+                        margin-bottom: 25px;
+                    }
+                    .section h2 {
+                        background-color: #f3f4f6;
+                        padding: 10px;
+                        margin: 0 0 15px 0;
+                        border-left: 4px solid #2563eb;
+                        font-size: 16px;
+                    }
+                    .info-grid {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 20px;
+                    }
+                    .info-item {
+                        margin-bottom: 10px;
+                    }
+                    .info-label {
+                        font-weight: bold;
+                        color: #555;
+                    }
+                    .products-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 15px;
+                    }
+                    .products-table th,
+                    .products-table td {
+                        border: 1px solid #ddd;
+                        padding: 12px;
+                        text-align: left;
+                    }
+                    .products-table th {
+                        background-color: #f8fafc;
+                        font-weight: bold;
+                        color: #374151;
+                    }
+                    .products-table tr:nth-child(even) {
+                        background-color: #f9fafb;
+                    }
+                    .totals {
+                        background-color: #f8fafc;
+                        padding: 20px;
+                        border-radius: 8px;
+                        margin-top: 20px;
+                    }
+                    .total-row {
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 10px;
+                        padding: 5px 0;
+                    }
+                    .total-final {
+                        border-top: 2px solid #333;
+                        padding-top: 10px;
+                        font-size: 18px;
+                        font-weight: bold;
+                        color: #2563eb;
+                    }
+                    .footer {
+                        margin-top: 40px;
+                        text-align: center;
+                        color: #666;
+                        font-size: 12px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>REMITO - PEDIDO MAYORISTA</h1>
+                    <p>Fecha: ${new Date().toLocaleDateString('es-AR')}</p>
+                </div>
+
+                <div class="section">
+                    <h2>PRODUCTOS SOLICITADOS</h2>
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${createForm.items
+                                .filter(item => item.productId && item.quantity > 0)
+                                .map(item => {
+                                    const product = products.find(p => p._id === item.productId);
+                                    const subtotal = item.price * item.quantity;
+                                    return `
+                                        <tr>
+                                            <td>${product?.titulo || 'Producto no encontrado'}</td>
+                                            <td>${item.quantity}</td>
+                                            <td>${formatCurrency(item.price)}</td>
+                                            <td>${formatCurrency(subtotal)}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="totals">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span>${formatCurrency(createForm.subTotal)}</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Costo de Envío:</span>
+                        <span>${formatCurrency(createForm.shippingPrice)}</span>
+                    </div>
+                    <div class="total-row total-final">
+                        <span>TOTAL:</span>
+                        <span>${formatCurrency(createForm.total)}</span>
+                    </div>
+                </div>
+
+                ${createForm.notes ? `
+                    <div class="section">
+                        <h2>NOTAS DEL CLIENTE</h2>
+                        <p>${createForm.notes}</p>
+                    </div>
+                ` : ''}
+
+                <div class="footer">
+                    <p>Remito generado el ${new Date().toLocaleString('es-AR')}</p>
+                    <p>Sistema de Gestión de Pedidos</p>
+                </div>
+            </body>
+            </html>
+        `;
+
+        // Crear y descargar el PDF
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            printWindow.print();
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-center">
-                    <Package className="h-12 w-12 animate-spin mx-auto mb-4" />
+                    <Table className="h-12 w-12 animate-spin mx-auto mb-4" />
                     <p className="text-muted-foreground">Cargando órdenes...</p>
                 </div>
             </div>
@@ -592,7 +809,7 @@ export default function OrdersAdminPage() {
                     <div className="flex items-center justify-between">
                         <div>
                             <CardTitle className="flex items-center gap-2">
-                                <Package className="h-6 w-6" />
+                                <Table className="h-6 w-6" />
                                 Gestión de Órdenes
                             </CardTitle>
                             <CardDescription>
@@ -673,6 +890,7 @@ export default function OrdersAdminPage() {
                                     <th className="text-left px-1.5 py-0.5 font-semibold border-b border-r text-xs whitespace-nowrap w-[110px]">Teléfono</th>
                                     <th className="text-left px-1.5 py-0.5 font-semibold border-b border-r text-xs w-[180px]">Productos</th>
                                     <th className="text-left px-1.5 py-0.5 font-semibold border-b border-r text-xs whitespace-nowrap w-[100px]">Medio de Pago</th>
+                                    <th className="text-left px-1.5 py-0.5 font-semibold border-b border-r text-xs w-[150px]">Notas del Cliente</th>
                                     <th className="text-left px-1.5 py-0.5 font-semibold border-b border-r text-xs whitespace-nowrap w-[85px]">Estado</th>
                                     <th className="text-left px-1.5 py-0.5 font-semibold border-b border-r text-xs whitespace-nowrap w-[80px]">Total</th>
                                     <th className="text-right px-1.5 py-0.5 font-semibold border-b text-xs whitespace-nowrap w-[70px]">Acciones</th>
@@ -681,7 +899,7 @@ export default function OrdersAdminPage() {
                             <tbody>
                                 {filteredOrders.length === 0 ? (
                                     <tr>
-                                        <td colSpan={10} className="text-center p-8 text-muted-foreground border">
+                                        <td colSpan={11} className="text-center p-8 text-muted-foreground border">
                                             No se encontraron órdenes
                                         </td>
                                     </tr>
@@ -697,12 +915,12 @@ export default function OrdersAdminPage() {
                                                             setInlineEditForm({ ...inlineEditForm, orderType: value })
                                                         }
                                                     >
-                                                        <SelectTrigger className="h-7 text-xs w-[90px]">
+                                                        <SelectTrigger className="h-6 text-[10px] w-[90px]">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            <SelectItem value="minorista">Minorista</SelectItem>
-                                                            <SelectItem value="mayorista">Mayorista</SelectItem>
+                                                            <SelectItem value="minorista" className="text-[10px]">Minorista</SelectItem>
+                                                            <SelectItem value="mayorista" className="text-[10px]">Mayorista</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 ) : (
@@ -724,13 +942,13 @@ export default function OrdersAdminPage() {
                                                         <Input
                                                             value={inlineEditForm.userName}
                                                             onChange={(e) => setInlineEditForm({ ...inlineEditForm, userName: e.target.value })}
-                                                            className="h-7 text-xs"
+                                                            className="h-6 text-[10px]"
                                                             placeholder="Nombre"
                                                         />
                                                         <Input
                                                             value={inlineEditForm.userEmail}
                                                             onChange={(e) => setInlineEditForm({ ...inlineEditForm, userEmail: e.target.value })}
-                                                            className="h-7 text-xs"
+                                                            className="h-6 text-[10px]"
                                                             placeholder="Email"
                                                         />
                                                     </div>
@@ -753,13 +971,13 @@ export default function OrdersAdminPage() {
                                                         <Input
                                                             value={inlineEditForm.address}
                                                             onChange={(e) => setInlineEditForm({ ...inlineEditForm, address: e.target.value })}
-                                                            className="h-7 text-xs"
+                                                            className="h-6 text-[10px]"
                                                             placeholder="Dirección"
                                                         />
                                                         <Input
                                                             value={inlineEditForm.city}
                                                             onChange={(e) => setInlineEditForm({ ...inlineEditForm, city: e.target.value })}
-                                                            className="h-7 text-xs"
+                                                            className="h-6 text-[10px]"
                                                             placeholder="Ciudad"
                                                         />
                                                     </div>
@@ -783,7 +1001,7 @@ export default function OrdersAdminPage() {
                                                     <Input
                                                         value={inlineEditForm.userPhone}
                                                         onChange={(e) => setInlineEditForm({ ...inlineEditForm, userPhone: e.target.value })}
-                                                        className="h-7 text-xs w-[120px]"
+                                                        className="h-6 text-[10px] w-[120px]"
                                                         placeholder="Teléfono"
                                                     />
                                                 ) : (
@@ -794,19 +1012,19 @@ export default function OrdersAdminPage() {
                                             {/* Productos */}
                                             <td className="px-2 py-2 border-b border-r">
                                                 {editingRowId === order._id ? (
-                                                    <div className="space-y-2 min-w-[200px]">
+                                                    <div className="space-y-1 min-w-[200px]">
                                                         {inlineEditForm.selectedProducts.map((product, idx) => (
-                                                            <div key={idx} className="flex gap-2 items-center">
+                                                            <div key={idx} className="flex gap-1 items-center">
                                                                 <Select
                                                                     value={product.productId}
                                                                     onValueChange={(value) => updateProductInOrder(idx, 'productId', value)}
                                                                 >
-                                                                    <SelectTrigger className="h-8 text-sm flex-1">
-                                                                        <SelectValue placeholder="Seleccionar producto" />
+                                                                    <SelectTrigger className="h-6 text-[10px] flex-1">
+                                                                        <SelectValue placeholder="Producto" />
                                                                     </SelectTrigger>
                                                                     <SelectContent>
                                                                         {products.map((p) => (
-                                                                            <SelectItem key={p._id || ''} value={p._id || ''}>
+                                                                            <SelectItem key={p._id || ''} value={p._id || ''} className="text-[10px]">
                                                                                 {p.titulo}
                                                                             </SelectItem>
                                                                         ))}
@@ -817,16 +1035,16 @@ export default function OrdersAdminPage() {
                                                                     min="1"
                                                                     value={product.quantity}
                                                                     onChange={(e) => updateProductInOrder(idx, 'quantity', parseInt(e.target.value) || 1)}
-                                                                    className="h-8 text-sm w-[60px]"
-                                                                    placeholder="Cant."
+                                                                    className="h-6 text-[10px] w-[45px]"
+                                                                    placeholder="Qty"
                                                                 />
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="sm"
                                                                     onClick={() => removeProductFromOrder(idx)}
-                                                                    className="h-8 w-8 p-0 text-red-500 hover:bg-red-50"
+                                                                    className="h-6 w-6 p-0 text-red-500 hover:bg-red-50"
                                                                 >
-                                                                    <X className="h-4 w-4" />
+                                                                    <X className="h-3 w-3" />
                                                                 </Button>
                                                             </div>
                                                         ))}
@@ -834,10 +1052,10 @@ export default function OrdersAdminPage() {
                                                             variant="outline"
                                                             size="sm"
                                                             onClick={addProductToOrder}
-                                                            className="h-8 text-sm w-full"
+                                                            className="h-6 text-[10px] w-full"
                                                         >
-                                                            <Plus className="h-4 w-4 mr-1" />
-                                                            Agregar Producto
+                                                            <Plus className="h-3 w-3 mr-1" />
+                                                            + Producto
                                                         </Button>
                                                     </div>
                                                 ) : (
@@ -858,9 +1076,46 @@ export default function OrdersAdminPage() {
                                             
                                             {/* Medio de Pago */}
                                             <td className="px-1.5 py-0.5 border-b border-r">
-                                                <span className="text-[10px] bg-muted px-1 py-0 rounded whitespace-nowrap inline-block">
-                                                    {order.paymentMethod}
-                                                </span>
+                                                {editingRowId === order._id ? (
+                                                    <Select
+                                                        value={inlineEditForm.paymentMethod}
+                                                        onValueChange={(value) => setInlineEditForm({ ...inlineEditForm, paymentMethod: value })}
+                                                    >
+                                                        <SelectTrigger className="h-6 text-[10px] w-[100px]">
+                                                            <SelectValue />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="Efectivo" className="text-[10px]">Efectivo</SelectItem>
+                                                            <SelectItem value="Transferencia" className="text-[10px]">Transferencia</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                ) : (
+                                                    <span className="text-[10px] bg-muted px-1 py-0 rounded whitespace-nowrap inline-block">
+                                                        {order.paymentMethod}
+                                                    </span>
+                                                )}
+                                            </td>
+                                            
+                                            {/* Notas del Cliente */}
+                                            <td className="px-1.5 py-0.5 border-b border-r">
+                                                {editingRowId === order._id ? (
+                                                    <Input
+                                                        value={inlineEditForm.notes}
+                                                        onChange={(e) => setInlineEditForm({ ...inlineEditForm, notes: e.target.value })}
+                                                        className="h-6 text-[10px] w-[140px]"
+                                                        placeholder="Notas del cliente"
+                                                    />
+                                                ) : (
+                                                    <div className="text-[10px] max-w-[140px]">
+                                                        {order.notes ? (
+                                                            <span className="bg-blue-50 dark:bg-blue-900/20 px-1 py-0 rounded text-blue-700 dark:text-blue-300 break-words">
+                                                                {order.notes}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-muted-foreground italic">Sin notas</span>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </td>
                                             
                                             {/* Estado */}
@@ -870,14 +1125,14 @@ export default function OrdersAdminPage() {
                                                         value={inlineEditForm.status}
                                                         onValueChange={(value) => setInlineEditForm({ ...inlineEditForm, status: value })}
                                                     >
-                                                        <SelectTrigger className="h-7 text-xs w-[90px]">
+                                                        <SelectTrigger className="h-6 text-[10px] w-[90px]">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            <SelectItem value="pending">Pendiente</SelectItem>
-                                                            <SelectItem value="confirmed">Confirmada</SelectItem>
-                                                            <SelectItem value="delivered">Entregada</SelectItem>
-                                                            <SelectItem value="cancelled">Cancelada</SelectItem>
+                                                            <SelectItem value="pending" className="text-[10px]">Pendiente</SelectItem>
+                                                            <SelectItem value="confirmed" className="text-[10px]">Confirmada</SelectItem>
+                                                            <SelectItem value="delivered" className="text-[10px]">Entregada</SelectItem>
+                                                            <SelectItem value="cancelled" className="text-[10px]">Cancelada</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 ) : (
@@ -900,14 +1155,14 @@ export default function OrdersAdminPage() {
                                                                     total: inlineEditForm.subTotal + shipping
                                                                 });
                                                             }}
-                                                            className="h-6 text-[10px] w-[90px]"
+                                                            className="h-5 text-[9px] w-[85px]"
                                                             placeholder="Envío"
                                                         />
                                                         <Input
                                                             type="number"
                                                             value={inlineEditForm.total}
                                                             onChange={(e) => setInlineEditForm({ ...inlineEditForm, total: parseFloat(e.target.value) || 0 })}
-                                                            className="h-6 text-[10px] w-[90px]"
+                                                            className="h-5 text-[9px] w-[85px]"
                                                             placeholder="Total"
                                                         />
                                                     </div>
@@ -957,6 +1212,16 @@ export default function OrdersAdminPage() {
                                                                 className="h-6 w-6 p-0"
                                                             >
                                                                 <Edit className="h-3 w-3" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => handleDuplicateOrder(order)}
+                                                                disabled={isPending}
+                                                                className="h-6 w-6 p-0"
+                                                                title="Duplicar pedido"
+                                                            >
+                                                                <Copy className="h-3 w-3 text-blue-600" />
                                                             </Button>
                                                             <Button
                                                                 variant="outline"
@@ -1022,7 +1287,7 @@ export default function OrdersAdminPage() {
                             {/* Items */}
                             <div className="p-4 bg-muted rounded-lg">
                                 <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                    <Package className="h-4 w-4" />
+                                    <DollarSign className="h-4 w-4" />
                                     Productos ({editingOrder.items.length})
                                 </h4>
                                 <div className="space-y-2">
@@ -1089,20 +1354,27 @@ export default function OrdersAdminPage() {
 
                                 <div>
                                     <Label htmlFor="paymentMethod">Método de Pago</Label>
-                                    <Input
-                                        id="paymentMethod"
+                                    <Select
                                         value={editForm.paymentMethod}
-                                        onChange={(e) => setEditForm({ ...editForm, paymentMethod: e.target.value })}
-                                    />
+                                        onValueChange={(value) => setEditForm({ ...editForm, paymentMethod: value })}
+                                    >
+                                        <SelectTrigger id="paymentMethod">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Efectivo">Efectivo</SelectItem>
+                                            <SelectItem value="Transferencia">Transferencia</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="notesOwn">Notas Internas</Label>
+                                    <Label htmlFor="notes">Notas del Cliente</Label>
                                     <Input
-                                        id="notesOwn"
-                                        value={editForm.notesOwn}
-                                        onChange={(e) => setEditForm({ ...editForm, notesOwn: e.target.value })}
-                                        placeholder="Notas privadas para uso interno..."
+                                        id="notes"
+                                        value={editForm.notes}
+                                        onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                                        placeholder="Notas del cliente..."
                                     />
                                 </div>
                             </div>
@@ -1268,7 +1540,7 @@ export default function OrdersAdminPage() {
                         <div className="p-4 bg-muted rounded-lg space-y-4">
                             <div className="flex items-center justify-between">
                                 <h4 className="font-semibold flex items-center gap-2">
-                                    <Package className="h-4 w-4" />
+                                    <DollarSign className="h-4 w-4" />
                                     Productos
                                 </h4>
                                 <Button onClick={addItem} variant="outline" size="sm" className="gap-2">
@@ -1383,12 +1655,18 @@ export default function OrdersAdminPage() {
                                 </div>
                                 <div>
                                     <Label htmlFor="paymentMethod">Método de Pago</Label>
-                                    <Input
-                                        id="paymentMethod"
+                                    <Select
                                         value={createForm.paymentMethod}
-                                        onChange={(e) => setCreateForm({ ...createForm, paymentMethod: e.target.value })}
-                                        placeholder="Efectivo"
-                                    />
+                                        onValueChange={(value) => setCreateForm({ ...createForm, paymentMethod: value })}
+                                    >
+                                        <SelectTrigger id="paymentMethod">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Efectivo">Efectivo</SelectItem>
+                                            <SelectItem value="Transferencia">Transferencia</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                                 <div>
                                     <Label htmlFor="shippingPrice">Costo de Envío</Label>
@@ -1409,6 +1687,16 @@ export default function OrdersAdminPage() {
                                         placeholder="0.00"
                                     />
                                 </div>
+                                <div>
+                                    <Label htmlFor="deliveryDay">Fecha de Entrega</Label>
+                                    <Input
+                                        id="deliveryDay"
+                                        type="date"
+                                        value={createForm.deliveryDay}
+                                        onChange={(e) => setCreateForm({ ...createForm, deliveryDay: e.target.value })}
+                                        min={new Date().toISOString().split('T')[0]}
+                                    />
+                                </div>
                                 <div className="col-span-2">
                                     <Label htmlFor="notes">Notas del Cliente</Label>
                                     <Input
@@ -1416,15 +1704,6 @@ export default function OrdersAdminPage() {
                                         value={createForm.notes}
                                         onChange={(e) => setCreateForm({ ...createForm, notes: e.target.value })}
                                         placeholder="Notas adicionales del cliente..."
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <Label htmlFor="notesOwn">Notas Internas</Label>
-                                    <Input
-                                        id="notesOwn"
-                                        value={createForm.notesOwn}
-                                        onChange={(e) => setCreateForm({ ...createForm, notesOwn: e.target.value })}
-                                        placeholder="Notas privadas para uso interno..."
                                     />
                                 </div>
                             </div>
@@ -1448,16 +1727,29 @@ export default function OrdersAdminPage() {
                     </div>
 
                     <DialogFooter>
-                        <Button
-                            variant="outline"
-                            onClick={() => setIsCreateDialogOpen(false)}
-                            disabled={isPending}
-                        >
-                            Cancelar
-                        </Button>
-                        <Button onClick={handleSaveNewOrder} disabled={isPending}>
-                            {isPending ? 'Creando...' : 'Crear Orden'}
-                        </Button>
+                        <div className="flex justify-between w-full">
+                            <Button
+                                variant="outline"
+                                onClick={generateRemitoPDF}
+                                disabled={isPending || createForm.items.filter(item => item.productId && item.quantity > 0).length === 0}
+                                className="gap-2"
+                            >
+                                <Download className="h-4 w-4" />
+                                Descargar Remito PDF
+                            </Button>
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setIsCreateDialogOpen(false)}
+                                    disabled={isPending}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button onClick={handleSaveNewOrder} disabled={isPending}>
+                                    {isPending ? 'Creando...' : 'Crear Orden'}
+                                </Button>
+                            </div>
+                        </div>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

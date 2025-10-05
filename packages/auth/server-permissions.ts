@@ -316,14 +316,14 @@ export const SIDEBAR_CONFIG: SidebarItem[] = [
         label: 'products',
         mobileLabel: 'productsMobile',
         href: '/admin',
-        icon: 'Package',
+        icon: 'DollarSign',
         requiredPermissions: ['admin:full_access'],
     },
     {
         label: 'orders',
         mobileLabel: 'ordersMobile',
         href: '/admin/orders',
-        icon: 'ShoppingCart',
+        icon: 'Table',
         requiredPermissions: ['admin:full_access'],
         adminOnly: true,
     }

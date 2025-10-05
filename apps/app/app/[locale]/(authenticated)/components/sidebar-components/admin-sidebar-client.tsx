@@ -12,6 +12,7 @@ import {
     MinusCircle,
     Package,
     ShoppingCart,
+    DollarSign,
 } from 'lucide-react';
 import Link from 'next/link';
 import {
@@ -37,6 +38,7 @@ const ICON_MAP = {
     MinusCircle,
     Package,
     ShoppingCart,
+    DollarSign,
 } as const;
 
 type AdminSidebarClientProps = {
