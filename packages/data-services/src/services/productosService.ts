@@ -25,11 +25,12 @@ export async function createProduct(productData: CreateAdminProduct, createdBy: 
         const newProduct: Omit<AdminProduct, '_id'> = {
             titulo: productData.titulo,
             descripcion: productData.descripcion,
-            precioMinorista: productData.precioMinorista,
+            precioMinorista: Math.round(productData.precioMinorista * 100) / 100,
+            precioMayorista: productData.precioMayorista ? Math.round(productData.precioMayorista * 100) / 100 : undefined,
             stock: productData.stock,
             imagenes: productData.imagenes || [],
             categoria: productData.categoria,
-            precioOferta: productData.precioOferta,
+            precioOferta: productData.precioOferta ? Math.round(productData.precioOferta * 100) / 100 : undefined,
             dimensiones: productData.dimensiones,
             isActive: true,
             createdBy,
@@ -45,6 +46,7 @@ export async function createProduct(productData: CreateAdminProduct, createdBy: 
             titulo: newProduct.titulo,
             descripcion: newProduct.descripcion,
             precioMinorista: newProduct.precioMinorista,
+            precioMayorista: newProduct.precioMayorista,
             stock: newProduct.stock,
             imagenes: newProduct.imagenes,
             categoria: newProduct.categoria,
@@ -85,6 +87,7 @@ export async function getAllProducts(includeInactive = false): Promise<AdminProd
             titulo: product.titulo,
             descripcion: product.descripcion,
             precioMinorista: product.precioMinorista,
+            precioMayorista: product.precioMayorista,
             stock: product.stock,
             imagenes: product.imagenes || [],
             categoria: product.categoria,
@@ -157,8 +160,18 @@ export async function updateProduct(productId: string, updateData: Partial<Creat
             }
         }
 
+        // Redondear precios a 2 decimales para evitar problemas de punto flotante
         const updateFields = {
             ...updateData,
+            ...(updateData.precioMinorista !== undefined && { 
+                precioMinorista: Math.round(updateData.precioMinorista * 100) / 100 
+            }),
+            ...(updateData.precioMayorista !== undefined && { 
+                precioMayorista: Math.round(updateData.precioMayorista * 100) / 100 
+            }),
+            ...(updateData.precioOferta !== undefined && { 
+                precioOferta: Math.round(updateData.precioOferta * 100) / 100 
+            }),
             updatedAt: new Date().toISOString(),
         };
 

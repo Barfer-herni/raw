@@ -266,17 +266,19 @@ export default function OrdersAdminPage() {
         const newProducts = [...inlineEditForm.selectedProducts];
         newProducts[index] = { ...newProducts[index], [field]: value };
         
-        // Si se cambia el producto, actualizar el precio automáticamente
+        // Si se cambia el producto, actualizar el precio automáticamente según el tipo de orden
         if (field === 'productId' && value) {
             const selectedProduct = products.find(p => p._id === value);
             if (selectedProduct) {
-                // Por ahora usamos solo precioMinorista hasta que el tipo incluya precioMayorista
-                const price = selectedProduct.precioMinorista;
+                // Usar precio mayorista si es orden mayorista y existe, sino usar minorista
+                const price = (inlineEditForm.orderType === 'mayorista' && selectedProduct.precioMayorista) 
+                    ? selectedProduct.precioMayorista 
+                    : selectedProduct.precioMinorista;
                 newProducts[index].price = price;
             }
         }
         
-        // Recalcular totales
+        // Recalcular totales automáticamente
         const newSubTotal = newProducts.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const newTotal = newSubTotal + inlineEditForm.shippingPrice;
         
@@ -520,19 +522,21 @@ export default function OrdersAdminPage() {
         const newItems = [...createForm.items];
         newItems[index] = { ...newItems[index], [field]: value };
         
-        // Si se cambia el producto, actualizar el precio automáticamente
+        // Si se cambia el producto, actualizar el precio automáticamente según el tipo de orden
         if (field === 'productId' && value) {
             const selectedProduct = products.find(p => p._id === value);
             if (selectedProduct) {
-                // Por ahora usamos solo precioMinorista hasta que el tipo incluya precioMayorista
-                const price = selectedProduct.precioMinorista;
+                // Usar precio mayorista si es orden mayorista y existe, sino usar minorista
+                const price = (createForm.orderType === 'mayorista' && selectedProduct.precioMayorista) 
+                    ? selectedProduct.precioMayorista 
+                    : selectedProduct.precioMinorista;
                 newItems[index].price = price;
             }
         }
         
         setCreateForm({ ...createForm, items: newItems });
         
-        // Recalcular totales
+        // Recalcular totales automáticamente
         const newSubTotal = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const newTotal = newSubTotal + createForm.shippingPrice;
         setCreateForm(prev => ({ ...prev, subTotal: newSubTotal, total: newTotal }));
@@ -1025,7 +1029,12 @@ export default function OrdersAdminPage() {
                                                                     <SelectContent>
                                                                         {products.map((p) => (
                                                                             <SelectItem key={p._id || ''} value={p._id || ''} className="text-[10px]">
-                                                                                {p.titulo}
+                                                                                <div className="flex flex-col">
+                                                                                    <span>{p.titulo}</span>
+                                                                                    <span className="text-[9px] text-gray-500">
+                                                                                        Min: ${p.precioMinorista}{p.precioMayorista ? ` | May: $${p.precioMayorista}` : ''}
+                                                                                    </span>
+                                                                                </div>
                                                                             </SelectItem>
                                                                         ))}
                                                                     </SelectContent>
@@ -1144,6 +1153,9 @@ export default function OrdersAdminPage() {
                                             <td className="px-1.5 py-0.5 font-semibold border-b border-r text-[11px] whitespace-nowrap">
                                                 {editingRowId === order._id ? (
                                                     <div className="space-y-1">
+                                                        <div className="text-[9px] text-muted-foreground">
+                                                            Sub: {formatCurrency(inlineEditForm.subTotal)}
+                                                        </div>
                                                         <Input
                                                             type="number"
                                                             value={inlineEditForm.shippingPrice}
@@ -1158,13 +1170,9 @@ export default function OrdersAdminPage() {
                                                             className="h-5 text-[9px] w-[85px]"
                                                             placeholder="Envío"
                                                         />
-                                                        <Input
-                                                            type="number"
-                                                            value={inlineEditForm.total}
-                                                            onChange={(e) => setInlineEditForm({ ...inlineEditForm, total: parseFloat(e.target.value) || 0 })}
-                                                            className="h-5 text-[9px] w-[85px]"
-                                                            placeholder="Total"
-                                                        />
+                                                        <div className="text-[10px] font-bold text-green-600">
+                                                            Total: {formatCurrency(inlineEditForm.total)}
+                                                        </div>
                                                     </div>
                                                 ) : (
                                                     <div>
@@ -1576,7 +1584,12 @@ export default function OrdersAdminPage() {
                                                 <SelectContent>
                                                     {products.map((product) => (
                                                         <SelectItem key={product._id || ''} value={product._id || ''}>
-                                                            {product.titulo}
+                                                            <div className="flex flex-col">
+                                                                <span>{product.titulo}</span>
+                                                                <span className="text-xs text-gray-500">
+                                                                    Min: ${product.precioMinorista}{product.precioMayorista ? ` | May: $${product.precioMayorista}` : ''}
+                                                                </span>
+                                                            </div>
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>

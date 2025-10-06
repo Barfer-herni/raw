@@ -37,6 +37,7 @@ export default function ProductosAdminPage() {
         titulo: '',
         descripcion: '',
         precioMinorista: 0,
+        precioMayorista: undefined,
         stock: 0,
         imagenes: [],
         categoria: '',
@@ -263,6 +264,7 @@ export default function ProductosAdminPage() {
             titulo: '',
             descripcion: '',
             precioMinorista: 0,
+            precioMayorista: undefined,
             stock: 0,
             imagenes: [],
             categoria: '',
@@ -287,6 +289,7 @@ export default function ProductosAdminPage() {
             titulo: product.titulo,
             descripcion: product.descripcion || '',
             precioMinorista: product.precioMinorista,
+            precioMayorista: product.precioMayorista,
             stock: product.stock,
             imagenes: product.imagenes || [],
             categoria: product.categoria,
@@ -519,9 +522,15 @@ export default function ProductosAdminPage() {
                             )}
                             <div className="space-y-2">
                                 <div className="flex justify-between">
-                                    <span className="text-sm text-gray-500">Precio:</span>
+                                    <span className="text-sm text-gray-500">Precio Minorista:</span>
                                     <span className="font-semibold text-barfer-green">${product.precioMinorista}</span>
                                 </div>
+                                {product.precioMayorista && (
+                                    <div className="flex justify-between">
+                                        <span className="text-sm text-gray-500">Precio Mayorista:</span>
+                                        <span className="font-semibold text-blue-600">${product.precioMayorista}</span>
+                                    </div>
+                                )}
                                 {product.precioOferta && (
                                     <div className="flex justify-between">
                                         <span className="text-sm text-gray-500">Oferta:</span>
@@ -620,6 +629,24 @@ export default function ProductosAdminPage() {
                                                 placeholder="0.00"
                                             />
                                         </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Precio Mayorista (opcional)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={productForm.precioMayorista || ''}
+                                                onChange={(e) => setProductForm(prev => ({ ...prev, precioMayorista: e.target.value ? parseFloat(e.target.value) : undefined }))}
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-barfer-green focus:border-barfer-green"
+                                                placeholder="Precio para mayoristas (opcional)"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Precio de Oferta */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 Precio de Oferta (opcional)

@@ -40,6 +40,7 @@ export interface AdminProduct {
     titulo: string;
     descripcion?: string;
     precioMinorista: number;  // Precio normal
+    precioMayorista?: number; // Precio para mayoristas
     stock: number;
     imagenes?: string[];      // Array de URLs de Cloudinary
     categoria: string;        // ID de la categoría
@@ -67,6 +68,7 @@ export interface CreateAdminProduct {
     titulo: string;
     descripcion?: string;
     precioMinorista: number;
+    precioMayorista?: number;
     stock: number;
     imagenes?: string[];
     categoria: string;

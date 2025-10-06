@@ -74,7 +74,8 @@ export async function getAllProductsAction(includeInactive = false): Promise<{ s
         }
 
         const products = await getAllProductsService(includeInactive);
-        
+
+        console.log('🔍 Products:', products);
         // Serializar explícitamente para Next.js
         return {
             success: true,
