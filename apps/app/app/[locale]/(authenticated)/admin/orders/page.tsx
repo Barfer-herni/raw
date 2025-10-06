@@ -909,9 +909,9 @@ export default function OrdersAdminPage() {
                                     </tr>
                                 ) : (
                                     filteredOrders.map((order) => (
-                                        <tr key={order._id} className={`hover:bg-muted/50 transition-colors ${editingRowId === order._id ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
+                                        <tr key={order._id} className={`hover:bg-muted/50 transition-colors ${editingRowId === order._id ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`} style={editingRowId === order._id ? { height: 'auto', maxHeight: 'none' } : undefined}>
                                             {/* Tipo Orden */}
-                                            <td className={`px-1.5 py-0.5 border-b border-r whitespace-nowrap ${order.orderType === 'mayorista' ? 'bg-red-300 dark:bg-red-700' : ''}`}>
+                                            <td className={`px-1.5 py-0.5 border-b border-r whitespace-nowrap align-top ${order.orderType === 'mayorista' ? 'bg-red-300 dark:bg-red-700' : ''}`}>
                                                 {editingRowId === order._id ? (
                                                     <Select
                                                         value={inlineEditForm.orderType}
@@ -935,14 +935,14 @@ export default function OrdersAdminPage() {
                                             </td>
                                             
                                             {/* Fecha */}
-                                            <td className="px-1.5 py-0.5 text-xs border-b border-r whitespace-nowrap">
+                                            <td className="px-1.5 py-0.5 text-xs border-b border-r whitespace-nowrap align-top">
                                                 {formatDate(order.createdAt)}
                                             </td>
                                             
                                             {/* Cliente */}
-                                            <td className="px-2 py-1 border-b border-r">
+                                            <td className="px-2 py-0.5 border-b border-r align-top">
                                                 {editingRowId === order._id ? (
-                                                    <div className="space-y-1">
+                                                    <div className="space-y-0.5">
                                                         <Input
                                                             value={inlineEditForm.userName}
                                                             onChange={(e) => setInlineEditForm({ ...inlineEditForm, userName: e.target.value })}
@@ -969,9 +969,9 @@ export default function OrdersAdminPage() {
                                             </td>
                                             
                                             {/* Dirección */}
-                                            <td className="px-2 py-1 border-b border-r">
+                                            <td className="px-2 py-0.5 border-b border-r align-top">
                                                 {editingRowId === order._id ? (
-                                                    <div className="space-y-1">
+                                                    <div className="space-y-0.5">
                                                         <Input
                                                             value={inlineEditForm.address}
                                                             onChange={(e) => setInlineEditForm({ ...inlineEditForm, address: e.target.value })}
@@ -1000,7 +1000,7 @@ export default function OrdersAdminPage() {
                                             </td>
                                             
                                             {/* Teléfono */}
-                                            <td className="px-2 py-1 border-b border-r text-[11px] whitespace-nowrap">
+                                            <td className="px-2 py-0.5 border-b border-r text-[11px] whitespace-nowrap align-top">
                                                 {editingRowId === order._id ? (
                                                     <Input
                                                         value={inlineEditForm.userPhone}
@@ -1014,9 +1014,9 @@ export default function OrdersAdminPage() {
                                             </td>
                                             
                                             {/* Productos */}
-                                            <td className="px-2 py-2 border-b border-r">
+                                            <td className="px-2 py-0.5 border-b border-r align-top">
                                                 {editingRowId === order._id ? (
-                                                    <div className="space-y-1 min-w-[200px]">
+                                                    <div className="space-y-0.5 min-w-[200px]">
                                                         {inlineEditForm.selectedProducts.map((product, idx) => (
                                                             <div key={idx} className="flex gap-1 items-center">
                                                                 <Select
@@ -1084,7 +1084,7 @@ export default function OrdersAdminPage() {
                                             </td>
                                             
                                             {/* Medio de Pago */}
-                                            <td className="px-1.5 py-0.5 border-b border-r">
+                                            <td className="px-1.5 py-0.5 border-b border-r align-top">
                                                 {editingRowId === order._id ? (
                                                     <Select
                                                         value={inlineEditForm.paymentMethod}
@@ -1106,7 +1106,7 @@ export default function OrdersAdminPage() {
                                             </td>
                                             
                                             {/* Notas del Cliente */}
-                                            <td className="px-1.5 py-0.5 border-b border-r">
+                                            <td className="px-1.5 py-0.5 border-b border-r align-top">
                                                 {editingRowId === order._id ? (
                                                     <Input
                                                         value={inlineEditForm.notes}
@@ -1128,7 +1128,7 @@ export default function OrdersAdminPage() {
                                             </td>
                                             
                                             {/* Estado */}
-                                            <td className={`px-1.5 py-0.5 border-b border-r ${order.status === 'confirmed' ? 'bg-green-700 dark:bg-green-800' : ''}`}>
+                                            <td className={`px-1.5 py-0.5 border-b border-r align-top ${order.status === 'confirmed' ? 'bg-green-700 dark:bg-green-800' : ''}`}>
                                                 {editingRowId === order._id ? (
                                                     <Select
                                                         value={inlineEditForm.status}
@@ -1150,9 +1150,9 @@ export default function OrdersAdminPage() {
                                             </td>
                                             
                                             {/* Total */}
-                                            <td className="px-1.5 py-0.5 font-semibold border-b border-r text-[11px] whitespace-nowrap">
+                                            <td className="px-1.5 py-0.5 font-semibold border-b border-r text-[11px] whitespace-nowrap align-top">
                                                 {editingRowId === order._id ? (
-                                                    <div className="space-y-1">
+                                                    <div className="space-y-0.5">
                                                         <div className="text-[9px] text-muted-foreground">
                                                             Sub: {formatCurrency(inlineEditForm.subTotal)}
                                                         </div>
@@ -1187,7 +1187,7 @@ export default function OrdersAdminPage() {
                                             </td>
                                             
                                             {/* Acciones */}
-                                            <td className="px-1 py-0.5 border-b">
+                                            <td className="px-1 py-0.5 border-b align-top">
                                                 <div className="flex gap-0.5 justify-end">
                                                     {editingRowId === order._id ? (
                                                         <>

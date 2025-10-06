@@ -225,7 +225,7 @@ export default function CheckoutPage() {
                 subTotal,
                 shippingPrice,
                 notes: customerData.notas || '',
-                paymentMethod: 'WhatsApp',
+                paymentMethod: 'Transferencia',
                 orderType: 'minorista' as const,
                 address: {
                     address: customerData.direccion,
