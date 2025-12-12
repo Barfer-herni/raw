@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getShippingOptionsAction, getFallbackShippingOptionsAction, type EnviaShippingOption } from '@repo/data-services/src/client-safe';
+import { getShippingOptionsAction, type EnviaShippingOption } from '@repo/data-services/src/client-safe';
 
 interface CartItem {
     id: string;
@@ -39,58 +39,76 @@ export function ShippingOptions({ cartItems, address, onShippingSelect, selected
 
     // Función para verificar si la dirección está completa
     const isAddressComplete = () => {
-        return address.street && address.city && address.state && address.postalCode;
+        const complete = !!(address.street && address.city && address.state && address.postalCode && address.name && address.phone);
+        console.log('🔍 [SHIPPING OPTIONS] Verificando dirección completa:', {
+            street: !!address.street,
+            city: !!address.city,
+            state: !!address.state,
+            postalCode: !!address.postalCode,
+            name: !!address.name,
+            phone: !!address.phone,
+            isComplete: complete
+        });
+        return complete;
     };
 
     // Función para obtener las opciones de envío
     const fetchShippingOptions = async () => {
-        if (!isAddressComplete() || cartItems.length === 0) {
+        console.log('\n🎯 [SHIPPING OPTIONS] ========== INICIO fetchShippingOptions ==========');
+        
+        if (!isAddressComplete()) {
+            console.log('🎯 [SHIPPING OPTIONS] ⚠️ Dirección incompleta. Esperando datos...');
+            setShippingOptions([]);
+            setError(null);
+            return;
+        }
+
+        if (cartItems.length === 0) {
+            console.log('🎯 [SHIPPING OPTIONS] ⚠️ Carrito vacío');
             setShippingOptions([]);
             return;
         }
+
+        console.log('🎯 [SHIPPING OPTIONS] ✅ Dirección completa. Iniciando consulta...');
+        console.log('🎯 [SHIPPING OPTIONS] 📦 Items:', cartItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            quantity: item.quantity,
+            dimensions: item.dimensions
+        })));
+        console.log('🎯 [SHIPPING OPTIONS] 📍 Dirección:', address);
 
         setIsLoading(true);
         setError(null);
 
         try {
-            console.log('🚚 Obteniendo opciones de envío...');
+            console.log('🎯 [SHIPPING OPTIONS] � Llamando a getShippingOptionsAction...');
             
             // Intentar obtener opciones reales de Envía
             const result = await getShippingOptionsAction(cartItems, address);
             
+            console.log('🎯 [SHIPPING OPTIONS] 📥 Resultado recibido:', {
+                success: result.success,
+                message: result.message,
+                optionsCount: result.data?.length || 0
+            });
+
             if (result.success && result.data && result.data.length > 0) {
-                console.log('🚚 Opciones de Envía obtenidas:', result.data);
+                console.log('🎯 [SHIPPING OPTIONS] ✅ Opciones obtenidas exitosamente:', result.data);
                 setShippingOptions(result.data);
+                setError(null);
             } else {
-                // Si no hay opciones o hay error, usar opciones de respaldo
-                console.log('🚚 Usando opciones de respaldo');
-                const fallbackResult = await getFallbackShippingOptionsAction();
-                
-                if (fallbackResult.success && fallbackResult.data) {
-                    setShippingOptions(fallbackResult.data);
-                } else {
-                    setError('No se pudieron obtener opciones de envío. Intenta nuevamente.');
-                    setShippingOptions([]);
-                }
-            }
-        } catch (error) {
-            console.error('🚚 Error obteniendo opciones de envío:', error);
-            
-            // En caso de error, usar opciones de respaldo
-            try {
-                const fallbackResult = await getFallbackShippingOptionsAction();
-                if (fallbackResult.success && fallbackResult.data) {
-                    setShippingOptions(fallbackResult.data);
-                } else {
-                    setError('No se pudieron obtener opciones de envío. Intenta nuevamente.');
-                    setShippingOptions([]);
-                }
-            } catch (fallbackError) {
-                setError('Error obteniendo opciones de envío. Intenta nuevamente.');
+                console.error('🎯 [SHIPPING OPTIONS] ❌ Sin opciones disponibles:', result.message);
+                setError(result.message || 'No se pudieron obtener opciones de envío. Intenta nuevamente.');
                 setShippingOptions([]);
             }
+        } catch (error) {
+            console.error('🎯 [SHIPPING OPTIONS] ❌ ERROR en fetchShippingOptions:', error);
+            setError('Error obteniendo opciones de envío. Intenta nuevamente.');
+            setShippingOptions([]);
         } finally {
             setIsLoading(false);
+            console.log('🎯 [SHIPPING OPTIONS] ========== FIN fetchShippingOptions ==========\n');
         }
     };
 

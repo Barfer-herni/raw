@@ -5,7 +5,7 @@
 
 // Client-safe actions
 export { getProductsForHomeAction } from './services/productosActions';
-export { getShippingOptionsAction, getFallbackShippingOptionsAction } from './actions/enviaActions';
+export { getShippingOptionsAction } from './actions/enviaActions';
 
 // Types (always safe for client)
 export type { Product } from './types/barfer';

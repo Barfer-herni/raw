@@ -216,12 +216,6 @@ export async function getProductsForHomeAction(): Promise<{ success: boolean; pr
         
         // Transformar los datos al formato esperado por la página de inicio
         const transformedProducts = result.map(product => {
-            console.log('🔍 Transforming product:', { 
-                _id: product._id, 
-                titulo: product.titulo, 
-                precioMinorista: product.precioMinorista,
-                precioOferta: product.precioOferta
-            });
             
             // Precio normal (solo minorista)
             const normalPrice = product.precioMinorista?.toString() || 'Consultar precio';
@@ -255,17 +249,6 @@ export async function getProductsForHomeAction(): Promise<{ success: boolean; pr
                     peso: product.dimensiones.peso || 0.5 // Incluir peso en las dimensiones
                 } : undefined
             };
-            
-            console.log(`✅ Product transformed - ${product.titulo}:`, {
-                isOnOffer: transformedProduct.isOnOffer,
-                originalPrice: transformedProduct.originalPrice,
-                offerPrice: transformedProduct.offerPrice,
-                weight: transformedProduct.weight,
-                dimensions: transformedProduct.dimensions,
-                originalDimensions: product.dimensiones,
-                pesoFromDB: product.dimensiones?.peso
-            });
-            
             return transformedProduct;
         });
 
