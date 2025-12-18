@@ -358,7 +358,7 @@ export default function CheckoutPage() {
 `
                 : '🚚 *ENVÍO:* A coordinar\n';
 
-            const mensaje = `¡Hola! Quiero finalizar mi pedido de Barfer:
+            const mensaje = `¡Hola! Quiero finalizar mi pedido de Raw:
 
 📦 *PRODUCTOS:*
 ${productos}
