@@ -172,18 +172,47 @@ export const columns: ColumnDef<Order>[] = [
     },
     {
         accessorKey: 'total',
-        header: () => <div className="w-full text-center">Total</div>,
+        header: () => <div className="w-full text-center">Precios</div>,
         cell: ({ row }: CellContext<Order, unknown>) => {
-            const amount = parseFloat(row.getValue('total') as string);
-            const formatted = new Intl.NumberFormat('es-AR', {
-                style: 'currency',
-                currency: 'ARS',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-            }).format(amount);
-            return <div className="font-semibold text-center min-w-[70px] text-[10px]">{formatted}</div>;
+            const order = row.original;
+            const subTotal = order.subTotal || 0;
+            const shippingPrice = order.shippingPrice || 0;
+            const total = parseFloat(row.getValue('total') as string);
+            
+            const formatCurrency = (amount: number) => {
+                return new Intl.NumberFormat('es-AR', {
+                    style: 'currency',
+                    currency: 'ARS',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                }).format(amount);
+            };
+            
+            return (
+                <div className="min-w-[110px] text-[10px] space-y-0.5">
+                    {/* Subtotal de productos */}
+                    <div className="flex justify-between items-center bg-blue-50 dark:bg-blue-900/20 px-1 py-0.5 rounded">
+                        <span className="text-[8px] text-muted-foreground">Prod:</span>
+                        <span className="font-medium">{formatCurrency(subTotal)}</span>
+                    </div>
+                    
+                    {/* Costo de envío */}
+                    {shippingPrice > 0 && (
+                        <div className="flex justify-between items-center bg-orange-50 dark:bg-orange-900/20 px-1 py-0.5 rounded">
+                            <span className="text-[8px] text-muted-foreground">Envío:</span>
+                            <span className="font-medium">{formatCurrency(shippingPrice)}</span>
+                        </div>
+                    )}
+                    
+                    {/* Total final */}
+                    <div className="flex justify-between items-center bg-green-100 dark:bg-green-900/30 px-1 py-0.5 rounded border border-green-300 dark:border-green-700">
+                        <span className="text-[8px] font-semibold text-green-700 dark:text-green-400">TOTAL:</span>
+                        <span className="font-bold text-green-700 dark:text-green-400">{formatCurrency(total)}</span>
+                    </div>
+                </div>
+            );
         },
-        size: 70,
+        size: 110,
     },
     {
         accessorKey: 'notes',

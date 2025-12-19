@@ -96,21 +96,26 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
         switch (normalizedId) {
             case 'orderType':
                 return (
-                    <Select
-                        value={editValues.orderType}
-                        onValueChange={(value) => onChange('orderType', value)}
-                    >
-                        <SelectTrigger className="h-6 text-[10px]">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {ORDER_TYPE_OPTIONS.map((opt) => (
-                                <SelectItem key={opt.value} value={opt.value} className="text-[10px]">
-                                    {opt.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <div className="space-y-0.5">
+                        <Select
+                            value={editValues.orderType}
+                            onValueChange={(value) => onChange('orderType', value)}
+                        >
+                            <SelectTrigger className="h-6 text-[10px]">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {ORDER_TYPE_OPTIONS.map((opt) => (
+                                    <SelectItem key={opt.value} value={opt.value} className="text-[10px]">
+                                        {opt.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <div className="text-[9px] text-muted-foreground italic">
+                            ⚠️ Cambiar recalcula precios
+                        </div>
+                    </div>
                 );
 
             case 'user.name':
@@ -161,68 +166,85 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
 
             case 'items':
                 return (
-                    <div className="space-y-0.5 min-w-[200px]">
+                    <div className="space-y-0.5 min-w-[250px]">
                         {editValues.selectedProducts?.map((product: any, idx: number) => (
-                            <div key={idx} className="flex gap-0.5 items-center">
-                                <Select
-                                    value={product.productId || undefined}
-                                    onValueChange={(value) => {
-                                        const newProducts = [...editValues.selectedProducts];
-                                        const selectedProduct = products.find(p => p._id === value);
-                                        newProducts[idx] = {
-                                            ...newProducts[idx],
-                                            productId: value,
-                                            price: selectedProduct?.precioMinorista || 0
-                                        };
-                                        onChange('selectedProducts', newProducts);
-                                    }}
-                                >
-                                    <SelectTrigger className="h-6 text-[10px] flex-1 p-1">
-                                        <SelectValue placeholder="Producto" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {products.filter(p => p._id && p._id.trim() !== '').map((p) => (
-                                            <SelectItem key={p._id} value={p._id || 'unknown'} className="text-[10px]">
-                                                {p.titulo}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <Input
-                                    type="number"
-                                    min="1"
-                                    value={product.quantity}
-                                    onChange={(e) => {
-                                        const newProducts = [...editValues.selectedProducts];
-                                        newProducts[idx].quantity = parseInt(e.target.value) || 1;
-                                        onChange('selectedProducts', newProducts);
-                                    }}
-                                    className="h-6 text-[10px] w-12 p-1"
-                                />
-                                <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => {
-                                        const newProducts = editValues.selectedProducts.filter((_: any, i: number) => i !== idx);
-                                        onChange('selectedProducts', newProducts);
-                                    }}
-                                    className="h-6 w-6 p-0"
-                                >
-                                    <X className="h-3 w-3" />
-                                </Button>
+                            <div key={idx} className="space-y-0.5">
+                                <div className="flex gap-0.5 items-center">
+                                    <Select
+                                        value={product.productId || undefined}
+                                        onValueChange={(value) => {
+                                            const newProducts = [...editValues.selectedProducts];
+                                            const selectedProduct = products.find(p => p._id === value);
+                                            // Use the correct price based on orderType
+                                            const price = editValues.orderType === 'mayorista' 
+                                                ? (selectedProduct?.precioMayorista || 0)
+                                                : (selectedProduct?.precioMinorista || 0);
+                                            newProducts[idx] = {
+                                                ...newProducts[idx],
+                                                productId: value,
+                                                price: price
+                                            };
+                                            onChange('selectedProducts', newProducts);
+                                        }}
+                                    >
+                                        <SelectTrigger className="h-6 text-[10px] flex-1 p-1">
+                                            <SelectValue placeholder="Producto" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {products.filter(p => p._id && p._id.trim() !== '').map((p) => (
+                                                <SelectItem key={p._id} value={p._id || 'unknown'} className="text-[10px]">
+                                                    {p.titulo}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Input
+                                        type="number"
+                                        min="1"
+                                        value={product.quantity}
+                                        onChange={(e) => {
+                                            const newProducts = [...editValues.selectedProducts];
+                                            newProducts[idx].quantity = parseInt(e.target.value) || 1;
+                                            onChange('selectedProducts', newProducts);
+                                        }}
+                                        className="h-6 text-[10px] w-12 p-1"
+                                    />
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => {
+                                            const newProducts = editValues.selectedProducts.filter((_: any, i: number) => i !== idx);
+                                            onChange('selectedProducts', newProducts);
+                                        }}
+                                        className="h-6 w-6 p-0"
+                                    >
+                                        <X className="h-3 w-3" />
+                                    </Button>
+                                </div>
+                                <div className="text-[9px] text-muted-foreground pl-1">
+                                    ${product.price?.toFixed(2) || '0.00'} × {product.quantity} = ${((product.price || 0) * (product.quantity || 0)).toFixed(2)}
+                                </div>
                             </div>
                         ))}
                         <Button
                             size="sm"
                             variant="outline"
                             onClick={() => {
-                                const newProducts = [...(editValues.selectedProducts || []), { productId: products[0]?._id || '', quantity: 1, price: 0 }];
+                                const firstProduct = products[0];
+                                const price = editValues.orderType === 'mayorista'
+                                    ? (firstProduct?.precioMayorista || 0)
+                                    : (firstProduct?.precioMinorista || 0);
+                                const newProducts = [...(editValues.selectedProducts || []), { 
+                                    productId: firstProduct?._id || '', 
+                                    quantity: 1, 
+                                    price: price 
+                                }];
                                 onChange('selectedProducts', newProducts);
                             }}
                             className="h-6 text-[10px] w-full p-1"
                         >
                             <Plus className="h-3 w-3 mr-0.5" />
-                            +
+                            Agregar Producto
                         </Button>
                     </div>
                 );
@@ -267,21 +289,34 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
 
             case 'total':
                 return (
-                    <div className="space-y-0.5">
-                        <Input
-                            type="number"
-                            value={editValues.shippingPrice}
-                            onChange={(e) => onChange('shippingPrice', parseFloat(e.target.value) || 0)}
-                            placeholder="Envío"
-                            className="h-6 text-[10px] p-1"
-                        />
-                        <Input
-                            type="number"
-                            value={editValues.total}
-                            onChange={(e) => onChange('total', parseFloat(e.target.value) || 0)}
-                            placeholder="Total"
-                            className="h-6 text-[10px] p-1 font-semibold"
-                        />
+                    <div className="space-y-1 min-w-[140px]">
+                        {/* Subtotal de productos */}
+                        <div className="bg-blue-50 dark:bg-blue-900/20 p-1 rounded">
+                            <div className="text-[8px] text-muted-foreground uppercase">Productos</div>
+                            <div className="text-[11px] font-semibold">
+                                ${editValues.subTotal?.toFixed(2) || '0.00'}
+                            </div>
+                        </div>
+                        
+                        {/* Costo de envío (editable) */}
+                        <div className="bg-orange-50 dark:bg-orange-900/20 p-1 rounded">
+                            <div className="text-[8px] text-muted-foreground uppercase mb-0.5">Envío</div>
+                            <Input
+                                type="number"
+                                value={editValues.shippingPrice}
+                                onChange={(e) => onChange('shippingPrice', parseFloat(e.target.value) || 0)}
+                                placeholder="0.00"
+                                className="h-6 text-[10px] p-1 bg-white dark:bg-gray-800"
+                            />
+                        </div>
+                        
+                        {/* Total final */}
+                        <div className="bg-green-100 dark:bg-green-900/30 p-1 rounded border border-green-300 dark:border-green-700">
+                            <div className="text-[8px] text-muted-foreground uppercase">Total Final</div>
+                            <div className="text-[12px] font-bold text-green-700 dark:text-green-400">
+                                ${editValues.total?.toFixed(2) || '0.00'}
+                            </div>
+                        </div>
                     </div>
                 );
 

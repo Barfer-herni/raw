@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getAllOrders, updateOrder, deleteOrder } from '@repo/data-services/src/services/barfer';
+import { getAllOrders, updateOrder, deleteOrder, createOrder } from '@repo/data-services/src/services/barfer';
 import { requireAdmin } from '@repo/auth/server-permissions';
 import type { Order } from '@repo/data-services/src/types/barfer';
 
@@ -81,6 +81,77 @@ export async function deleteOrderAction(orderId: string) {
         return {
             success: false,
             message: error instanceof Error ? error.message : 'Error al eliminar la orden'
+        };
+    }
+}
+
+/**
+ * Duplica una orden existente (solo para admins)
+ */
+export async function duplicateOrderAction(orderId: string) {
+    try {
+        await requireAdmin();
+
+        // Obtener la orden original
+        const orders = await getAllOrders({
+            sorting: [{ id: 'createdAt', desc: true }],
+            limit: 1000
+        });
+        
+        const originalOrder = orders.find(order => order._id === orderId);
+        
+        if (!originalOrder) {
+            return {
+                success: false,
+                message: 'Orden no encontrada'
+            };
+        }
+
+        // Crear una copia de la orden sin el _id y actualizando timestamps
+        const { _id, createdAt, updatedAt, ...orderData } = originalOrder;
+        
+        // Crear la nueva orden duplicada con valores por defecto para campos opcionales
+        const newOrderData = {
+            ...orderData,
+            status: 'pending' as const, // Nueva orden empieza como pendiente
+            notes: orderData.notes ? `[DUPLICADA] ${orderData.notes}` : '[DUPLICADA]',
+            deliveryDay: new Date(), // Nueva fecha de entrega
+            // Asegurar que deliveryArea existe o proporcionar valores por defecto
+            deliveryArea: orderData.deliveryArea || {
+                _id: '',
+                description: 'Sin zona de entrega',
+                coordinates: [],
+                schedule: '09:00-18:00',
+                orderCutOffHour: 12,
+                enabled: true,
+                sameDayDelivery: false,
+                sameDayDeliveryDays: [],
+                whatsappNumber: '',
+                sheetName: '',
+            },
+        };
+
+        const result = await createOrder(newOrderData as any);
+        
+        if (!result.success) {
+            return {
+                success: false,
+                message: result.error || 'Error al duplicar la orden'
+            };
+        }
+
+        revalidatePath('/admin/orders');
+
+        return {
+            success: true,
+            message: 'Orden duplicada exitosamente',
+            orderId: result.order?._id
+        };
+    } catch (error) {
+        console.error('Error duplicating order:', error);
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : 'Error al duplicar la orden'
         };
     }
 }

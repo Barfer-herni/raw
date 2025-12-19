@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { Input } from '@repo/design-system/components/ui/input';
 import { Button } from '@repo/design-system/components/ui/button';
-import { updateOrderAction, deleteOrderAction } from '../actions';
+import { updateOrderAction, deleteOrderAction, duplicateOrderAction } from '../actions';
 import { getAllProductsAction, type AdminProduct } from '@repo/data-services/src/actions';
 import { DateRangeFilter } from './DateRangeFilter';
 import { OrderTypeFilter } from './OrderTypeFilter';
@@ -125,11 +125,28 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
         const order = row.original;
         setEditingRowId(row.id);
         
+        const orderType = order.orderType || 'minorista';
+        
+        // Map items and ensure prices are correct based on orderType
+        const mappedProducts = order.items?.map((item: any) => {
+            const product = products.find(p => p._id === item.id);
+            // Use the correct price based on orderType, fallback to stored price if product not found
+            let price = item.options?.[0]?.price || item.price || 0;
+            if (product) {
+                price = orderType === 'mayorista' ? product.precioMayorista : product.precioMinorista;
+            }
+            return {
+                productId: item.id || '',
+                quantity: item.options?.[0]?.quantity || 1,
+                price: price,
+            };
+        }) || [];
+        
         // Inicializar valores de edición con los datos actuales
         setEditValues({
             status: order.status || 'pending',
             paymentMethod: order.paymentMethod || 'Efectivo',
-            orderType: order.orderType || 'minorista',
+            orderType: orderType,
             userName: order.user?.name || '',
             userLastName: order.user?.lastName || '',
             userEmail: order.user?.email || '',
@@ -143,11 +160,7 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
             subTotal: order.subTotal || 0,
             shippingPrice: order.shippingPrice || 0,
             total: order.total || 0,
-            selectedProducts: order.items?.map((item: any) => ({
-                productId: item.id || '',
-                quantity: item.options?.[0]?.quantity || 1,
-                price: item.options?.[0]?.price || item.price || 0,
-            })) || [],
+            selectedProducts: mappedProducts,
         });
     };
 
@@ -175,7 +188,45 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
     };
 
     const handleEditValueChange = (field: string, value: any) => {
-        setEditValues((prev) => ({ ...prev, [field]: value }));
+        setEditValues((prev) => {
+            const newValues = { ...prev, [field]: value };
+            
+            // If orderType changes, recalculate all product prices
+            if (field === 'orderType') {
+                const updatedProducts = newValues.selectedProducts.map((productItem: any) => {
+                    const product = products.find(p => p._id === productItem.productId);
+                    if (product) {
+                        return {
+                            ...productItem,
+                            price: value === 'mayorista' ? product.precioMayorista : product.precioMinorista
+                        };
+                    }
+                    return productItem;
+                });
+                newValues.selectedProducts = updatedProducts;
+                
+                // Recalculate subtotal and total
+                const newSubTotal = updatedProducts.reduce((sum: number, item: any) => 
+                    sum + (item.price * item.quantity), 0);
+                newValues.subTotal = newSubTotal;
+                newValues.total = newSubTotal + newValues.shippingPrice;
+            }
+            
+            // If selectedProducts changes (quantity or product), recalculate subtotal and total
+            if (field === 'selectedProducts') {
+                const newSubTotal = value.reduce((sum: number, item: any) => 
+                    sum + (item.price * item.quantity), 0);
+                newValues.subTotal = newSubTotal;
+                newValues.total = newSubTotal + newValues.shippingPrice;
+            }
+            
+            // If shippingPrice changes, recalculate total
+            if (field === 'shippingPrice') {
+                newValues.total = newValues.subTotal + value;
+            }
+            
+            return newValues;
+        });
     };
 
     const handleSave = async (row: any) => {
@@ -258,7 +309,24 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
     };
 
     const handleDuplicate = async (row: any) => {
-        alert('Función de duplicación no implementada. Agrega la lógica según tus necesidades.');
+        if (!confirm('¿Estás seguro de que quieres duplicar esta orden? Se creará una nueva orden con los mismos datos.')) {
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const result = await duplicateOrderAction(row.id);
+            if (!result.success) {
+                throw new Error(result.message || 'Error al duplicar');
+            }
+            
+            alert(`✅ Orden duplicada exitosamente. Nueva orden ID: ${result.orderId}`);
+            router.refresh();
+        } catch (e) {
+            alert(e instanceof Error ? e.message : 'Error al duplicar la orden');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

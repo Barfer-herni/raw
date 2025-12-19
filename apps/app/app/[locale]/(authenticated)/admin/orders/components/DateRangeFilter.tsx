@@ -46,6 +46,15 @@ export function DateRangeFilter() {
         updateDateRange(undefined);
     }, [updateDateRange]);
 
+    const setToday = useCallback(() => {
+        const today = new Date();
+        updateDateRange({ from: today, to: today });
+    }, [updateDateRange]);
+
+    const isToday = dateRange.from && dateRange.to && 
+        format(dateRange.from, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') &&
+        format(dateRange.to, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
+
     return (
         <div className="flex items-center gap-2">
             <Popover>
@@ -71,6 +80,17 @@ export function DateRangeFilter() {
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
+                    <div className="p-3 border-b">
+                        <Button
+                            variant={isToday ? "default" : "outline"}
+                            onClick={setToday}
+                            disabled={isPending}
+                            className="w-full"
+                            size="sm"
+                        >
+                            📅 Hoy
+                        </Button>
+                    </div>
                     <Calendar
                         initialFocus
                         mode="range"
@@ -82,6 +102,7 @@ export function DateRangeFilter() {
                     />
                 </PopoverContent>
             </Popover>
+            
             {(dateRange.from || dateRange.to) && (
                 <Button
                     variant="ghost"
