@@ -204,7 +204,18 @@ export function ProductsPage() {
                                             <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                                 <div className="flex-1 min-w-0">
                                                     <p className="font-medium text-sm truncate">{item.name}</p>
-                                                    <p className="text-sm text-gray-500">${item.priceRange}</p>
+                                                    {item.isOnOffer && item.originalPrice && item.offerPrice ? (
+                                                        <div className="flex flex-col space-y-1">
+                                                            <p className="text-sm text-gray-500 line-through font-medium">
+                                                                ${item.originalPrice}
+                                                            </p>
+                                                            <p className="text-sm text-red-500 font-semibold">
+                                                                ${item.offerPrice} 🏷️ OFERTA
+                                                            </p>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-sm text-gray-500">${item.priceRange}</p>
+                                                    )}
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <Button

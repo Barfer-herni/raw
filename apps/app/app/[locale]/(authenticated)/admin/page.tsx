@@ -332,12 +332,12 @@ const FAQ_DATA = [
     {
         id: 2,
         question: '¿Cuánto demora el envío?',
-        answer: 'Los días de despacho son los martes y viernes y desde esa fecha su demora dependerá de la opción de envío seleccionada.'
+        answer: 'Dependerá de la opción de envío seleccionada.'
     },
     {
         id: 3,
         question: '¿Son aptos para perros y gatos?',
-        answer: 'Los treats sí son aptos para ambos, pero los mordedores son únicamente para perros.'
+        answer: 'Los treats sí son aptos para ambos, pero los mordedores son únicamente para perros debido a su tamaño y dureza.'
     },
     {
         id: 4,
@@ -480,7 +480,6 @@ export default function AdminPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
-    const [expandedBenefit, setExpandedBenefit] = useState<number | null>(null);
     const [currentClientPhotoIndex, setCurrentClientPhotoIndex] = useState(0);
     const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
 
@@ -728,10 +727,6 @@ export default function AdminPage() {
         );
     };
 
-    const toggleBenefit = (benefitId: number) => {
-        setExpandedBenefit(expandedBenefit === benefitId ? null : benefitId);
-    };
-
     const toggleFAQ = (faqId: number) => {
         setExpandedFAQ(expandedFAQ === faqId ? null : faqId);
     };
@@ -859,51 +854,17 @@ export default function AdminPage() {
                     {BENEFITS_DATA.map((benefit) => (
                         <div
                             key={benefit.id}
-                            className="border-2 border-barfer-green rounded-2xl overflow-hidden hover:shadow-xl transition-all bg-barfer-white h-fit"
+                            className="border-2 border-barfer-green rounded-2xl overflow-hidden hover:shadow-xl transition-all bg-barfer-white"
                         >
                             {/* Header del beneficio */}
-                            <div
-                                className="p-6 cursor-pointer bg-gradient-to-r from-green-50 to-orange-50 hover:from-green-100 hover:to-orange-100"
-                                onClick={() => toggleBenefit(benefit.id)}
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3 flex-1 justify-center">
-                                        <span className="text-3xl">{benefit.icon}</span>
-                                        <h3 className="text-xl font-semibold text-gray-900 text-center">
-                                            {benefit.title}
-                                        </h3>
-                                    </div>
-                                    <button className="text-barfer-orange hover:text-orange-600 transition-colors">
-                                        <svg
-                                            className={`w-6 h-6 transform transition-transform ${expandedBenefit === benefit.id ? 'rotate-45' : 'rotate-0'
-                                                }`}
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                        </svg>
-                                    </button>
+                            <div className="p-6 bg-gradient-to-r from-green-50 to-orange-50 hover:from-green-100 hover:to-orange-100">
+                                <div className="flex items-center gap-3 justify-center">
+                                    <span className="text-3xl">{benefit.icon}</span>
+                                    <h3 className="text-xl font-semibold text-gray-900 text-center">
+                                        {benefit.title}
+                                    </h3>
                                 </div>
                             </div>
-
-                            {/* Contenido expandible */}
-                            {expandedBenefit === benefit.id && (
-                                <div className="p-6 bg-white border-t border-barfer-green">
-                                    <ul className="space-y-2">
-                                        {benefit.details.map((detail, index) => (
-                                            <li key={index} className="flex items-start gap-2">
-                                                <span className="text-barfer-green mt-1">
-                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                    </svg>
-                                                </span>
-                                                <span className="text-gray-600">{detail}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
                         </div>
                     ))}
                 </div>

@@ -786,7 +786,7 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
                                             </p>
                                             {item.isOnOffer && item.originalPrice && item.offerPrice ? (
                                                 <div className="flex flex-col space-y-1">
-                                                    <p className="text-xs text-gray-500 line-through">
+                                                    <p className="text-sm text-gray-500 line-through font-medium">
                                                         ${item.originalPrice}
                                                     </p>
                                                     <p className="text-sm text-red-500 font-semibold">

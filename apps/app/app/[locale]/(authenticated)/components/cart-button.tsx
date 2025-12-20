@@ -71,7 +71,18 @@ export function CartButton() {
                                                 />
                                                 <div className="flex-1">
                                                     <h4 className="font-semibold text-sm line-clamp-2">{item.name}</h4>
-                                                    <p className="text-orange-600 font-bold">${item.priceRange}</p>
+                                                    {item.isOnOffer && item.originalPrice && item.offerPrice ? (
+                                                        <div className="flex flex-col space-y-1">
+                                                            <p className="text-sm text-gray-500 line-through font-medium">
+                                                                ${item.originalPrice}
+                                                            </p>
+                                                            <p className="text-sm text-red-500 font-semibold">
+                                                                ${item.offerPrice} 🏷️ OFERTA
+                                                            </p>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-orange-600 font-bold">${item.priceRange}</p>
+                                                    )}
                                                     <div className="flex items-center gap-2 mt-2">
                                                         <Button
                                                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
