@@ -83,7 +83,7 @@ export const Footer = ({ dictionary }: FooterProps) => {
             </motion.div>
 
             <p className="leading-relaxed max-w-sm text-gray-600 dark:text-gray-300">
-              {dictionary?.web.footer?.companyDescription || "LupaPyme is the platform that helps you understand your customers and boost your business. In-depth metrics, customer retention, and total control of your company."}
+              Los mejores snacks para la salud y felicidad de tu peludo
             </p>
             <div className="flex gap-4 mt-6">
               <a

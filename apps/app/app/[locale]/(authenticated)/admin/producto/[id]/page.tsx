@@ -322,15 +322,17 @@ export default function ProductDetailPage() {
                                     </div>
                                 )}
 
-                                {/* Stock */}
-                                <div className="mb-6">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-sm font-medium text-gray-600">Stock disponible:</span>
-                                        <span className={`font-semibold ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                            {product.stock} unidades
-                                        </span>
+                                {/* Stock - Solo mostrar cuando sea 0 */}
+                                {product.stock === 0 && (
+                                    <div className="mb-6">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-medium text-gray-600">Stock:</span>
+                                            <span className="font-semibold text-red-600">
+                                                Sin stock
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
 
                                 {/* Dimensiones */}
                                 {product.dimensiones && (

@@ -55,7 +55,13 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     };
 
     const incrementQuantity = () => {
-        setLocalQuantity(prev => prev + 1);
+        const availableStock = (product.stock || 0) - cartQuantity;
+        setLocalQuantity(prev => {
+            if (prev < availableStock) {
+                return prev + 1;
+            }
+            return prev;
+        });
     };
 
     const decrementQuantity = () => {
@@ -64,33 +70,59 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         }
     };
 
+    const isOutOfStock = (product.stock || 0) === 0;
+
     return (
-        <div className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-white rounded-xl overflow-hidden">
-            {/* Product Image - Clickeable */}
-            <Link href={`/${locale}/admin/producto/${product.id}`} className="block">
+        <div className={`group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-white rounded-xl overflow-hidden ${isOutOfStock ? 'opacity-75' : ''}`}>
+            {/* Product Image - Clickeable solo si hay stock */}
+            {isOutOfStock ? (
                 <div className="relative overflow-hidden bg-gray-50">
                     <img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-64 lg:h-80 object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-64 lg:h-80 object-cover grayscale"
                     />
-                    {/* Badge de Oferta */}
-                    {product.isOnOffer && (
-                        <div className="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-pulse">
-                            OFERTA
-                        </div>
-                    )}
+                    {/* Badge Sin Stock */}
+                    <div className="absolute top-2 left-2 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                        SIN STOCK
+                    </div>
+                    {/* Overlay oscuro */}
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <span className="text-white text-xl font-bold">Sin stock</span>
+                    </div>
                 </div>
-            </Link>
+            ) : (
+                <Link href={`/${locale}/admin/producto/${product.id}`} className="block">
+                    <div className="relative overflow-hidden bg-gray-50">
+                        <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-full h-64 lg:h-80 object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {/* Badge de Oferta */}
+                        {product.isOnOffer && (
+                            <div className="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-pulse">
+                                OFERTA
+                            </div>
+                        )}
+                    </div>
+                </Link>
+            )}
 
             {/* Product Info */}
             <div className="p-4 space-y-4">
-                {/* Product Name - Clickeable */}
-                <Link href={`/${locale}/admin/producto/${product.id}`}>
-                    <h3 className="text-base lg:text-lg font-bold text-gray-900 line-clamp-2 min-h-[3rem] flex items-center justify-center text-center hover:text-barfer-green transition-colors cursor-pointer">
+                {/* Product Name - Clickeable solo si hay stock */}
+                {isOutOfStock ? (
+                    <h3 className="text-base lg:text-lg font-bold text-gray-500 line-clamp-2 min-h-[3rem] flex items-center justify-center text-center">
                         {product.name}
                     </h3>
-                </Link>
+                ) : (
+                    <Link href={`/${locale}/admin/producto/${product.id}`}>
+                        <h3 className="text-base lg:text-lg font-bold text-gray-900 line-clamp-2 min-h-[3rem] flex items-center justify-center text-center hover:text-barfer-green transition-colors cursor-pointer">
+                            {product.name}
+                        </h3>
+                    </Link>
+                )}
 
                 {/* Price */}
                 <div className="flex flex-col items-center justify-center space-y-1">
@@ -114,54 +146,64 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
                 </div>
 
                 {/* Cart Status */}
-                {cartQuantity > 0 && (
+                {cartQuantity > 0 && !isOutOfStock && (
                     <div className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-md border border-green-200">
                         ✓ En carrito: {cartQuantity} unidad{cartQuantity !== 1 ? 'es' : ''}
                     </div>
                 )}
 
+                {/* Sin stock message */}
+                {isOutOfStock && (
+                    <div className="text-xs text-red-600 font-medium bg-red-50 px-2 py-1 rounded-md border border-red-200 text-center">
+                        ⚠ Sin stock disponible
+                    </div>
+                )}
+
                 {/* Quantity Counter - Mobile First */}
-                <div className="flex flex-col sm:flex-row gap-3">
-                    <div className={`flex items-center border rounded-lg ${cartQuantity > 0 ? 'border-green-300 bg-green-50' : 'border-gray-300'} self-center sm:self-start`}>
+                {!isOutOfStock && (
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <div className={`flex items-center border rounded-lg ${cartQuantity > 0 ? 'border-green-300 bg-green-50' : 'border-gray-300'} self-center sm:self-start`}>
+                            <button
+                                onClick={decrementQuantity}
+                                disabled={localQuantity <= 1}
+                                className="p-2 sm:p-1.5 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <Minus className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                            </button>
+                            <span className="px-4 py-2 sm:px-3 sm:py-1.5 min-w-[3rem] text-center font-medium">
+                                {localQuantity}
+                            </span>
+                            <button
+                                onClick={incrementQuantity}
+                                disabled={localQuantity >= ((product.stock || 0) - cartQuantity)}
+                                className="p-2 sm:p-1.5 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <Plus className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                            </button>
+                        </div>
+
+                        {/* Add to Cart Button - Full width on mobile */}
                         <button
-                            onClick={decrementQuantity}
-                            disabled={localQuantity <= 1}
-                            className="p-2 sm:p-1.5 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            onClick={handleAddToCart}
+                            disabled={localQuantity <= cartQuantity || localQuantity > (product.stock || 0)}
+                            className="w-full sm:flex-1 bg-barfer-green hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-4 py-3 sm:py-2.5 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 disabled:transform-none text-sm sm:text-base"
                         >
-                            <Minus className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
-                        </button>
-                        <span className="px-4 py-2 sm:px-3 sm:py-1.5 min-w-[3rem] text-center font-medium">
-                            {localQuantity}
-                        </span>
-                        <button
-                            onClick={incrementQuantity}
-                            className="p-2 sm:p-1.5 hover:bg-gray-100 transition-colors"
-                        >
-                            <Plus className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
+                            {cartQuantity > 0 
+                                ? (localQuantity > cartQuantity 
+                                    ? <span className="block sm:hidden">+{localQuantity - cartQuantity}</span>
+                                    : <span className="block sm:hidden">Ya agregado</span>
+                                )
+                                : <span className="block sm:hidden">🛒 Agregar</span>
+                            }
+                            <span className="hidden sm:block">
+                                {cartQuantity > 0 
+                                    ? (localQuantity > cartQuantity ? `Agregar ${localQuantity - cartQuantity} más` : 'Ya agregado')
+                                    : 'Agregar'
+                                }
+                            </span>
                         </button>
                     </div>
-
-                    {/* Add to Cart Button - Full width on mobile */}
-                    <button
-                        onClick={handleAddToCart}
-                        disabled={localQuantity <= cartQuantity}
-                        className="w-full sm:flex-1 bg-barfer-green hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-4 py-3 sm:py-2.5 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 disabled:transform-none text-sm sm:text-base"
-                    >
-                        {cartQuantity > 0 
-                            ? (localQuantity > cartQuantity 
-                                ? <span className="block sm:hidden">+{localQuantity - cartQuantity}</span>
-                                : <span className="block sm:hidden">Ya agregado</span>
-                            )
-                            : <span className="block sm:hidden">🛒 Agregar</span>
-                        }
-                        <span className="hidden sm:block">
-                            {cartQuantity > 0 
-                                ? (localQuantity > cartQuantity ? `Agregar ${localQuantity - cartQuantity} más` : 'Ya agregado')
-                                : 'Agregar'
-                            }
-                        </span>
-                    </button>
-                </div>
+                )}
             </div>
         </div>
     );

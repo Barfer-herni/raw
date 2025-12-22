@@ -1021,8 +1021,7 @@ export default function AdminPage() {
                         <div className="space-y-4">
                             <h3 className="text-xl font-bold text-barfer-green">Raw and Fun</h3>
                             <p className="text-gray-300 leading-relaxed">
-                                Tu tienda de confianza para productos premium de mascotas.
-                                Comprometidos con la salud y felicidad de tu compañero peludo.
+                                Los mejores snacks para la salud y felicidad de tu peludo
                             </p>
                             <div className="flex space-x-4">
                                 {/* Solo Instagram */}
