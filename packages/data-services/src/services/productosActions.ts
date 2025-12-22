@@ -209,13 +209,20 @@ export async function searchProductsAction(searchTerm: string): Promise<{ succes
 /**
  * Server Action: Obtener productos para mostrar en la página de inicio
  * Transforma los datos de AdminProduct al formato esperado por la UI
+ * Filtra productos soloMayorista si el usuario es minorista (por defecto)
  */
-export async function getProductsForHomeAction(): Promise<{ success: boolean; products?: any[]; message?: string; error?: string }> {
+export async function getProductsForHomeAction(userType: 'minorista' | 'mayorista' = 'minorista'): Promise<{ success: boolean; products?: any[]; message?: string; error?: string }> {
     try {
         const result = await getAllProductsService(false); // Solo productos activos
         
+        // Filtrar productos según el tipo de usuario
+        // Si es minorista, excluir productos soloMayorista
+        const filteredProducts = userType === 'minorista' 
+            ? result.filter(product => !product.soloMayorista)
+            : result;
+        
         // Transformar los datos al formato esperado por la página de inicio
-        const transformedProducts = result.map(product => {
+        const transformedProducts = filteredProducts.map(product => {
             
             // Precio normal (solo minorista)
             const normalPrice = product.precioMinorista?.toString() || 'Consultar precio';

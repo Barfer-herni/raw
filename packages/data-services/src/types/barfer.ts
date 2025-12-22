@@ -58,6 +58,7 @@ export interface AdminProduct {
     
     // Metadatos
     isActive: boolean;
+    soloMayorista?: boolean;  // Si es true, solo disponible para mayoristas
     createdBy: string;        // ID del usuario admin que lo creó
     createdAt: string;
     updatedAt: string;
@@ -82,6 +83,7 @@ export interface CreateAdminProduct {
         profundidad?: number;
         peso?: number;
     };
+    soloMayorista?: boolean;  // Si es true, solo disponible para mayoristas
 }
 
 // interfaz order 

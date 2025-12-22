@@ -47,7 +47,8 @@ export default function ProductosAdminPage() {
             ancho: undefined,
             profundidad: undefined,
             peso: undefined
-        }
+        },
+        soloMayorista: false
     });
 
     // Estados del formulario de categoría
@@ -274,7 +275,8 @@ export default function ProductosAdminPage() {
                 ancho: undefined,
                 profundidad: undefined,
                 peso: undefined
-            }
+            },
+            soloMayorista: false
         });
         setEditingProduct(null);
         setSelectedImageFiles([]);
@@ -299,7 +301,8 @@ export default function ProductosAdminPage() {
                 ancho: undefined,
                 profundidad: undefined,
                 peso: undefined
-            }
+            },
+            soloMayorista: product.soloMayorista || false
         });
         setShowProductForm(true);
     };
@@ -462,7 +465,13 @@ export default function ProductosAdminPage() {
                 {/* Lista de productos */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {products.map((product) => (
-                        <div key={product._id} className="bg-barfer-white rounded-2xl shadow-lg border-2 border-barfer-green p-4 hover:shadow-xl transition-all transform hover:scale-105">
+                        <div key={product._id} className="bg-barfer-white rounded-2xl shadow-lg border-2 border-barfer-green p-4 hover:shadow-xl transition-all transform hover:scale-105 relative">
+                            {/* Badge Solo Mayorista */}
+                            {product.soloMayorista && (
+                                <div className="absolute top-2 right-2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
+                                    SOLO MAYORISTA
+                                </div>
+                            )}
                             {product.imagenes && product.imagenes.length > 0 ? (
                                 <img
                                     src={product.imagenes[0]}
@@ -543,6 +552,14 @@ export default function ProductosAdminPage() {
                                         {product.stock}
                                     </span>
                                 </div>
+                                {product.soloMayorista && (
+                                    <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-200">
+                                        <span className="text-xs text-gray-500">Tipo:</span>
+                                        <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                                            Solo Mayorista
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                             <div className="mt-4 flex gap-2">
                                 <button 
@@ -812,20 +829,41 @@ export default function ProductosAdminPage() {
                                                 <input
                                                     type="number"
                                                     min="0"
-                                                    step="0.1"
-                                                    value={productForm.dimensiones?.peso || ''}
-                                                    onChange={(e) => setProductForm(prev => ({
-                                                        ...prev,
-                                                        dimensiones: {
-                                                            ...prev.dimensiones,
-                                                            peso: parseFloat(e.target.value) || undefined
-                                                        }
-                                                    }))}
+                                                    step="0.01"
+                                                    value={productForm.dimensiones?.peso ?? ''}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        setProductForm(prev => ({
+                                                            ...prev,
+                                                            dimensiones: {
+                                                                ...prev.dimensiones,
+                                                                peso: value === '' ? undefined : parseFloat(value)
+                                                            }
+                                                        }));
+                                                    }}
                                                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-barfer-green focus:border-barfer-green text-sm"
+                                                    placeholder="0.45"
                                                 />
-                                                <label className="block text-xs text-gray-500 mt-1 text-center">Peso (kg)</label>
+                                                <label className="block text-xs text-gray-500 mt-1 text-center">Peso (kg) - Ej: 0.45 o 0.115</label>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    {/* Solo Mayorista */}
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                            type="checkbox"
+                                            id="soloMayorista"
+                                            checked={productForm.soloMayorista || false}
+                                            onChange={(e) => setProductForm(prev => ({
+                                                ...prev,
+                                                soloMayorista: e.target.checked
+                                            }))}
+                                            className="w-5 h-5 text-barfer-green border-gray-300 rounded focus:ring-barfer-green"
+                                        />
+                                        <label htmlFor="soloMayorista" className="text-sm font-medium text-gray-700 cursor-pointer">
+                                            Solo disponible para mayoristas
+                                        </label>
                                     </div>
 
                                     {/* Botones */}
