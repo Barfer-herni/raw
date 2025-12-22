@@ -73,45 +73,38 @@ const CAROUSEL_IMAGES = [
 const ANIMAL_PRODUCT_PHOTOS = [
     {
         id: 1,
-        src: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop',
-        alt: 'Golden Retriever con cama ortopédica',
+        src: '/amigos/1.jpeg',
+        alt: 'Mascota feliz con productos RAW',
         animal: 'Luna',
-        product: 'Cama Ortopédica Premium'
+        product: 'Productos Premium'
     },
     {
         id: 2,
-        src: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=400&fit=crop',
-        alt: 'Gato Persa con juguete interactivo',
+        src: '/amigos/2.jpeg',
+        alt: 'Mascota disfrutando snacks naturales',
         animal: 'Milo',
-        product: 'Juguete Interactivo'
+        product: 'Snacks Naturales'
     },
     {
         id: 3,
-        src: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=400&fit=crop',
-        alt: 'Pastor Alemán con comida premium',
+        src: '/amigos/3.jpeg',
+        alt: 'Mascota saludable con productos RAW',
         animal: 'Rocky',
-        product: 'Comida Premium Natural'
+        product: 'Alimentación Natural'
     },
     {
         id: 4,
-        src: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=400&fit=crop',
-        alt: 'Husky con collar y correa',
+        src: '/amigos/4.jpeg',
+        alt: 'Mascota contenta con productos premium',
         animal: 'Bella',
-        product: 'Set Collar y Correa'
+        product: 'Productos Premium'
     },
     {
         id: 5,
-        src: 'https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=400&h=400&fit=crop',
-        alt: 'Labrador con suplementos vitamínicos',
+        src: '/amigos/5.jpeg',
+        alt: 'Mascota disfrutando snacks saludables',
         animal: 'Max',
-        product: 'Suplementos Vitamínicos'
-    },
-    {
-        id: 6,
-        src: 'https://images.unsplash.com/photo-1601758228041-3b9a0a2b0b0b?w=400&h=400&fit=crop',
-        alt: 'Bulldog con shampoo natural',
-        animal: 'Nina',
-        product: 'Shampoo Hipoalergénico'
+        product: 'Snacks Saludables'
     }
 ];
 
