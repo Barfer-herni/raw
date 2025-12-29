@@ -144,6 +144,12 @@ export async function loginUser(data: LoginData) {
         }
 
         // Crear la sesión del usuario
+        // Asegurar que siempre haya permisos por defecto para usuarios normales
+        const defaultPermissions = ['account:view_own', 'account:edit_own'];
+        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0 
+            ? user.permissions 
+            : defaultPermissions;
+
         const userData = {
             id: user._id.toString(),
             name: user.name,
@@ -152,7 +158,7 @@ export async function loginUser(data: LoginData) {
             phone: user.phone,
             address: user.address,
             role: user.role,
-            permissions: user.permissions,
+            permissions: userPermissions,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
         };
@@ -186,6 +192,12 @@ export async function getUserById(userId: string) {
             return null;
         }
 
+        // Asegurar que siempre haya permisos por defecto para usuarios normales
+        const defaultPermissions = ['account:view_own', 'account:edit_own'];
+        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0 
+            ? user.permissions 
+            : defaultPermissions;
+
         // Retornar usuario sin contraseña
         return {
             id: user._id.toString(),
@@ -195,7 +207,7 @@ export async function getUserById(userId: string) {
             phone: user.phone,
             address: user.address,
             role: user.role,
-            permissions: user.permissions,
+            permissions: userPermissions,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
         };
@@ -347,13 +359,19 @@ export async function getCurrentUser() {
 export async function createUserSession(user: any) {
     try {
         const cookieStore = await cookies();
+        // Asegurar que siempre haya permisos por defecto para usuarios normales
+        const defaultPermissions = ['account:view_own', 'account:edit_own'];
+        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0 
+            ? user.permissions 
+            : defaultPermissions;
+
         const sessionData = {
             id: user.id,
             userId: user.id,
             email: user.email,
             name: user.name,
             role: user.role,
-            permissions: user.permissions || []
+            permissions: userPermissions
         };
 
         cookieStore.set('auth-token', JSON.stringify(sessionData), {
@@ -481,6 +499,7 @@ export async function getAllUsers(excludeUserId?: string) {
         const users = await usersCollection.find(filter).sort({ createdAt: -1 }).toArray();
 
         // Mapear para no incluir passwords
+        const defaultPermissions = ['account:view_own', 'account:edit_own'];
         return users.map(user => ({
             id: user._id.toString(),
             name: user.name,
@@ -489,7 +508,9 @@ export async function getAllUsers(excludeUserId?: string) {
             phone: user.phone,
             address: user.address,
             role: user.role,
-            permissions: user.permissions || [],
+            permissions: Array.isArray(user.permissions) && user.permissions.length > 0 
+                ? user.permissions 
+                : defaultPermissions,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt
         }));

@@ -244,8 +244,8 @@
         }
       },
       "layout": {
-        "title": "Panel de Administración Barfer",
-        "description": "Accede a las herramientas administrativas de Barfer para gestionar tu negocio de manera eficiente."
+        "title": "Bienvenido a Barfer",
+        "description": "Ingresa para gestionar tu cuenta y realizar pedidos."
       },
       "account": {
         "title": "Gestión de Cuenta",

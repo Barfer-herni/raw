@@ -17,6 +17,7 @@ type Role = typeof ROLES[keyof typeof ROLES];
 
 // Permission-based route access
 const ROUTE_PERMISSIONS: Record<string, string[]> = {
+  '/admin': ['account:view_own'], // Usuarios pueden acceder al admin principal
   '/admin/account': ['account:view_own'], // Todos pueden ver su cuenta
 };
 
@@ -139,7 +140,7 @@ export function middleware(req: NextRequest) {
   const pathnameWithoutLocale = pathname.replace(/^\/[a-z]{2}(?:\/|$)/, '/');
 
   // Always allow public routes
-  if (isPublicRoute(pathnameWithoutLocale)) {
+  if (isPublicRoute(pathnameWithoutLocale) || pathnameWithoutLocale === '/') {
     return securityHeaders();
   }
 
@@ -175,10 +176,10 @@ export function middleware(req: NextRequest) {
   // User is authenticated
   if (userId) {
     // Root path redirect to permission-based dashboard
-    if (pathnameWithoutLocale === '/' || pathnameWithoutLocale === '') {
-      const redirectUrl = getDefaultRedirect(userRole, userPermissions);
-      return NextResponse.redirect(new URL(`/${locale}${redirectUrl}`, req.url));
-    }
+    // if (pathnameWithoutLocale === '/' || pathnameWithoutLocale === '') {
+    //   const redirectUrl = getDefaultRedirect(userRole, userPermissions);
+    //   return NextResponse.redirect(new URL(`/${locale}${redirectUrl}`, req.url));
+    // }
 
     // Check permissions for /admin routes
     if (pathnameWithoutLocale.startsWith('/admin')) {

@@ -72,7 +72,7 @@ export const SignUp = ({ dictionary, error }: SignUpProps) => {
                     <input
                         name="name"
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-1 focus:ring-sky-500 focus:border-sky-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-barfer-green/50 focus:border-barfer-green transition-all duration-200"
                         placeholder={dictionary?.app?.auth?.signUp?.firstName || 'Nombre'}
                         required
                     />
@@ -85,7 +85,7 @@ export const SignUp = ({ dictionary, error }: SignUpProps) => {
                     <input
                         name="lastName"
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-1 focus:ring-sky-500 focus:border-sky-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-barfer-green/50 focus:border-barfer-green transition-all duration-200"
                         placeholder={dictionary?.app?.auth?.signUp?.lastName || 'Apellido'}
                         required
                     />
@@ -98,7 +98,7 @@ export const SignUp = ({ dictionary, error }: SignUpProps) => {
                     <input
                         name="email"
                         type="email"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-1 focus:ring-sky-500 focus:border-sky-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-barfer-green/50 focus:border-barfer-green transition-all duration-200"
                         placeholder="correo@ejemplo.com"
                         required
                     />
@@ -111,7 +111,7 @@ export const SignUp = ({ dictionary, error }: SignUpProps) => {
                     <input
                         name="phone"
                         type="tel"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-1 focus:ring-sky-500 focus:border-sky-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-barfer-green/50 focus:border-barfer-green transition-all duration-200"
                         placeholder="+54 11 1234-5678"
                     />
                 </div>
@@ -123,7 +123,7 @@ export const SignUp = ({ dictionary, error }: SignUpProps) => {
                     <input
                         name="password"
                         type="password"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-1 focus:ring-sky-500 focus:border-sky-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-barfer-green/50 focus:border-barfer-green transition-all duration-200"
                         placeholder="••••••••"
                         required
                     />
@@ -136,7 +136,7 @@ export const SignUp = ({ dictionary, error }: SignUpProps) => {
                     <input
                         name="confirmPassword"
                         type="password"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-1 focus:ring-sky-500 focus:border-sky-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-barfer-green/50 focus:border-barfer-green transition-all duration-200"
                         placeholder="••••••••"
                         required
                     />
@@ -149,7 +149,7 @@ export const SignUp = ({ dictionary, error }: SignUpProps) => {
             <div className="text-center">
                 <Link
                     href="/sign-in"
-                    className="text-sm text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300 transition-colors"
+                    className="text-sm text-barfer-green hover:text-barfer-green/80 dark:text-barfer-green dark:hover:text-barfer-green/80 transition-colors font-medium"
                 >
                     {dictionary?.app?.auth?.signUp?.goToSignIn || '¿Ya tienes cuenta? Inicia sesión'}
                 </Link>
