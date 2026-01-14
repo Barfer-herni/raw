@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { registerUser } from '@repo/auth/server';
 import { Dictionary } from '@repo/internationalization';
 import { SignUpButton } from './SignUpButton';
+import { PasswordInput } from './PasswordInput';
 import Link from 'next/link';
 
 interface SignUpProps {
@@ -116,31 +117,19 @@ export const SignUp = ({ dictionary, error }: SignUpProps) => {
                     />
                 </div>
 
-                <div className="space-y-2">
-                    <label htmlFor="password" className="text-sm font-medium text-gray-900 dark:text-white">
-                        {dictionary?.app?.auth?.signUp?.password || 'Contraseña'}
-                    </label>
-                    <input
-                        name="password"
-                        type="password"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-barfer-green/50 focus:border-barfer-green transition-all duration-200"
-                        placeholder="••••••••"
-                        required
-                    />
-                </div>
+                <PasswordInput
+                    name="password"
+                    label={dictionary?.app?.auth?.signUp?.password || 'Contraseña'}
+                    placeholder="••••••••"
+                    required
+                />
 
-                <div className="space-y-2">
-                    <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-900 dark:text-white">
-                        {dictionary?.app?.auth?.signUp?.confirmPassword || 'Confirmar Contraseña'}
-                    </label>
-                    <input
-                        name="confirmPassword"
-                        type="password"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-barfer-green/50 focus:border-barfer-green transition-all duration-200"
-                        placeholder="••••••••"
-                        required
-                    />
-                </div>
+                <PasswordInput
+                    name="confirmPassword"
+                    label={dictionary?.app?.auth?.signUp?.confirmPassword || 'Confirmar Contraseña'}
+                    placeholder="••••••••"
+                    required
+                />
 
                 <SignUpButton dictionary={dictionary} />
             </form>

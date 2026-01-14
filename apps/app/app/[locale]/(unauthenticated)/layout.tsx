@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import Image from 'next/image';
-import logo from '@/public/logo.png';
+import logo from '@/public/barfer.png';
 import { getDictionary } from '@repo/internationalization';
 
 type AuthLayoutProps = {
@@ -29,8 +29,8 @@ const AuthLayout = async ({ children, params }: AuthLayoutProps) => {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <Link href="/" className="flex items-center gap-3 hover:scale-105 transition-transform duration-300">
-            <Image src={logo} alt="Barfer" width={48} height={48} className="drop-shadow-lg" />
-            <span className="font-bold text-3xl text-gray-900 dark:text-white tracking-tight">Barfer</span>
+            <Image src={logo} alt="Raw and Fun" width={48} height={48} className="drop-shadow-lg" />
+            <span className="font-bold text-3xl text-gray-900 dark:text-white tracking-tight">Raw and Fun</span>
           </Link>
         </div>
 
@@ -47,7 +47,7 @@ const AuthLayout = async ({ children, params }: AuthLayoutProps) => {
 
         {/* Footer links or copyright could go here */}
         <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-          &copy; {new Date().getFullYear()} Barfer. Todos los derechos reservados.
+          &copy; {new Date().getFullYear()} Raw and Fun. Todos los derechos reservados.
         </div>
       </div>
     </div>
