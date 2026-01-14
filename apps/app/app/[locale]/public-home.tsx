@@ -114,6 +114,87 @@ const ANIMAL_PRODUCT_PHOTOS = [
     }
 ];
 
+// Datos de los beneficios
+const BENEFITS_DATA = [
+    {
+        id: 1,
+        title: 'Salud Dental',
+        icon: '🦷',
+        details: [
+            'Estimulación cognitiva y mental',
+            'Reducción de ansiedad y estrés',
+            'Prevención de problemas de comportamiento',
+            'Mejora del estado de ánimo',
+            'Fortalecimiento del vínculo emocional'
+        ]
+    },
+    {
+        id: 2,
+        title: 'Relajación',
+        icon: '😌',
+        details: [
+            'Camas ortopédicas con memoria viscoelástica',
+            'Ambientes tranquilos y confortables',
+            'Reducción del estrés ambiental',
+            'Mejora de la calidad del sueño',
+            'Espacios seguros y acogedores'
+        ]
+    },
+    {
+        id: 3,
+        title: 'Entretenimiento',
+        icon: '🎾',
+        details: [
+            'Juguetes interactivos y educativos',
+            'Actividades físicas y mentales',
+            'Prevención del aburrimiento',
+            'Estimulación de instintos naturales',
+            'Fomento de la socialización'
+        ]
+    },
+    {
+        id: 4,
+        title: '100% Natural',
+        icon: '🌿',
+        details: [
+            'Ingredientes orgánicos certificados',
+            'Materiales biodegradables',
+            'Sin químicos ni conservantes artificiales',
+            'Producción sostenible y responsable',
+            'Seguro para mascotas y medio ambiente'
+        ]
+    }
+];
+
+// Preguntas frecuentes
+const FAQ_DATA = [
+    {
+        id: 1,
+        question: '¿Cómo conservarlos?',
+        answer: 'Para una mayor duración se deben conservar en su envase cerrado en un lugar fresco, seco y sin humedad.'
+    },
+    {
+        id: 2,
+        question: '¿Cuánto demora el envío?',
+        answer: 'Dependerá de la opción de envío seleccionada.'
+    },
+    {
+        id: 3,
+        question: '¿Son aptos para perros y gatos?',
+        answer: 'Los treats sí son aptos para ambos, pero los mordedores son únicamente para perros debido a su tamaño y dureza.'
+    },
+    {
+        id: 4,
+        question: '¿Hacen ventas mayoristas?',
+        answer: 'Para ventas mayoristas comunicarse al: 11 2867-8999'
+    },
+    {
+        id: 5,
+        question: '¿Son 100% naturales?',
+        answer: 'Sí, los productos son solo sometidos a un proceso de deshidratación, no tienen ningún tipo de químicos, conservantes o saborizantes.'
+    }
+];
+
 const SAMPLE_PRODUCTS: Product[] = [
     {
         id: '1',
@@ -456,11 +537,259 @@ export function PublicHome({ locale, dictionary, isAuthenticated }: PublicHomePr
                             </div>
                         </ScrollReveal>
 
-                        {/* ... (Other sections like FriendCarousel - I'm abbreviating to keep it manageable, or user can request more detail. 
-                           I'll omit extra heavy components like FAQ and FriendCarousel for brevity unless requested, 
-                           BUT since the user said "literally the same", I should try to include them if possible. 
-                           I'll include the footer/contact at least effectively.)
-                        */}
+                        {/* Sección de BENEFICIOS */}
+                        <ScrollReveal delay={200}>
+                            <div className="container mx-auto px-4 mb-12">
+                                <div className="text-center mb-8">
+                                    <h2 className="text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-barfer-green to-barfer-orange font-poppins mb-2">
+                                        ✨ BENEFICIOS ✨
+                                    </h2>
+                                    <p className="text-gray-600 text-lg">Todo lo que tu mascota necesita para ser feliz</p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                                    {BENEFITS_DATA.map((benefit) => (
+                                        <div
+                                            key={benefit.id}
+                                            className="border-2 border-barfer-green rounded-2xl overflow-hidden hover:shadow-xl transition-all bg-barfer-white"
+                                        >
+                                            {/* Header del beneficio */}
+                                            <div className="p-6 bg-gradient-to-r from-green-50 to-orange-50 hover:from-green-100 hover:to-orange-100">
+                                                <div className="flex items-center gap-3 justify-center">
+                                                    <span className="text-3xl">{benefit.icon}</span>
+                                                    <h3 className="text-xl font-semibold text-gray-900 text-center">
+                                                        {benefit.title}
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </ScrollReveal>
+
+                        {/* Sección NUESTROS AMIGOS - Animales con Productos */}
+                        <ScrollReveal delay={400}>
+                            <div className="container mx-auto px-4 mb-12">
+                                <div className="text-center mb-8">
+                                    <h2 className="text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-barfer-orange to-barfer-green font-poppins mb-2">
+                                        🐾 NUESTROS AMIGOS 🐾
+                                    </h2>
+                                    <p className="text-gray-600 text-lg">Fotos de nuestros clientes felices</p>
+                                </div>
+
+                                {/* Carrusel de fotos de clientes */}
+                                <FriendCarousel />
+                            </div>
+                        </ScrollReveal>
+
+                        {/* Sección de Preguntas Frecuentes */}
+                        <ScrollReveal delay={600}>
+                            <div className="container mx-auto px-4 mb-12">
+                                <div className="text-center mb-8">
+                                    <h2 className="text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-barfer-green to-barfer-orange font-poppins mb-2">
+                                        ❓ PREGUNTAS FRECUENTES ❓
+                                    </h2>
+                                </div>
+
+                                <div className="w-full space-y-6">
+                                    {FAQ_DATA.map((faq) => (
+                                        <div
+                                            key={faq.id}
+                                            className="border-2 border-barfer-green rounded-2xl overflow-hidden hover:shadow-xl transition-all bg-barfer-white"
+                                        >
+                                            {/* Pregunta */}
+                                            <div
+                                                className="p-6 cursor-pointer bg-gradient-to-r from-green-50 to-orange-50 hover:from-green-100 hover:to-orange-100"
+                                                onClick={() => toggleFAQ(faq.id)}
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <h3 className="text-lg font-semibold text-gray-900 pr-4 leading-tight">
+                                                        {faq.question}
+                                                    </h3>
+                                                    <button className="text-barfer-orange hover:text-orange-600 transition-colors flex-shrink-0">
+                                                        <svg
+                                                            className={`w-6 h-6 transform transition-transform ${expandedFAQ === faq.id ? 'rotate-45' : 'rotate-0'}`}
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Respuesta expandible */}
+                                            {expandedFAQ === faq.id && (
+                                                <div className="p-6 bg-barfer-white border-t border-barfer-green">
+                                                    <p className="text-gray-700 leading-relaxed text-base">
+                                                        {faq.answer}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </ScrollReveal>
+
+                        {/* Formulario de Contacto */}
+                        <ScrollReveal delay={800}>
+                            <div className="container mx-auto px-4 mb-12">
+                                <div className="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8 border-2 border-barfer-green">
+                                    <h3 className="text-3xl font-bold text-center text-barfer-orange mb-6 font-poppins">
+                                        ¿Tenes alguna consulta?
+                                    </h3>
+                                    <p className="text-center text-gray-600 mb-8">
+                                        Estamos aquí para ayudarte. Envíanos tu mensaje y te responderemos lo antes posible.
+                                    </p>
+                                    <form onSubmit={handleContactSubmit} className="space-y-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <input
+                                                type="text"
+                                                name="nombre"
+                                                value={contactForm.nombre}
+                                                onChange={handleContactInputChange}
+                                                placeholder="Tu nombre *"
+                                                required
+                                                className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg"
+                                            />
+                                            <input
+                                                type="email"
+                                                name="email"
+                                                value={contactForm.email}
+                                                onChange={handleContactInputChange}
+                                                placeholder="Tu email *"
+                                                required
+                                                className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg"
+                                            />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            name="asunto"
+                                            value={contactForm.asunto}
+                                            onChange={handleContactInputChange}
+                                            placeholder="Asunto (opcional)"
+                                            className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg"
+                                        />
+                                        <textarea
+                                            name="mensaje"
+                                            value={contactForm.mensaje}
+                                            onChange={handleContactInputChange}
+                                            placeholder="Tu mensaje *"
+                                            rows={4}
+                                            required
+                                            className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-barfer-green focus:bg-green-50 transition-all shadow-md hover:shadow-lg resize-none"
+                                        ></textarea>
+
+                                        {/* Mensaje de estado */}
+                                        {contactStatus.type && (
+                                            <div
+                                                className={`p-4 rounded-xl text-center ${
+                                                    contactStatus.type === 'success'
+                                                        ? 'bg-green-100 text-green-800 border border-green-300'
+                                                        : 'bg-red-100 text-red-800 border border-red-300'
+                                                }`}
+                                            >
+                                                {contactStatus.message}
+                                            </div>
+                                        )}
+
+                                        <button
+                                            type="submit"
+                                            disabled={isSubmittingContact}
+                                            className="w-full bg-barfer-orange hover:bg-orange-600 text-white py-4 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-nunito disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                        >
+                                            {isSubmittingContact ? 'Enviando...' : 'Enviar Mensaje'}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </ScrollReveal>
+
+                        {/* Footer */}
+                        <footer className="bg-gray-900 dark:bg-black text-white mt-16">
+                            <div className="w-full px-6 py-12">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {/* Información de la empresa */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-xl font-bold text-barfer-green">Raw and Fun</h3>
+                                        <p className="text-gray-300 leading-relaxed">
+                                            Los mejores snacks para la salud y felicidad de tu peludo
+                                        </p>
+                                        <div className="flex space-x-4">
+                                            {/* Solo Instagram */}
+                                            <a href="https://www.instagram.com/rw.fun/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-barfer-orange transition-colors">
+                                                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {/* Contacto */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-xl font-bold text-barfer-orange font-poppins">Contacto</h3>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center space-x-3">
+                                                <svg className="w-5 h-5 text-barfer-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                </svg>
+                                                <a href="mailto:rawfun.info@gmail.com" className="text-gray-300 hover:text-white transition-colors">
+                                                    rawfun.info@gmail.com
+                                                </a>
+                                            </div>
+                                            <div className="flex items-center space-x-3">
+                                                <svg className="w-5 h-5 text-barfer-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                </svg>
+                                                <a href="tel:+5411128678999" className="text-gray-300 hover:text-white transition-colors">
+                                                    +54 11-2867-8999
+                                                </a>
+                                            </div>
+                                            <div className="flex items-center space-x-3">
+                                                <svg className="w-5 h-5 text-barfer-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                                <span className="text-gray-300">
+                                                    Buenos Aires, Argentina
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center space-x-3">
+                                                <svg className="w-5 h-5 text-barfer-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <span className="text-gray-300">
+                                                    Lun - Vie: 9:00 - 18:00
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Copyright */}
+                                <div className="mt-12 pt-8 border-t border-gray-800 text-center">
+                                    <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                                        <p className="text-gray-400">
+                                            © 2025 Raw and Fun. Todos los derechos reservados.
+                                        </p>
+                                        <div className="flex space-x-6 text-sm">
+                                            <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                                                Política de Privacidad
+                                            </a>
+                                            <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                                                Términos de Servicio
+                                            </a>
+                                            <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                                                Contacto
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </footer>
                     </div>
 
                     <CartNotification
@@ -470,6 +799,131 @@ export function PublicHome({ locale, dictionary, isAuthenticated }: PublicHomePr
                         onClose={closeNotification}
                     />
                 </main>
+            </div>
+        </div>
+    );
+}
+
+// Componente Carrusel de Amigos
+function FriendCarousel() {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    
+    // Configuración para diferentes pantallas
+    const getVisibleCount = () => {
+        if (typeof window !== 'undefined') {
+            if (window.innerWidth >= 1024) return 3; // Desktop: 3 fotos
+            if (window.innerWidth >= 768) return 2;  // Tablet: 2 fotos
+            return 1; // Mobile: 1 foto
+        }
+        return 3; // Default
+    };
+
+    const [visibleCount, setVisibleCount] = useState(3);
+
+    // Actualizar el número de fotos visibles en resize
+    useEffect(() => {
+        const handleResize = () => {
+            setVisibleCount(getVisibleCount());
+        };
+
+        handleResize(); // Set initial value
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Auto-desplazamiento
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentIndex((prevIndex) => {
+                const maxIndex = ANIMAL_PRODUCT_PHOTOS.length - visibleCount;
+                return prevIndex >= maxIndex ? 0 : prevIndex + 1;
+            });
+        }, 3000); // Cambia cada 3 segundos
+
+        return () => clearInterval(interval);
+    }, [visibleCount]);
+
+    const nextSlide = () => {
+        const maxIndex = ANIMAL_PRODUCT_PHOTOS.length - visibleCount;
+        setCurrentIndex((prevIndex) => (prevIndex >= maxIndex ? 0 : prevIndex + 1));
+    };
+
+    const prevSlide = () => {
+        const maxIndex = ANIMAL_PRODUCT_PHOTOS.length - visibleCount;
+        setCurrentIndex((prevIndex) => (prevIndex <= 0 ? maxIndex : prevIndex - 1));
+    };
+
+    return (
+        <div className="relative max-w-6xl mx-auto">
+            {/* Contenedor del carrusel */}
+            <div className="overflow-hidden rounded-xl">
+                <div 
+                    className="flex transition-transform duration-500 ease-in-out"
+                    style={{ 
+                        transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
+                        width: `${(ANIMAL_PRODUCT_PHOTOS.length / visibleCount) * 100}%`
+                    }}
+                >
+                    {ANIMAL_PRODUCT_PHOTOS.map((photo) => (
+                        <div
+                            key={photo.id}
+                            className="flex-shrink-0 px-2"
+                            style={{ width: `${100 / ANIMAL_PRODUCT_PHOTOS.length}%` }}
+                        >
+                            <div className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                <img
+                                    src={photo.src}
+                                    alt={photo.alt}
+                                    className="w-full h-48 md:h-56 lg:h-64 object-cover group-hover:scale-110 transition-transform duration-300"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div className="absolute bottom-3 left-3 right-3">
+                                        <p className="text-white text-sm md:text-base font-medium truncate">
+                                            {photo.animal}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Botones de navegación */}
+            <button
+                onClick={prevSlide}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-barfer-orange p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-10"
+                aria-label="Foto anterior"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            
+            <button
+                onClick={nextSlide}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-barfer-orange p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-10"
+                aria-label="Siguiente foto"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+
+            {/* Indicadores */}
+            <div className="flex justify-center mt-6 space-x-2">
+                {Array.from({ length: Math.ceil(ANIMAL_PRODUCT_PHOTOS.length / visibleCount) }).map((_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => setCurrentIndex(index)}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                            index === currentIndex 
+                                ? 'bg-barfer-orange scale-125' 
+                                : 'bg-gray-300 hover:bg-gray-400'
+                        }`}
+                        aria-label={`Ir a grupo ${index + 1}`}
+                    />
+                ))}
             </div>
         </div>
     );
