@@ -19,6 +19,9 @@ type Role = typeof ROLES[keyof typeof ROLES];
 const ROUTE_PERMISSIONS: Record<string, string[]> = {
   '/admin': ['account:view_own'], // Usuarios pueden acceder al admin principal
   '/admin/account': ['account:view_own'], // Todos pueden ver su cuenta
+  '/admin/productos': ['products:view'], // Ver listado de productos
+  '/admin/producto': ['products:view'], // Ver detalle de producto (incluye /admin/producto/[id])
+  '/admin/checkout': ['cart:checkout'], // Acceder al checkout
 };
 
 // Role configuration with route permissions
@@ -82,11 +85,19 @@ const hasAccessToRoute = (pathname: string, userRole: Role, userPermissions: str
   // Admins always have access
   if (userRole === ROLES.ADMIN) return true;
 
-  // Check if the specific route requires permissions
+  // Check if the specific route requires permissions (exact match first)
   const routePermissions = ROUTE_PERMISSIONS[pathname];
   if (routePermissions) {
     // Check if user has at least one of the required permissions
     return routePermissions.some(permission => userPermissions.includes(permission));
+  }
+
+  // Check for prefix matches (for dynamic routes like /admin/producto/[id])
+  for (const [route, permissions] of Object.entries(ROUTE_PERMISSIONS)) {
+    if (pathname.startsWith(route + '/')) {
+      // Check if user has at least one of the required permissions
+      return permissions.some(permission => userPermissions.includes(permission));
+    }
   }
 
   // Para rutas /admin/* que NO están en ROUTE_PERMISSIONS, DENEGAR acceso

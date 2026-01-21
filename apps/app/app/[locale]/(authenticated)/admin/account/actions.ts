@@ -3,11 +3,14 @@
 import { revalidatePath } from 'next/cache';
 import {
     changePassword as changePasswordService,
-    createUser as createUserService,
-    deleteUser as deleteUserService,
-    updateUser as updateUserService,
 } from '@repo/auth/server';
-import { getAllCategorias } from '@repo/data-services';
+import { 
+    getAllCategorias 
+} from '@repo/data-services';
+// Importar directamente desde el archivo del servicio
+import { createGestorUser, updateGestorUser, deleteGestorUser } from '@repo/data-services/src/services/gestorUsersService';
+// Importar funciones de MongoDB para actualizar perfil de usuario
+import { updateUserProfile } from '@repo/data-services/src/services/authService';
 import { z } from 'zod';
 import type { UserRole } from '@repo/database';
 import { hasPermission } from '@repo/auth/server-permissions';
@@ -56,11 +59,17 @@ export async function updateProfile(userId: string, formData: FormData) {
             return { success: false, message: validated.error.errors[0].message };
         }
 
-        await updateUserService(userId, { ...validated.data, password: '' });
+        // Actualizar perfil usando el servicio de MongoDB
+        const result = await updateUserProfile(userId, validated.data);
+
+        if (!result.success) {
+            return { success: false, message: result.message || 'Error al actualizar el perfil' };
+        }
 
         revalidatePath('/admin/account');
         return { success: true, message: 'Perfil actualizado exitosamente' };
     } catch (error) {
+        console.error('Error al actualizar perfil:', error);
         return { success: false, message: 'Error al actualizar el perfil' };
     }
 }
@@ -102,6 +111,11 @@ export async function createUser(formData: FormData) {
             return { success: false, message: 'No tienes permisos para crear usuarios.' };
         }
 
+        const currentUser = await getCurrentUser();
+        if (!currentUser) {
+            return { success: false, message: 'No se pudo obtener el usuario actual.' };
+        }
+
         const data = {
             name: formData.get('name'),
             lastName: formData.get('lastName'),
@@ -119,17 +133,24 @@ export async function createUser(formData: FormData) {
             return { success: false, message: "La contraseña es requerida para nuevos usuarios." };
         }
 
-        const result = await createUserService({ ...validated.data, role: validated.data.role as UserRole, password: validated.data.password });
+        // Crear usuario en la tabla users_gestor (usuarios creados por admin)
+        const result = await createGestorUser({ 
+            ...validated.data, 
+            role: validated.data.role as UserRole, 
+            password: validated.data.password,
+            createdBy: currentUser.id
+        });
 
         if (!result.success) {
-            return { success: false, message: result.message || 'Error al crear el usuario' };
+            return { success: false, message: result.message || 'Error al crear el usuario de gestión' };
         }
 
         revalidatePath('/admin/account');
-        return { success: true, message: 'Usuario creado exitosamente' };
+        return { success: true, message: 'Usuario de gestión creado exitosamente' };
 
     } catch (error) {
-        return { success: false, message: 'Error al crear el usuario' };
+        console.error('Error al crear usuario de gestión:', error);
+        return { success: false, message: 'Error al crear el usuario de gestión' };
     }
 }
 
@@ -153,13 +174,22 @@ export async function updateUser(userId: string, formData: FormData) {
             return { success: false, message: validated.error.errors[0].message };
         }
 
-        await updateUserService(userId, { ...validated.data, role: validated.data.role as UserRole, password: validated.data.password || '' });
+        // Actualizar usuario en la tabla users_gestor
+        const result = await updateGestorUser(userId, { 
+            ...validated.data, 
+            role: validated.data.role as UserRole 
+        });
+
+        if (!result.success) {
+            return { success: false, message: result.message || 'Error al actualizar el usuario de gestión' };
+        }
 
         revalidatePath('/admin/account');
-        return { success: true, message: 'Usuario actualizado exitosamente' };
+        return { success: true, message: 'Usuario de gestión actualizado exitosamente' };
 
     } catch (error) {
-        return { success: false, message: 'Error al actualizar el usuario' };
+        console.error('Error al actualizar usuario de gestión:', error);
+        return { success: false, message: 'Error al actualizar el usuario de gestión' };
     }
 }
 
@@ -222,12 +252,19 @@ export async function deleteUser(userId: string) {
             return { success: false, message: 'No tienes permisos para eliminar usuarios.' };
         }
 
-        await deleteUserService(userId);
+        // Eliminar usuario de la tabla users_gestor
+        const result = await deleteGestorUser(userId);
+        
+        if (!result.success) {
+            return { success: false, message: result.message || 'Error al eliminar el usuario de gestión' };
+        }
+
         revalidatePath('/admin/account');
-        return { success: true, message: 'Usuario eliminado exitosamente' };
+        return { success: true, message: 'Usuario de gestión eliminado exitosamente' };
 
     } catch (error) {
-        return { success: false, message: 'Error al eliminar el usuario' };
+        console.error('Error al eliminar usuario de gestión:', error);
+        return { success: false, message: 'Error al eliminar el usuario de gestión' };
     }
 }
 
@@ -269,7 +306,16 @@ export async function updateDeliveryInfo(userId: string, formData: FormData) {
             address: addressData
         };
 
-        await updateUserService(userId, updateData);
+        // Actualizar usando el servicio de MongoDB (busca en ambas tablas)
+        const result = await updateUserProfile(userId, updateData);
+        
+        if (!result.success) {
+            return { 
+                success: false, 
+                message: result.message || 'Error al actualizar la información de entrega' 
+            };
+        }
+
         revalidatePath('/admin/account');
         
         return { 

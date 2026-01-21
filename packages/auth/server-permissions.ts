@@ -51,6 +51,12 @@ export type Permission =
     // Permisos dinámicos por categoría (se generan automáticamente)
     | 'outputs:view_all_categories'
     | `outputs:view_category:${string}`
+    // Products/Productos
+    | 'products:view'
+    | 'products:purchase'
+    // Cart/Carrito
+    | 'cart:view'
+    | 'cart:checkout'
 
 // Permisos por defecto para admins (siempre tienen todos)
 export const ADMIN_PERMISSIONS: Permission[] = [
@@ -85,6 +91,10 @@ export const ADMIN_PERMISSIONS: Permission[] = [
     'outputs:delete',
     'outputs:view_statistics',
     'outputs:view_all_categories',
+    'products:view',
+    'products:purchase',
+    'cart:view',
+    'cart:checkout',
 ];
 
 /**

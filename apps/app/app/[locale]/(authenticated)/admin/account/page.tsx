@@ -1,5 +1,4 @@
 import { getCurrentUser } from '@repo/auth/server';
-import { getAllUsers } from '@repo/auth/server';
 import { getDictionary } from '@repo/internationalization';
 import { hasPermission, requirePermission } from '@repo/auth/server-permissions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/design-system/components/ui/tabs';
@@ -8,6 +7,8 @@ import { PasswordSection } from './components/PasswordSection';
 import { DeliveryInfoSection } from './components/DeliveryInfoSection';
 import { UsersSection } from './components/UsersSection';
 import { CategoryPermissionsManager } from './components/CategoryPermissionsManager';
+// Importar directamente desde el archivo del servicio
+import { getAllGestorUsers } from '@repo/data-services/src/services/gestorUsersService';
 
 interface AccountPageProps {
     params: Promise<{ locale: string }>;
@@ -36,7 +37,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
 
     // Verificar si puede gestionar usuarios para obtener la lista
     const canManageUsers = await hasPermission('account:manage_users');
-    const users = canManageUsers ? await getAllUsers(currentUser.id) : []; // Excluir al usuario actual
+    const users = canManageUsers ? await getAllGestorUsers(currentUser.id) : []; // Solo usuarios de gestión (users_gestor)
 
     return (
         <div className="space-y-6 p-4 md:p-6">

@@ -25,6 +25,19 @@ export {
     type UpdateProfileData as MongoUpdateProfileData
 } from './authService';
 
+// Gestor Users Service (MongoDB) - usuarios de gestión creados por admin
+export {
+    createGestorUser,
+    getAllGestorUsers,
+    getGestorUserById,
+    getGestorUserByEmail,
+    updateGestorUser,
+    deleteGestorUser,
+    getAllUsersIncludingGestor,
+    type GestorUser,
+    type CreateGestorUserData
+} from './gestorUsersService';
+
 // User Service (PostgreSQL/Prisma) - main user service
 export {
     createUser,

@@ -82,7 +82,14 @@ export async function registerUser(data: RegisterData) {
             password: hashedPassword,
             phone: data.phone,
             role: 'user',
-            permissions: ['account:view_own', 'account:edit_own'],
+            permissions: [
+                'account:view_own',
+                'account:edit_own',
+                'products:view',
+                'products:purchase',
+                'cart:view',
+                'cart:checkout',
+            ],
             createdAt: new Date(),
             updatedAt: new Date(),
         };
@@ -120,9 +127,15 @@ export async function registerUser(data: RegisterData) {
 export async function loginUser(data: LoginData) {
     try {
         const usersCollection = await getCollection('users');
+        const gestorUsersCollection = await getCollection('users_gestor');
 
-        // Buscar usuario por email
-        const user = await usersCollection.findOne({ email: data.email });
+        // Buscar usuario por email en ambas tablas
+        const [regularUser, gestorUser] = await Promise.all([
+            usersCollection.findOne({ email: data.email }),
+            gestorUsersCollection.findOne({ email: data.email })
+        ]);
+
+        const user = regularUser || gestorUser;
 
         if (!user) {
             return {
@@ -344,9 +357,40 @@ export async function getCurrentUser() {
             return null;
         }
 
-        // Obtener el usuario de la base de datos
-        const user = await getUserById(sessionData.userId);
-        return user;
+        // Obtener el usuario de la base de datos (buscar en ambas tablas)
+        const usersCollection = await getCollection('users');
+        const gestorUsersCollection = await getCollection('users_gestor');
+
+        const [regularUser, gestorUser] = await Promise.all([
+            usersCollection.findOne({ _id: new ObjectId(sessionData.userId) }),
+            gestorUsersCollection.findOne({ _id: new ObjectId(sessionData.userId) })
+        ]);
+
+        const user = regularUser || gestorUser;
+
+        if (!user) {
+            return null;
+        }
+
+        // Asegurar que siempre haya permisos por defecto para usuarios normales
+        const defaultPermissions = ['account:view_own', 'account:edit_own'];
+        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0 
+            ? user.permissions 
+            : defaultPermissions;
+
+        // Retornar usuario sin contraseña
+        return {
+            id: user._id.toString(),
+            name: user.name,
+            lastName: user.lastName,
+            email: user.email,
+            phone: user.phone,
+            address: user.address,
+            role: user.role,
+            permissions: userPermissions,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+        };
     } catch (error) {
         console.error('Error al obtener usuario actual:', error);
         return null;
