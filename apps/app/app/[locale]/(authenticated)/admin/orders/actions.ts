@@ -11,7 +11,7 @@ import type { Order } from '@repo/data-services/src/types/barfer';
 export async function getAllOrdersAction() {
     try {
         await requireAdmin();
-        
+
         const orders = await getAllOrders({
             sorting: [{ id: 'createdAt', desc: true }],
             limit: 1000 // Límite para evitar problemas de rendimiento
@@ -62,7 +62,7 @@ export async function deleteOrderAction(orderId: string) {
         await requireAdmin();
 
         const result = await deleteOrder(orderId);
-        
+
         if (!result.success) {
             return {
                 success: false,
@@ -97,9 +97,9 @@ export async function duplicateOrderAction(orderId: string) {
             sorting: [{ id: 'createdAt', desc: true }],
             limit: 1000
         });
-        
+
         const originalOrder = orders.find(order => order._id === orderId);
-        
+
         if (!originalOrder) {
             return {
                 success: false,
@@ -109,7 +109,7 @@ export async function duplicateOrderAction(orderId: string) {
 
         // Crear una copia de la orden sin el _id y actualizando timestamps
         const { _id, createdAt, updatedAt, ...orderData } = originalOrder;
-        
+
         // Crear la nueva orden duplicada con valores por defecto para campos opcionales
         const newOrderData = {
             ...orderData,
@@ -132,7 +132,7 @@ export async function duplicateOrderAction(orderId: string) {
         };
 
         const result = await createOrder(newOrderData as any);
-        
+
         if (!result.success) {
             return {
                 success: false,
@@ -156,3 +156,53 @@ export async function duplicateOrderAction(orderId: string) {
     }
 }
 
+
+/**
+ * Crea una nueva orden manualmente (solo para admins)
+ */
+export async function createOrderAction(data: any) {
+    try {
+        await requireAdmin();
+
+        // Asegurar campos mínimos requeridos que podrían faltar en la creación manual
+        const orderData = {
+            ...data,
+            deliveryArea: data.deliveryArea || {
+                _id: 'manual',
+                description: 'Venta Manual',
+                coordinates: [],
+                schedule: '09:00-18:00',
+                orderCutOffHour: 12,
+                enabled: true,
+                sameDayDelivery: false,
+                sameDayDeliveryDays: [],
+                whatsappNumber: '',
+                sheetName: '',
+            },
+            deliveryDay: data.deliveryDay || new Date(),
+        };
+
+        const result = await createOrder(orderData);
+
+        if (!result.success) {
+            return {
+                success: false,
+                message: result.error || 'Error al crear la orden'
+            };
+        }
+
+        revalidatePath('/admin/orders');
+
+        return {
+            success: true,
+            message: 'Orden creada exitosamente',
+            order: result.order
+        };
+    } catch (error) {
+        console.error('Error creating order:', error);
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : 'Error al crear la orden'
+        };
+    }
+}

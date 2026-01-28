@@ -5,11 +5,12 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { Input } from '@repo/design-system/components/ui/input';
 import { Button } from '@repo/design-system/components/ui/button';
-import { updateOrderAction, deleteOrderAction, duplicateOrderAction } from '../actions';
+import { updateOrderAction, deleteOrderAction, duplicateOrderAction, createOrderAction } from '../actions';
 import { getAllProductsAction, type AdminProduct } from '@repo/data-services/src/actions';
 import { DateRangeFilter } from './DateRangeFilter';
 import { OrderTypeFilter } from './OrderTypeFilter';
-import { Search } from 'lucide-react';
+import { ManualOrderModal } from './ManualOrderModal';
+import { Search, Plus } from 'lucide-react';
 
 import type { DataTableProps, EditValues } from '../types';
 import { OrdersTable } from './OrdersTable';
@@ -29,6 +30,7 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
     const searchParams = useSearchParams();
 
     // Estado local
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingRowId, setEditingRowId] = useState<string | null>(null);
     const [editValues, setEditValues] = useState<EditValues>({
         status: 'pending',
@@ -124,9 +126,9 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
     const handleEditClick = async (row: any) => {
         const order = row.original;
         setEditingRowId(row.id);
-        
+
         const orderType = order.orderType || 'minorista';
-        
+
         // Map items and ensure prices are correct based on orderType
         const mappedProducts = order.items?.map((item: any) => {
             const product = products.find(p => p._id === item.id);
@@ -141,7 +143,7 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
                 price: price,
             };
         }) || [];
-        
+
         // Inicializar valores de edición con los datos actuales
         setEditValues({
             status: order.status || 'pending',
@@ -168,7 +170,7 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
         setEditingRowId(null);
         setEditValues({
             status: 'pending',
-            paymentMethod: '',
+            paymentMethod: 'Transferencia',
             orderType: 'minorista',
             userName: '',
             userLastName: '',
@@ -190,7 +192,7 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
     const handleEditValueChange = (field: string, value: any) => {
         setEditValues((prev) => {
             const newValues = { ...prev, [field]: value };
-            
+
             // If orderType changes, recalculate all product prices
             if (field === 'orderType') {
                 const updatedProducts = newValues.selectedProducts.map((productItem: any) => {
@@ -204,27 +206,27 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
                     return productItem;
                 });
                 newValues.selectedProducts = updatedProducts;
-                
+
                 // Recalculate subtotal and total
-                const newSubTotal = updatedProducts.reduce((sum: number, item: any) => 
+                const newSubTotal = updatedProducts.reduce((sum: number, item: any) =>
                     sum + (item.price * item.quantity), 0);
                 newValues.subTotal = newSubTotal;
                 newValues.total = newSubTotal + newValues.shippingPrice;
             }
-            
+
             // If selectedProducts changes (quantity or product), recalculate subtotal and total
             if (field === 'selectedProducts') {
-                const newSubTotal = value.reduce((sum: number, item: any) => 
+                const newSubTotal = value.reduce((sum: number, item: any) =>
                     sum + (item.price * item.quantity), 0);
                 newValues.subTotal = newSubTotal;
                 newValues.total = newSubTotal + newValues.shippingPrice;
             }
-            
+
             // If shippingPrice changes, recalculate total
             if (field === 'shippingPrice') {
                 newValues.total = newValues.subTotal + value;
             }
-            
+
             return newValues;
         });
     };
@@ -276,8 +278,13 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
                 items: updatedItems,
             };
 
-            const result = await updateOrderAction(row.id, updateData as any);
-            
+            let result;
+            if (editingRowId === 'new') {
+                result = await createOrderAction(updateData);
+            } else {
+                result = await updateOrderAction(row.id, updateData as any);
+            }
+
             if (!result.success) {
                 throw new Error(result.message || 'Error al guardar');
             }
@@ -319,7 +326,7 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
             if (!result.success) {
                 throw new Error(result.message || 'Error al duplicar');
             }
-            
+
             alert(`✅ Orden duplicada exitosamente. Nueva orden ID: ${result.orderId}`);
             router.refresh();
         } catch (e) {
@@ -358,6 +365,15 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
                         <DateRangeFilter />
                         <OrderTypeFilter />
                     </div>
+                    <div className="flex-1 flex justify-end">
+                        <Button
+                            onClick={() => setIsModalOpen(true)}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Agregar Orden
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -382,6 +398,15 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
                 onEditValueChange={handleEditValueChange}
                 onPaginationChange={navigateToPagination}
                 onSortingChange={navigateToSorting}
+            />
+
+            <ManualOrderModal
+                open={isModalOpen}
+                onOpenChange={setIsModalOpen}
+                products={products}
+                onSuccess={() => {
+                    router.refresh();
+                }}
             />
         </div>
     );

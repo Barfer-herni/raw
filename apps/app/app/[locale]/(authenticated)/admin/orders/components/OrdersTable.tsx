@@ -92,7 +92,7 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
     const renderEditableCell = (columnId: string, original: any, editValues: any, onChange: any, products: any[]) => {
         // Normalizar columnId para manejar variaciones
         const normalizedId = columnId.replace(/_/g, '.');
-        
+
         switch (normalizedId) {
             case 'orderType':
                 return (
@@ -176,7 +176,7 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                                             const newProducts = [...editValues.selectedProducts];
                                             const selectedProduct = products.find(p => p._id === value);
                                             // Use the correct price based on orderType
-                                            const price = editValues.orderType === 'mayorista' 
+                                            const price = editValues.orderType === 'mayorista'
                                                 ? (selectedProduct?.precioMayorista || 0)
                                                 : (selectedProduct?.precioMinorista || 0);
                                             newProducts[idx] = {
@@ -234,10 +234,10 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                                 const price = editValues.orderType === 'mayorista'
                                     ? (firstProduct?.precioMayorista || 0)
                                     : (firstProduct?.precioMinorista || 0);
-                                const newProducts = [...(editValues.selectedProducts || []), { 
-                                    productId: firstProduct?._id || '', 
-                                    quantity: 1, 
-                                    price: price 
+                                const newProducts = [...(editValues.selectedProducts || []), {
+                                    productId: firstProduct?._id || '',
+                                    quantity: 1,
+                                    price: price
                                 }];
                                 onChange('selectedProducts', newProducts);
                             }}
@@ -297,7 +297,7 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                                 ${editValues.subTotal?.toFixed(2) || '0.00'}
                             </div>
                         </div>
-                        
+
                         {/* Costo de envío (editable) */}
                         <div className="bg-orange-50 dark:bg-orange-900/20 p-1 rounded">
                             <div className="text-[8px] text-muted-foreground uppercase mb-0.5">Envío</div>
@@ -309,7 +309,7 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                                 className="h-6 text-[10px] p-1 bg-white dark:bg-gray-800"
                             />
                         </div>
-                        
+
                         {/* Total final */}
                         <div className="bg-green-100 dark:bg-green-900/30 p-1 rounded border border-green-300 dark:border-green-700">
                             <div className="text-[8px] text-muted-foreground uppercase">Total Final</div>
@@ -337,7 +337,7 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
             default:
                 // Para cualquier columna no reconocida, intentar mostrar el valor actual
                 console.log('Columna no reconocida:', normalizedId, 'ColumnId original:', columnId);
-                
+
                 // Intentar extraer el valor del original usando el columnId
                 const keys = normalizedId.split('.');
                 let value = original;
@@ -346,7 +346,7 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                         value = value[key];
                     }
                 }
-                
+
                 return (
                     <div className="text-[10px] text-muted-foreground italic">
                         {typeof value === 'string' || typeof value === 'number' ? value : '-'}
@@ -386,9 +386,9 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => {
                                 const highlight = shouldHighlightRow(row);
-                                const rowClass = 
+                                const rowClass =
                                     highlight === 'green' ? 'bg-green-50 dark:bg-green-900/20' :
-                                    highlight === 'blue' ? 'bg-blue-50 dark:bg-blue-900/20' : '';
+                                        highlight === 'blue' ? 'bg-blue-50 dark:bg-blue-900/20' : '';
 
                                 const isEditing = editingRowId === row.id;
 
@@ -407,7 +407,7 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                                             if (isEditing) {
                                                 // Intentar obtener el accessorKey o usar el id de la columna
                                                 const columnIdentifier = (cell.column.columnDef as any).accessorKey || cell.column.id;
-                                                
+
                                                 return (
                                                     <TableCell
                                                         key={cell.id}

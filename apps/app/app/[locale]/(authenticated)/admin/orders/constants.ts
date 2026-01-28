@@ -27,10 +27,7 @@ export const STATUS_OPTIONS = [
 
 // Opciones de método de pago
 export const PAYMENT_METHOD_OPTIONS = [
-    { value: 'Efectivo', label: 'Efectivo' },
     { value: 'Transferencia', label: 'Transferencia' },
-    { value: 'Tarjeta de Crédito', label: 'Tarjeta de Crédito' },
-    { value: 'Tarjeta de Débito', label: 'Tarjeta de Débito' },
     { value: 'Mercado Pago', label: 'Mercado Pago' },
 ];
 

@@ -6,9 +6,9 @@ import type { Order } from '../../types/barfer';
 
 const createOrderSchema = z.object({
     status: z.enum(['pending', 'confirmed', 'delivered', 'cancelled']).default('pending'),
-    total: z.number().positive(),
-    subTotal: z.number().min(0).optional().default(0),
-    shippingPrice: z.number().min(0).optional().default(0),
+    total: z.coerce.number().positive(),
+    subTotal: z.coerce.number().min(0).optional().default(0),
+    shippingPrice: z.coerce.number().min(0).optional().default(0),
     notes: z.string().optional(),
     notesOwn: z.string().optional(),
     paymentMethod: z.string(),
@@ -33,10 +33,10 @@ const createOrderSchema = z.object({
         images: z.array(z.string()).optional(),
         options: z.array(z.object({
             name: z.string(),
-            price: z.number(),
-            quantity: z.number().positive(),
+            price: z.coerce.number(),
+            quantity: z.coerce.number().positive(),
         })),
-        price: z.number(),
+        price: z.coerce.number(),
         salesCount: z.number().optional(),
         discountApllied: z.number().optional(),
     })),
