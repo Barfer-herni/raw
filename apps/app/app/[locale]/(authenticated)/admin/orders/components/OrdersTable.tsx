@@ -6,7 +6,9 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
-import { Pencil, Save, Trash2, X, Copy, Plus } from 'lucide-react';
+import { Pencil, Save, Trash2, X, Copy, Plus, CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 import {
     Table,
@@ -20,6 +22,9 @@ import { Button } from '@repo/design-system/components/ui/button';
 import { Input } from '@repo/design-system/components/ui/input';
 import { Textarea } from '@repo/design-system/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/design-system/components/ui/select';
+import { Calendar } from '@repo/design-system/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@repo/design-system/components/ui/popover';
+import { cn } from '@repo/design-system/lib/utils';
 
 import { shouldHighlightRow, getDateCellBackgroundColor, getStatusCellBackgroundColor } from '../helpers';
 import { STATUS_OPTIONS, PAYMENT_METHOD_OPTIONS, ORDER_TYPE_OPTIONS } from '../constants';
@@ -330,9 +335,37 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                     />
                 );
 
-            case 'createdAt':
-                // La fecha no es editable
-                return <div className="text-[10px]">{original.createdAt ? new Date(original.createdAt).toLocaleDateString() : 'N/A'}</div>;
+            case 'deliveryDay':
+            case 'createdAt': // Fallback si la columna se llama createdAt pero queremos editar deliveryDay
+                return (
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                className={cn(
+                                    "w-[140px] justify-start text-left font-normal h-8 text-[10px] px-2",
+                                    !editValues.deliveryDay && "text-muted-foreground"
+                                )}
+                            >
+                                <CalendarIcon className="mr-2 h-3 w-3" />
+                                {editValues.deliveryDay ? (
+                                    format(editValues.deliveryDay, "dd-MMM", { locale: es })
+                                ) : (
+                                    <span>Fecha</span>
+                                )}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                                mode="single"
+                                selected={editValues.deliveryDay}
+                                onSelect={(date) => onChange('deliveryDay', date || new Date())}
+                                initialFocus
+                                locale={es}
+                            />
+                        </PopoverContent>
+                    </Popover>
+                );
 
             default:
                 // Para cualquier columna no reconocida, intentar mostrar el valor actual

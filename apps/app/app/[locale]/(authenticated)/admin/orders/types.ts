@@ -28,6 +28,7 @@ export interface EditValues {
     subTotal: number;
     shippingPrice: number;
     total: number;
+    deliveryDay?: Date;
     selectedProducts: Array<{ productId: string; quantity: number; price: number }>;
 }
 

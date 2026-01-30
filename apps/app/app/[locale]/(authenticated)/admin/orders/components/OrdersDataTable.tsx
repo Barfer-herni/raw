@@ -162,6 +162,7 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
             subTotal: order.subTotal || 0,
             shippingPrice: order.shippingPrice || 0,
             total: order.total || 0,
+            deliveryDay: order.deliveryDay ? new Date(order.deliveryDay) : new Date(order.createdAt),
             selectedProducts: mappedProducts,
         });
     };
@@ -264,6 +265,7 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
                 total: editValues.total,
                 subTotal: editValues.subTotal,
                 shippingPrice: editValues.shippingPrice,
+                deliveryDay: editValues.deliveryDay, // Incluir fecha de entrega
                 user: {
                     name: editValues.userName,
                     lastName: editValues.userLastName,

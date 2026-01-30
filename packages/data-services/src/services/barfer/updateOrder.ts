@@ -37,7 +37,12 @@ function normalizeDeliveryDay(dateInput: string | Date | { $date: string }): Dat
     else if (dateInput instanceof Date) {
         date = dateInput;
     } else {
-        // Si es string, parsear
+        // Si es string formato YYYY-MM-DD, parsear manualmente para evitar problemas de zona horaria
+        if (typeof dateInput === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+            const [year, month, day] = dateInput.split('-').map(Number);
+            return new Date(year, month - 1, day);
+        }
+        // Si es otro tipo de string, parsear normal
         date = new Date(dateInput);
     }
 

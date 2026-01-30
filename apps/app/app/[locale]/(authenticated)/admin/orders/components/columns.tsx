@@ -115,7 +115,7 @@ export const columns: ColumnDef<Order>[] = [
 
             return (
                 <div className="min-w-[150px] text-[10px] whitespace-normal break-words">
-                    {items.slice(0, 1).map((item, index) => {
+                    {items.map((item, index) => {
                         const option = item.options?.[0] as any;
                         const quantity = option?.quantity || 1;
 
@@ -125,11 +125,6 @@ export const columns: ColumnDef<Order>[] = [
                             </div>
                         );
                     })}
-                    {items.length > 1 && (
-                        <div className="text-[9px] text-muted-foreground">
-                            +{items.length - 1} más
-                        </div>
-                    )}
                 </div>
             );
         },
