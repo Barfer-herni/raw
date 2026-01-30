@@ -26,16 +26,19 @@ export const columns: ColumnDef<Order>[] = [
         size: 60,
     },
     {
-        accessorKey: 'createdAt',
+        accessorKey: 'deliveryDay',
         header: 'Fecha',
         enableSorting: true,
         cell: ({ row }: CellContext<Order, unknown>) => {
-            const createdAt = row.original.createdAt;
-            if (!createdAt) {
+            // Priorizamos deliveryDay, si no existe usamos createdAt
+            // Nota: En la definición de tipo Order, deliveryDay puede ser string o Date
+            const dateToUse = row.original.deliveryDay || row.original.createdAt;
+
+            if (!dateToUse) {
                 return <div className="w-full text-center text-[10px]">--</div>;
             }
 
-            const date = new Date(createdAt);
+            const date = new Date(dateToUse);
             const formatted = format(date, 'dd-MMM', { locale: es });
 
             // Colores por día de la semana
@@ -58,7 +61,7 @@ export const columns: ColumnDef<Order>[] = [
         cell: ({ row }: CellContext<Order, unknown>) => {
             const user = row.original.user;
             if (!user) return <div className="text-[10px]">N/A</div>;
-            
+
             return (
                 <div className="min-w-[100px] text-[10px] whitespace-normal break-words">
                     <div className="font-medium">{user.name} {user.lastName || ''}</div>
@@ -78,7 +81,7 @@ export const columns: ColumnDef<Order>[] = [
         cell: ({ row }: CellContext<Order, unknown>) => {
             const address = row.original.address;
             if (!address) return <div className="text-[10px]">N/A</div>;
-            
+
             return (
                 <div className="min-w-[130px] text-[10px] whitespace-normal break-words">
                     <div className="truncate" title={address.address}>{address.address || 'N/A'}</div>
@@ -109,13 +112,13 @@ export const columns: ColumnDef<Order>[] = [
             if (!items || items.length === 0) {
                 return <div className="text-[10px]">Sin productos</div>;
             }
-            
+
             return (
                 <div className="min-w-[150px] text-[10px] whitespace-normal break-words">
                     {items.slice(0, 1).map((item, index) => {
                         const option = item.options?.[0] as any;
                         const quantity = option?.quantity || 1;
-                        
+
                         return (
                             <div key={`${item.id}-${index}`} className="truncate" title={item.name}>
                                 • {item.name} (x{quantity})
@@ -154,7 +157,7 @@ export const columns: ColumnDef<Order>[] = [
         cell: ({ row }: CellContext<Order, unknown>) => {
             const status = row.getValue('status') as Order['status'];
             const translatedStatus = STATUS_TRANSLATIONS[status] || status || 'Sin estado';
-            
+
             let variant: 'default' | 'secondary' | 'destructive' | 'outline' = 'secondary';
             if (status === 'confirmed') variant = 'default';
             if (status === 'delivered') variant = 'outline';
@@ -178,7 +181,7 @@ export const columns: ColumnDef<Order>[] = [
             const subTotal = order.subTotal || 0;
             const shippingPrice = order.shippingPrice || 0;
             const total = parseFloat(row.getValue('total') as string);
-            
+
             const formatCurrency = (amount: number) => {
                 return new Intl.NumberFormat('es-AR', {
                     style: 'currency',
@@ -187,7 +190,7 @@ export const columns: ColumnDef<Order>[] = [
                     maximumFractionDigits: 0,
                 }).format(amount);
             };
-            
+
             return (
                 <div className="min-w-[110px] text-[10px] space-y-0.5">
                     {/* Subtotal de productos */}
@@ -195,7 +198,7 @@ export const columns: ColumnDef<Order>[] = [
                         <span className="text-[8px] text-muted-foreground">Prod:</span>
                         <span className="font-medium">{formatCurrency(subTotal)}</span>
                     </div>
-                    
+
                     {/* Costo de envío */}
                     {shippingPrice > 0 && (
                         <div className="flex justify-between items-center bg-orange-50 dark:bg-orange-900/20 px-1 py-0.5 rounded">
@@ -203,7 +206,7 @@ export const columns: ColumnDef<Order>[] = [
                             <span className="font-medium">{formatCurrency(shippingPrice)}</span>
                         </div>
                     )}
-                    
+
                     {/* Total final */}
                     <div className="flex justify-between items-center bg-green-100 dark:bg-green-900/30 px-1 py-0.5 rounded border border-green-300 dark:border-green-700">
                         <span className="text-[8px] font-semibold text-green-700 dark:text-green-400">TOTAL:</span>

@@ -157,7 +157,7 @@ export function ManualOrderModal({ open, onOpenChange, products, onSuccess }: Ma
                     total: editValues.total,
                     subTotal: editValues.subTotal,
                     shippingPrice: editValues.shippingPrice,
-                    deliveryDay: editValues.deliveryDay,
+                    deliveryDay: editValues.deliveryDay ? format(editValues.deliveryDay, 'yyyy-MM-dd') : undefined,
                     user: {
                         name: editValues.userName,
                         lastName: editValues.userLastName,

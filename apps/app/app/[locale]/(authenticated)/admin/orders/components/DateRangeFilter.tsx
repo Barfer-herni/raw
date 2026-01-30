@@ -51,7 +51,7 @@ export function DateRangeFilter() {
         updateDateRange({ from: today, to: today });
     }, [updateDateRange]);
 
-    const isToday = dateRange.from && dateRange.to && 
+    const isToday = dateRange.from && dateRange.to &&
         format(dateRange.from, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') &&
         format(dateRange.to, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
 
@@ -80,40 +80,42 @@ export function DateRangeFilter() {
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                    <div className="p-3 border-b">
-                        <Button
-                            variant={isToday ? "default" : "outline"}
-                            onClick={setToday}
-                            disabled={isPending}
-                            className="w-full"
-                            size="sm"
-                        >
-                            📅 Hoy
-                        </Button>
-                    </div>
                     <Calendar
                         initialFocus
                         mode="range"
                         defaultMonth={dateRange.from}
                         selected={dateRange}
                         onSelect={updateDateRange}
-                        numberOfMonths={2}
+                        numberOfMonths={1}
                         locale={es}
                     />
+                    <div className="p-3 border-t flex justify-start">
+                        <Button
+                            variant={isToday ? "default" : "outline"}
+                            onClick={setToday}
+                            disabled={isPending}
+                            className="w-auto"
+                            size="sm"
+                        >
+                            📅 Hoy
+                        </Button>
+                    </div>
                 </PopoverContent>
             </Popover>
-            
-            {(dateRange.from || dateRange.to) && (
-                <Button
-                    variant="ghost"
-                    onClick={clearDateRange}
-                    disabled={isPending}
-                    className="px-2"
-                >
-                    Limpiar
-                </Button>
-            )}
-        </div>
+
+            {
+                (dateRange.from || dateRange.to) && (
+                    <Button
+                        variant="ghost"
+                        onClick={clearDateRange}
+                        disabled={isPending}
+                        className="px-2"
+                    >
+                        Limpiar
+                    </Button>
+                )
+            }
+        </div >
     );
 }
 
