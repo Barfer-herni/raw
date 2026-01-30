@@ -50,11 +50,11 @@ export const createMetadata = ({
     },
     icons: {
       icon: [
-        { url: '/logo.png', type: 'image/png' }
+        { url: '/barfer.png', type: 'image/png' }
       ],
-      shortcut: '/logo.png',
+      shortcut: '/barfer.png',
       apple: [
-        { url: '/logo.png' }
+        { url: '/barfer.png' }
       ],
     },
   };

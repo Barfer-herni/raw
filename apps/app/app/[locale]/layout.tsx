@@ -2,7 +2,14 @@ import '@repo/design-system/styles/globals.css';
 import { DesignSystemProvider } from '@repo/design-system';
 import { fonts } from '../../lib/fonts';
 import { Toolbar } from '@repo/feature-flags/components/toolbar';
+import { createMetadata } from '@repo/seo/metadata';
+import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+
+export const metadata: Metadata = createMetadata({
+  title: 'Barfer',
+  description: 'Los mejores snacks para tu peludo',
+});
 
 type RootLayoutProperties = {
   readonly children: ReactNode;

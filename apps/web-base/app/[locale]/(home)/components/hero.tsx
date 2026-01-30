@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic';
 import { BarChart3, Users, Smartphone } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { env } from '@/env';
-import logo from '@/public/logo.png';
+import logo from '@/public/barfer.png';
 import { staggerContainer, fadeIn, slideIn } from '../lib/animations';
 import pedidosPorDia from '@/public/pedidos-por-dia.png';
 import piePorCategorias from '@/public/pie-por-categorias.png';

@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Facebook, Instagram, Linkedin, Mail, Phone, ShoppingBag, Shield, CheckCircle } from 'lucide-react';
-import logo from '@/public/logo.png';
+import logo from '@/public/barfer.png';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import type { Dictionary } from '@repo/internationalization';

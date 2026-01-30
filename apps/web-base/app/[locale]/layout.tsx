@@ -5,7 +5,14 @@ import { fonts } from '@repo/design-system/lib/fonts';
 import { cn } from '@repo/design-system/lib/utils';
 import { Toolbar } from '@repo/feature-flags/components/toolbar';
 import { getDictionary } from '@repo/internationalization';
+import { createMetadata } from '@repo/seo/metadata';
+import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+
+export const metadata: Metadata = createMetadata({
+  title: 'Barfer',
+  description: 'Comida natural para mascotas',
+});
 import { Footer } from './components/footer';
 import { Header } from './components/header';
 import { SnowParticlesWrapper } from './components/snow-particles-wrapper';
