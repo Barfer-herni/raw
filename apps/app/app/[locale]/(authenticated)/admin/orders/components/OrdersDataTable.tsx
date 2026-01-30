@@ -15,6 +15,8 @@ import { Search, Plus } from 'lucide-react';
 import type { DataTableProps, EditValues } from '../types';
 import { OrdersTable } from './OrdersTable';
 
+import { sortProducts } from '../helpers';
+
 export function OrdersDataTable<TData extends { _id: string }, TValue>({
     columns,
     data,
@@ -56,12 +58,13 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
     const [searchInput, setSearchInput] = useState(searchParams.get('search') ?? '');
     const [isPending, startTransition] = useTransition();
 
+
     // Cargar productos al montar
     useEffect(() => {
         const loadProducts = async () => {
             const result = await getAllProductsAction(true);
             if (result.success && result.products) {
-                setProducts(result.products);
+                setProducts(sortProducts(result.products));
             }
         };
         loadProducts();

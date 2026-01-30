@@ -6,7 +6,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
-import { Pencil, Save, Trash2, X, Copy, Plus, CalendarIcon } from 'lucide-react';
+import { Pencil, Save, Trash2, X, Copy, Plus, CalendarIcon, FileDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -232,24 +232,32 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                             </div>
                         ))}
                         <Button
+                            type="button"
                             size="sm"
                             variant="outline"
-                            onClick={() => {
-                                const firstProduct = products[0];
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const validProducts = products.filter(p => p._id && p._id.trim() !== '');
+                                if (validProducts.length === 0) return;
+
+                                const firstProduct = validProducts[0];
                                 const price = editValues.orderType === 'mayorista'
                                     ? (firstProduct?.precioMayorista || 0)
                                     : (firstProduct?.precioMinorista || 0);
+
                                 const newProducts = [...(editValues.selectedProducts || []), {
-                                    productId: firstProduct?._id || '',
+                                    productId: firstProduct._id || '',
                                     quantity: 1,
                                     price: price
                                 }];
                                 onChange('selectedProducts', newProducts);
                             }}
                             className="h-6 text-[10px] w-full p-1"
+                            disabled={products.length === 0}
                         >
                             <Plus className="h-3 w-3 mr-0.5" />
-                            Agregar Producto
+                            Agregar Item (+)
                         </Button>
                     </div>
                 );
@@ -319,7 +327,7 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                         <div className="bg-green-100 dark:bg-green-900/30 p-1 rounded border border-green-300 dark:border-green-700">
                             <div className="text-[8px] text-muted-foreground uppercase">Total Final</div>
                             <div className="text-[12px] font-bold text-green-700 dark:text-green-400">
-                                ${editValues.total?.toFixed(2) || '0.00'}
+                                ${editValues.total?.toFixed(0) || '0'}
                             </div>
                         </div>
                     </div>
@@ -505,6 +513,17 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                                                     >
                                                         <Copy className="w-3 h-3" />
                                                     </Button>
+                                                    {(row.original as any).orderType === 'mayorista' && (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={() => window.open(`/admin/orders/${row.original._id}/remito`, '_blank')}
+                                                            className="h-7 w-7 p-0 border-green-500 text-green-600"
+                                                            title="Descargar Remito"
+                                                        >
+                                                            <FileDown className="w-3 h-3" />
+                                                        </Button>
+                                                    )}
                                                     {canDelete && (
                                                         <Button
                                                             size="sm"

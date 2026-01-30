@@ -24,7 +24,7 @@ const createOrderSchema = z.object({
     user: z.object({
         name: z.string(),
         lastName: z.string(),
-        email: z.string().email(),
+        email: z.string().optional().or(z.literal('')),
     }),
     items: z.array(z.object({
         id: z.string(),

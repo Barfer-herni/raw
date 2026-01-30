@@ -93,10 +93,15 @@ export function ManualOrderModal({ open, onOpenChange, products, onSuccess }: Ma
         });
     };
 
-    const addProduct = () => {
-        const firstProduct = products[0];
+    const addProduct = (e?: React.MouseEvent) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        const validProducts = products.filter(p => p._id && p._id.trim() !== '');
+        const firstProduct = validProducts[0];
         if (!firstProduct) return;
-        const price = editValues.orderType === 'mayorista' ? firstProduct.precioMayorista : firstProduct.precioMinorista;
+        const price = editValues.orderType === 'mayorista' ? (firstProduct.precioMayorista || 0) : (firstProduct.precioMinorista || 0);
         handleValueChange('selectedProducts', [
             ...editValues.selectedProducts,
             { productId: firstProduct._id || '', quantity: 1, price },
@@ -358,12 +363,13 @@ export function ManualOrderModal({ open, onOpenChange, products, onSuccess }: Ma
                                     </div>
                                 ))}
                                 <Button
+                                    type="button"
                                     variant="outline"
                                     size="sm"
                                     className="w-full text-xs"
-                                    onClick={addProduct}
+                                    onClick={(e) => addProduct(e)}
                                 >
-                                    <Plus className="h-3 w-3 mr-1" /> Agregar Producto
+                                    <Plus className="h-3 w-3 mr-1" /> Agregar Item (+)
                                 </Button>
                             </div>
                         </div>
@@ -380,7 +386,7 @@ export function ManualOrderModal({ open, onOpenChange, products, onSuccess }: Ma
                             <div className="space-y-2">
                                 <Label className="text-blue-600">Total Final</Label>
                                 <div className="h-10 flex items-center px-3 border rounded-md bg-blue-50 font-bold text-blue-700">
-                                    ${editValues.total.toFixed(2)}
+                                    ${editValues.total.toFixed(0)}
                                 </div>
                             </div>
                         </div>
