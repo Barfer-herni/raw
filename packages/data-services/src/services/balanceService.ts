@@ -6,21 +6,6 @@ import { database } from '@repo/database';
 
 export interface BalanceMonthlyData {
     mes: string;
-    // Entradas Minorista
-    entradasMinorista: number;
-    entradasMinoristaPorcentaje: number;
-    cantVentasMinorista: number;
-    cantVentasMinoristaPorcentaje: number;
-    // Entradas Mayorista  
-    entradasMayorista: number;
-    entradasMayoristaPorcentaje: number;
-    cantVentasMayorista: number;
-    cantVentasMayoristaPorcentaje: number;
-    // Entradas Express (bank-transfer)
-    entradasExpress: number;
-    entradasExpressPorcentaje: number;
-    cantVentasExpress: number;
-    cantVentasExpressPorcentaje: number;
     // Entradas Totales
     entradasTotales: number;
     // Salidas - Desglose por tipo y empresa
@@ -53,161 +38,44 @@ export async function getBalanceMonthly(
     try {
         const ordersCollection = await getCollection('orders');
 
-        const ordersMatchCondition: any = {};
-        if (startDate || endDate) {
-            ordersMatchCondition.createdAt = {};
-            if (startDate) ordersMatchCondition.createdAt.$gte = startDate;
-            if (endDate) ordersMatchCondition.createdAt.$lte = endDate;
-        } else {
+        const ordersPipeline: any[] = [];
+
+        // Convertimos createdAt a tipo Date si es un string para que funcionen los operadores de fecha
+        ordersPipeline.push({
+            $addFields: {
+                createdAtDate: { $toDate: '$createdAt' }
+            }
+        });
+
+        // Aplicamos el filtro sobre la fecha convertida y el estado
+        const ordersMatch: any = { status: 'confirmed' };
+
+        let start = startDate;
+        let end = endDate;
+
+        if (!start && !end) {
             // Si no se especifica fecha, mostrar los últimos 3 años para asegurar datos
             const currentYear = new Date().getFullYear();
-            const yearStartDate = new Date(currentYear - 2, 0, 1); // Dos años atrás
-            const yearEndDate = new Date(currentYear, 11, 31, 23, 59, 59); // Año actual
-            ordersMatchCondition.createdAt = { $gte: yearStartDate, $lte: yearEndDate };
+            start = new Date(currentYear - 2, 0, 1); // Dos años atrás
+            end = new Date(currentYear, 11, 31, 23, 59, 59); // Año actual
         }
 
+        ordersMatch.createdAtDate = {};
+        if (start) ordersMatch.createdAtDate.$gte = start;
+        if (end) ordersMatch.createdAtDate.$lte = end;
 
-        const ordersPipeline: any[] = [];
-        if (Object.keys(ordersMatchCondition).length > 0) {
-            ordersPipeline.push({ $match: ordersMatchCondition });
-        }
+        ordersPipeline.push({ $match: ordersMatch });
 
         ordersPipeline.push(
             {
                 $group: {
                     _id: {
-                        year: { $year: '$createdAt' },
-                        month: { $month: '$createdAt' }
-                    },
-                    // Express: órdenes con paymentMethod = 'bank-transfer' (prioridad alta)
-                    totalExpress: {
-                        $sum: {
-                            $cond: [
-                                {
-                                    $eq: [
-                                        { $ifNull: ['$paymentMethod', ''] },
-                                        'bank-transfer'
-                                    ]
-                                },
-                                '$total',
-                                0
-                            ]
-                        }
-                    },
-                    cantExpress: {
-                        $sum: {
-                            $cond: [
-                                {
-                                    $eq: [
-                                        { $ifNull: ['$paymentMethod', ''] },
-                                        'bank-transfer'
-                                    ]
-                                },
-                                1,
-                                0
-                            ]
-                        }
-                    },
-                    // Mayorista: orderType = 'mayorista' (excluyendo bank-transfer que ya se contaron como Express)
-                    totalMayorista: {
-                        $sum: {
-                            $cond: [
-                                {
-                                    $and: [
-                                        {
-                                            $eq: [
-                                                { $ifNull: ['$orderType', 'minorista'] },
-                                                'mayorista'
-                                            ]
-                                        },
-                                        {
-                                            $ne: [
-                                                { $ifNull: ['$paymentMethod', ''] },
-                                                'bank-transfer'
-                                            ]
-                                        }
-                                    ]
-                                },
-                                '$total',
-                                0
-                            ]
-                        }
-                    },
-                    cantMayorista: {
-                        $sum: {
-                            $cond: [
-                                {
-                                    $and: [
-                                        {
-                                            $eq: [
-                                                { $ifNull: ['$orderType', 'minorista'] },
-                                                'mayorista'
-                                            ]
-                                        },
-                                        {
-                                            $ne: [
-                                                { $ifNull: ['$paymentMethod', ''] },
-                                                'bank-transfer'
-                                            ]
-                                        }
-                                    ]
-                                },
-                                1,
-                                0
-                            ]
-                        }
-                    },
-                    totalMinorista: {
-                        $sum: {
-                            $cond: [
-                                {
-                                    $and: [
-                                        {
-                                            $ne: [
-                                                { $ifNull: ['$orderType', 'minorista'] },
-                                                'mayorista'
-                                            ]
-                                        },
-                                        {
-                                            $ne: [
-                                                { $ifNull: ['$paymentMethod', ''] },
-                                                'bank-transfer'
-                                            ]
-                                        }
-                                    ]
-                                },
-                                '$total',
-                                0
-                            ]
-                        }
-                    },
-                    cantMinorista: {
-                        $sum: {
-                            $cond: [
-                                {
-                                    $and: [
-                                        {
-                                            $ne: [
-                                                { $ifNull: ['$orderType', 'minorista'] },
-                                                'mayorista'
-                                            ]
-                                        },
-                                        {
-                                            $ne: [
-                                                { $ifNull: ['$paymentMethod', ''] },
-                                                'bank-transfer'
-                                            ]
-                                        }
-                                    ]
-                                },
-                                1,
-                                0
-                            ]
-                        }
+                        year: { $year: '$createdAtDate' },
+                        month: { $month: '$createdAtDate' }
                     },
                     totalEntradas: { $sum: '$total' },
                     totalOrdenes: { $sum: 1 },
-                    totalItems: { $sum: { $size: '$items' } }
+                    totalItems: { $sum: { $size: { $ifNull: ['$items', []] } } }
                 }
             },
             { $sort: { '_id.year': 1, '_id.month': 1 } }
@@ -216,15 +84,7 @@ export async function getBalanceMonthly(
         const ordersResult = await ordersCollection.aggregate(ordersPipeline, {
             allowDiskUse: true
         }).toArray();
-        if (ordersResult.length === 0) {
-        } else {
-            ordersResult.forEach((monthData: any, index: number) => {
-                const monthName = new Date(monthData._id.year, monthData._id.month - 1).toLocaleDateString('es-AR', {
-                    year: 'numeric',
-                    month: 'long'
-                });
-            });
-        }
+
         const salidasCollection = await getCollection('salidas');
         const salidasQuery: any = {};
         if (startDate || endDate) {
@@ -233,7 +93,7 @@ export async function getBalanceMonthly(
             if (endDate) salidasQuery.fechaFactura.$lte = endDate;
         } else {
             const currentYear = new Date().getFullYear();
-            const yearStartDate = new Date(currentYear, 0, 1);
+            const yearStartDate = new Date(currentYear - 2, 0, 1);
             const yearEndDate = new Date(currentYear, 11, 31, 23, 59, 59);
             salidasQuery.fechaFactura = { $gte: yearStartDate, $lte: yearEndDate };
         }
@@ -264,23 +124,23 @@ export async function getBalanceMonthly(
                 extraordinariosSLR: 0
             };
 
-            current.total += salida.monto;
+            current.total += salida.monto || 0;
 
             if (salida.tipo === 'ORDINARIO') {
                 if (isBarfer) {
-                    current.ordinariosBarfer += salida.monto;
+                    current.ordinariosBarfer += salida.monto || 0;
                 } else if (isSLR) {
-                    current.ordinariosSLR += salida.monto;
+                    current.ordinariosSLR += salida.monto || 0;
                 } else {
-                    current.ordinariosBarfer += salida.monto;
+                    current.ordinariosBarfer += salida.monto || 0;
                 }
             } else if (salida.tipo === 'EXTRAORDINARIO') {
                 if (isBarfer) {
-                    current.extraordinariosBarfer += salida.monto;
+                    current.extraordinariosBarfer += salida.monto || 0;
                 } else if (isSLR) {
-                    current.extraordinariosSLR += salida.monto;
+                    current.extraordinariosSLR += salida.monto || 0;
                 } else {
-                    current.extraordinariosBarfer += salida.monto;
+                    current.extraordinariosBarfer += salida.monto || 0;
                 }
             }
 
@@ -288,10 +148,24 @@ export async function getBalanceMonthly(
         }
 
         // Combinar datos y calcular métricas
+        const allMonths = new Set<string>();
+        ordersResult.forEach(orderData => {
+            allMonths.add(`${orderData._id.year}-${String(orderData._id.month).padStart(2, '0')}`);
+        });
+        salidasByMonth.forEach((_, monthKey) => {
+            allMonths.add(monthKey);
+        });
+
+        const sortedMonths = Array.from(allMonths).sort();
         const balanceData: BalanceMonthlyData[] = [];
 
-        for (const orderData of ordersResult) {
-            const monthKey = `${orderData._id.year}-${String(orderData._id.month).padStart(2, '0')}`;
+        for (const monthKey of sortedMonths) {
+            const orderData = ordersResult.find(od => `${od._id.year}-${String(od._id.month).padStart(2, '0')}` === monthKey) || {
+                totalEntradas: 0,
+                totalOrdenes: 0,
+                totalItems: 0
+            };
+
             const salidasData = salidasByMonth.get(monthKey) || {
                 total: 0,
                 ordinariosBarfer: 0,
@@ -301,13 +175,8 @@ export async function getBalanceMonthly(
             };
 
             const totalEntradas = orderData.totalEntradas;
-            const totalMinorista = orderData.totalMinorista;
-            const totalMayorista = orderData.totalMayorista;
-            const totalExpress = orderData.totalExpress;
-            const totalOrdenes = orderData.totalOrdenes;
 
             // Estimación simple del peso basada en órdenes promedio
-            // Para evitar agregaciones complejas que pueden causar errores de memoria
             const estimatedWeight = orderData.totalItems * 8; // Estimación de 8kg promedio por item
 
             // Cálculo de los dos resultados diferentes
@@ -317,21 +186,6 @@ export async function getBalanceMonthly(
 
             balanceData.push({
                 mes: monthKey,
-                // Entradas Minorista
-                entradasMinorista: totalMinorista,
-                entradasMinoristaPorcentaje: totalEntradas > 0 ? (totalMinorista / totalEntradas) * 100 : 0,
-                cantVentasMinorista: orderData.cantMinorista,
-                cantVentasMinoristaPorcentaje: totalOrdenes > 0 ? (orderData.cantMinorista / totalOrdenes) * 100 : 0,
-                // Entradas Mayorista
-                entradasMayorista: totalMayorista,
-                entradasMayoristaPorcentaje: totalEntradas > 0 ? (totalMayorista / totalEntradas) * 100 : 0,
-                cantVentasMayorista: orderData.cantMayorista,
-                cantVentasMayoristaPorcentaje: totalOrdenes > 0 ? (orderData.cantMayorista / totalOrdenes) * 100 : 0,
-                // Entradas Express
-                entradasExpress: totalExpress,
-                entradasExpressPorcentaje: totalEntradas > 0 ? (totalExpress / totalEntradas) * 100 : 0,
-                cantVentasExpress: orderData.cantExpress,
-                cantVentasExpressPorcentaje: totalOrdenes > 0 ? (orderData.cantExpress / totalOrdenes) * 100 : 0,
                 // Entradas Totales
                 entradasTotales: totalEntradas,
                 // Salidas - Desglose por tipo y empresa

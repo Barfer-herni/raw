@@ -3,6 +3,8 @@ import type { Locale } from '@repo/internationalization';
 import { getBalanceMonthlyAction } from './actions';
 import { BalanceTable } from './components/BalanceTable';
 
+export const dynamic = 'force-dynamic';
+
 interface BalancePageProps {
     params: Promise<{ locale: Locale }>;
     searchParams: Promise<{ year?: string }>;
