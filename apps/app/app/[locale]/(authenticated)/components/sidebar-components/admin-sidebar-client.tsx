@@ -50,9 +50,9 @@ export function AdminSidebarClient({ items, dictionary }: AdminSidebarClientProp
     const searchParams = useSearchParams();
     const activeTab = searchParams.get('tab') || 'config';
 
-    // Filtrar para mostrar solo 'products' (precios) y 'orders' (ordenes)
+    // Filtrar para mostrar solo 'products', 'orders', 'balance' y 'outputs'
     const filteredItems = items.filter(item =>
-        item.label === 'products' || item.label === 'orders'
+        ['products', 'orders', 'balance', 'outputs'].includes(item.label)
     );
 
     const isActivePath = (path: string) => {

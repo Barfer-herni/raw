@@ -1,0 +1,473 @@
+'use server'
+
+import {
+    // Servicios MongoDB
+    getAllSalidasMongo,
+    getAllSalidasWithPermissionFilterMongo,
+    getSalidasPaginatedMongo,
+    createSalidaMongo,
+    updateSalidaMongo,
+    deleteSalidaMongo,
+    getSalidasByDateRangeMongo,
+    getAllCategoriasMongo,
+    getAllMetodosPagoMongo,
+    createCategoriaMongo,
+    deleteCategoriaMongo,
+    createMetodoPagoMongo,
+    initializeCategoriasMongo,
+    initializeMetodosPagoMongo,
+    // Servicios de Proveedores
+    getAllProveedoresMongo,
+    getAllProveedoresIncludingInactiveMongo,
+    getProveedorByIdMongo,
+    createProveedorMongo,
+    updateProveedorMongo,
+    deleteProveedorMongo,
+    searchProveedoresMongo,
+    testSearchProveedoresMongo,
+    // Servicios de Categorías de Proveedores
+    getAllCategoriasProveedoresMongo,
+    createCategoriaProveedorMongo,
+    updateCategoriaProveedorMongo,
+    deleteCategoriaProveedorMongo,
+    initializeCategoriasProveedoresMongo,
+    // Servicios de Analytics MongoDB
+    getSalidasCategoryAnalyticsMongo,
+    getSalidasTypeAnalyticsMongo,
+    getSalidasMonthlyAnalyticsMongo,
+    getSalidasOverviewAnalyticsMongo,
+    // Servicios adicionales
+    getSalidasByCategoryMongo,
+    // Tipos MongoDB
+    type CreateSalidaMongoInput,
+    type UpdateSalidaMongoInput,
+    type CreateProveedorMongoInput,
+    type UpdateProveedorMongoInput,
+    type CreateCategoriaProveedorMongoInput,
+    type UpdateCategoriaProveedorMongoInput
+} from '@repo/data-services';
+import { revalidatePath } from 'next/cache';
+import { TipoSalida, TipoRegistro } from '@repo/database';
+import { hasPermission } from '@repo/auth/server-permissions';
+
+// Re-exportar tipos para las acciones
+// Re-exportar tipos para las acciones - ELIMINADO para evitar errores de build con 'use server'
+// Los tipos deben importarse directamente de @repo/data-services
+
+// Acciones usando los nuevos servicios
+
+// Obtener todas las salidas
+export async function getAllSalidasAction() {
+    const result = await getAllSalidasWithPermissionFilterMongo();
+    return result;
+}
+
+// Obtener salidas paginadas
+export async function getSalidasPaginatedAction({
+    pageIndex = 0,
+    pageSize = 50,
+    filters = {},
+}: {
+    pageIndex?: number;
+    pageSize?: number;
+    filters?: {
+        searchTerm?: string;
+        categoriaId?: string;
+        marca?: string;
+        metodoPagoId?: string;
+        tipo?: 'ORDINARIO' | 'EXTRAORDINARIO';
+        tipoRegistro?: 'BLANCO' | 'NEGRO';
+        fecha?: string;
+        fechaDesde?: Date;
+        fechaHasta?: Date;
+    };
+}) {
+    'use server';
+
+    // Convertir fechaDesde y fechaHasta a formato de fecha si están presentes
+    const processedFilters: any = { ...filters };
+    if (filters.fechaDesde) {
+        processedFilters.fechaDesde = filters.fechaDesde;
+    }
+    if (filters.fechaHasta) {
+        processedFilters.fechaHasta = filters.fechaHasta;
+    }
+
+    const result = await getSalidasPaginatedMongo({ pageIndex, pageSize, filters: processedFilters });
+    return result;
+}
+
+// Crear una nueva salida
+export async function createSalidaAction(data: CreateSalidaMongoInput) {
+    // Verificar permisos
+    if (!await hasPermission('outputs:create')) {
+        return { success: false, error: 'No tienes permisos para crear salidas' };
+    }
+
+    const result = await createSalidaMongo(data);
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Actualizar una salida
+export async function updateSalidaAction(salidaId: string, data: UpdateSalidaMongoInput) {
+    // Verificar permisos
+    if (!await hasPermission('outputs:edit')) {
+        return { success: false, error: 'No tienes permisos para editar salidas' };
+    }
+
+    const result = await updateSalidaMongo(salidaId, data);
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Eliminar una salida
+export async function deleteSalidaAction(salidaId: string) {
+    // Verificar permisos
+    if (!await hasPermission('outputs:delete')) {
+        return { success: false, error: 'No tienes permisos para eliminar salidas' };
+    }
+
+    const result = await deleteSalidaMongo(salidaId);
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Obtener salidas por rango de fechas
+export async function getSalidasByDateRangeAction(startDate: Date, endDate: Date) {
+    return await getSalidasByDateRangeMongo(startDate, endDate);
+}
+
+// Obtener salidas por categoría
+export async function getSalidasByCategoryAction(categoria: string) {
+    return await getSalidasByCategoryMongo(categoria);
+}
+
+// Nuevas acciones para categorías y métodos de pago
+
+// Obtener todas las categorías
+export async function getAllCategoriasAction() {
+    return await getAllCategoriasMongo();
+}
+
+// Crear una nueva categoría
+export async function createCategoriaAction(nombre: string) {
+    const result = await createCategoriaMongo({ nombre });
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Eliminar una categoría
+export async function deleteCategoriaAction(categoriaId: string) {
+    // Verificar permisos
+    if (!await hasPermission('outputs:delete')) {
+        return { success: false, error: 'No tienes permisos para eliminar categorías' };
+    }
+
+    const result = await deleteCategoriaMongo(categoriaId);
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Inicializar categorías por defecto
+export async function initializeCategoriasAction() {
+    // Verificar permisos de admin
+    if (!await hasPermission('admin:full_access')) {
+        return { success: false, error: 'No tienes permisos para inicializar categorías' };
+    }
+
+    const result = await initializeCategoriasMongo();
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Obtener todos los métodos de pago
+export async function getAllMetodosPagoAction() {
+    return await getAllMetodosPagoMongo();
+}
+
+// Crear un nuevo método de pago
+export async function createMetodoPagoAction(nombre: string) {
+    const result = await createMetodoPagoMongo({ nombre });
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Inicializar métodos de pago por defecto
+export async function initializeMetodosPagoAction() {
+    // Verificar permisos de admin
+    if (!await hasPermission('admin:full_access')) {
+        return { success: false, error: 'No tienes permisos para inicializar métodos de pago' };
+    }
+
+    const result = await initializeMetodosPagoMongo();
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// ==========================================
+// ACCIONES DE ANALYTICS (MongoDB)
+// ==========================================
+
+// Obtener estadísticas de salidas por mes
+export async function getSalidasStatsByMonthAction(year: number, month: number) {
+    const { getSalidasStatsByMonthMongo } = await import('@repo/data-services');
+    return await getSalidasStatsByMonthMongo(year, month);
+}
+
+// ==========================================
+// ACCIONES DE ANALYTICS (PostgreSQL/Prisma)
+// ==========================================
+
+// Obtener estadísticas de salidas por categoría (MongoDB)
+export async function getSalidasCategoryAnalyticsAction(startDate?: Date, endDate?: Date) {
+    return await getSalidasCategoryAnalyticsMongo(startDate, endDate);
+}
+
+// Obtener estadísticas de salidas por tipo (ordinario vs extraordinario) (MongoDB)
+export async function getSalidasTypeAnalyticsAction(startDate?: Date, endDate?: Date) {
+    return await getSalidasTypeAnalyticsMongo(startDate, endDate);
+}
+
+// Obtener estadísticas de salidas por mes (MongoDB)
+export async function getSalidasMonthlyAnalyticsAction(categoriaId?: string, startDate?: Date, endDate?: Date) {
+    return await getSalidasMonthlyAnalyticsMongo(categoriaId, startDate, endDate);
+}
+
+// Obtener resumen general de salidas (MongoDB)
+export async function getSalidasOverviewAnalyticsAction(startDate?: Date, endDate?: Date) {
+    return await getSalidasOverviewAnalyticsMongo(startDate, endDate);
+}
+
+// Obtener detalles de salidas por categoría
+export async function getSalidasDetailsByCategoryAction(categoriaId: string, startDate?: Date, endDate?: Date) {
+    // Usar servicio MongoDB en lugar de Prisma
+    const result = await getAllSalidasMongo();
+
+    if (!result.success || !result.salidas) {
+        return { success: false, salidas: [], error: result.error };
+    }
+
+    // Filtrar por categoría y rango de fechas
+    const filteredSalidas = result.salidas.filter(salida => {
+        const matchesCategory = salida.categoriaId === categoriaId;
+
+        if (!matchesCategory) return false;
+
+        if (startDate || endDate) {
+            const salidaDate = new Date(salida.fechaFactura);
+            if (startDate && salidaDate < startDate) return false;
+            if (endDate && salidaDate > endDate) return false;
+        }
+
+        return true;
+    });
+
+    return { success: true, salidas: filteredSalidas };
+}
+
+// ==========================================
+// ACCIONES DE PROVEEDORES (MongoDB)
+// ==========================================
+
+// Obtener todos los proveedores
+export async function getAllProveedoresAction() {
+    return await getAllProveedoresMongo();
+}
+
+// Obtener todos los proveedores (incluyendo inactivos)
+export async function getAllProveedoresIncludingInactiveAction() {
+    return await getAllProveedoresIncludingInactiveMongo();
+}
+
+// Obtener un proveedor por ID
+export async function getProveedorByIdAction(id: string) {
+    return await getProveedorByIdMongo(id);
+}
+
+// Crear un nuevo proveedor
+export async function createProveedorAction(data: CreateProveedorMongoInput) {
+    // Verificar permisos
+    if (!await hasPermission('outputs:create')) {
+        return { success: false, error: 'No tienes permisos para crear proveedores' };
+    }
+
+    const result = await createProveedorMongo(data);
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Actualizar un proveedor
+export async function updateProveedorAction(proveedorId: string, data: UpdateProveedorMongoInput) {
+    // Verificar permisos
+    if (!await hasPermission('outputs:edit')) {
+        return { success: false, error: 'No tienes permisos para editar proveedores' };
+    }
+
+    const result = await updateProveedorMongo(proveedorId, data);
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Eliminar un proveedor
+export async function deleteProveedorAction(proveedorId: string) {
+    // Verificar permisos
+    if (!await hasPermission('outputs:delete')) {
+        return { success: false, error: 'No tienes permisos para eliminar proveedores' };
+    }
+
+    const result = await deleteProveedorMongo(proveedorId);
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Buscar proveedores
+export async function searchProveedoresAction(searchTerm: string) {
+    return await searchProveedoresMongo(searchTerm);
+}
+
+// Función de prueba para búsqueda de proveedores
+export async function testSearchProveedoresAction(searchTerm: string) {
+    return await testSearchProveedoresMongo(searchTerm);
+}
+
+// ==========================================
+// ACCIONES DE CATEGORÍAS DE PROVEEDORES (MongoDB)
+// ==========================================
+
+// Obtener todas las categorías de proveedores
+export async function getAllCategoriasProveedoresAction() {
+    return await getAllCategoriasProveedoresMongo();
+}
+
+// Crear una nueva categoría de proveedor
+export async function createCategoriaProveedorAction(data: CreateCategoriaProveedorMongoInput) {
+    // Verificar permisos
+    if (!await hasPermission('outputs:create')) {
+        return { success: false, error: 'No tienes permisos para crear categorías de proveedores' };
+    }
+
+    const result = await createCategoriaProveedorMongo(data);
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Actualizar una categoría de proveedor
+export async function updateCategoriaProveedorAction(categoriaId: string, data: UpdateCategoriaProveedorMongoInput) {
+    // Verificar permisos
+    if (!await hasPermission('outputs:edit')) {
+        return { success: false, error: 'No tienes permisos para editar categorías de proveedores' };
+    }
+
+    const result = await updateCategoriaProveedorMongo(categoriaId, data);
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Eliminar una categoría de proveedor
+export async function deleteCategoriaProveedorAction(categoriaId: string) {
+    // Verificar permisos
+    if (!await hasPermission('outputs:delete')) {
+        return { success: false, error: 'No tienes permisos para eliminar categorías de proveedores' };
+    }
+
+    const result = await deleteCategoriaProveedorMongo(categoriaId);
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Inicializar categorías de proveedores por defecto
+export async function initializeCategoriasProveedoresAction() {
+    // Verificar permisos de admin
+    if (!await hasPermission('admin:full_access')) {
+        return { success: false, error: 'No tienes permisos para inicializar categorías de proveedores' };
+    }
+
+    const result = await initializeCategoriasProveedoresMongo();
+    if (result.success) {
+        revalidatePath('/admin/salidas');
+    }
+    return result;
+}
+
+// Duplicar una salida
+export async function duplicateSalidaAction(id: string) {
+    'use server';
+
+    try {
+        // Verificar permisos
+        if (!await hasPermission('outputs:create')) {
+            return { success: false, error: 'No tienes permisos para duplicar salidas' };
+        }
+
+        // Obtener la salida original
+        const { getCollection, ObjectId } = await import('@repo/database');
+        const salidasCollection = await getCollection('salidas');
+        const originalSalida = await salidasCollection.findOne({ _id: new ObjectId(id) });
+
+        if (!originalSalida) {
+            return { success: false, error: 'Salida no encontrada' };
+        }
+
+        // Crear una copia de la salida con modificaciones para indicar que es duplicada
+        const duplicatedSalidaData: CreateSalidaMongoInput = {
+            fechaFactura: originalSalida.fechaFactura instanceof Date
+                ? originalSalida.fechaFactura
+                : new Date(originalSalida.fechaFactura),
+            detalle: `DUPLICADO - ${originalSalida.detalle || ''}`,
+            categoriaId: originalSalida.categoriaId.toString(),
+            tipo: originalSalida.tipo,
+            marca: originalSalida.marca || 'BARFER',
+            monto: originalSalida.monto,
+            metodoPagoId: originalSalida.metodoPagoId.toString(),
+            tipoRegistro: originalSalida.tipoRegistro,
+            proveedorId: originalSalida.proveedorId ? originalSalida.proveedorId.toString() : undefined,
+            fechaPago: originalSalida.fechaPago
+                ? (originalSalida.fechaPago instanceof Date
+                    ? originalSalida.fechaPago
+                    : new Date(originalSalida.fechaPago))
+                : undefined,
+            comprobanteNumber: originalSalida.comprobanteNumber || undefined,
+        };
+
+        // Crear la salida duplicada usando el servicio existente
+        const result = await createSalidaMongo(duplicatedSalidaData);
+        if (!result.success) {
+            return { success: false, error: result.error || 'Error al duplicar la salida' };
+        }
+
+        revalidatePath('/admin/salidas');
+        return { success: true, salida: result.salida, message: 'Gasto duplicado correctamente' };
+    } catch (error) {
+        console.error('Error in duplicateSalidaAction:', error);
+        return { success: false, error: 'Error al duplicar la salida' };
+    }
+} 

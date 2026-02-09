@@ -336,6 +336,22 @@ export const SIDEBAR_CONFIG: SidebarItem[] = [
         icon: 'Table',
         requiredPermissions: ['admin:full_access'],
         adminOnly: true,
+    },
+    {
+        label: 'balance',
+        mobileLabel: 'balanceMobile',
+        href: '/admin/balance',
+        icon: 'BarChart3',
+        requiredPermissions: ['admin:full_access'],
+        adminOnly: true,
+    },
+    {
+        label: 'outputs',
+        mobileLabel: 'outputsMobile',
+        href: '/admin/salidas',
+        icon: 'MinusCircle',
+        requiredPermissions: ['admin:full_access'],
+        adminOnly: true,
     }
 ];
 
