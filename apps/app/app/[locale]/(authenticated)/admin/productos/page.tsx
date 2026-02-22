@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-    createProductAction, 
-    getAllProductsAction, 
-    getAllCategoriesAction, 
+import {
+    createProductAction,
+    getAllProductsAction,
+    getAllCategoriesAction,
     createCategoryAction,
     uploadImageAction,
     validateImageFile,
@@ -12,9 +12,9 @@ import {
     checkAdminRoleAction,
     updateProductAction,
     deleteProductAction,
-    type AdminProduct, 
-    type CreateAdminProduct, 
-    type ProductCategory, 
+    type AdminProduct,
+    type CreateAdminProduct,
+    type ProductCategory,
     type CreateProductCategory
 } from '@repo/data-services/src/actions';
 
@@ -79,11 +79,11 @@ export default function ProductosAdminPage() {
                 getAllProductsAction(true), // Incluir todos los productos para admin
                 getAllCategoriesAction()
             ]);
-            
+
             if (productsResult.success && productsResult.products) {
                 setProducts(productsResult.products);
             }
-            
+
             if (categoriesResult.success && categoriesResult.categories) {
                 setCategories(categoriesResult.categories);
             }
@@ -104,7 +104,7 @@ export default function ProductosAdminPage() {
         // Procesar cada archivo
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            
+
             // Validar archivo
             const validation = validateImageFile(file);
             if (!validation.isValid) {
@@ -121,9 +121,9 @@ export default function ProductosAdminPage() {
         if (newFiles.length > 0) {
             // Agregar archivos a los existentes
             setSelectedImageFiles(prev => [...prev, ...newFiles]);
-            setProductForm(prev => ({ 
-                ...prev, 
-                imagenes: [...(prev.imagenes || []), ...newPreviews] 
+            setProductForm(prev => ({
+                ...prev,
+                imagenes: [...(prev.imagenes || []), ...newPreviews]
             }));
         }
     };
@@ -137,7 +137,7 @@ export default function ProductosAdminPage() {
 
         // Remover de los archivos seleccionados
         setSelectedImageFiles(prev => prev.filter((_, i) => i !== index));
-        
+
         // Remover de las URLs de preview
         setProductForm(prev => ({
             ...prev,
@@ -161,11 +161,11 @@ export default function ProductosAdminPage() {
                 setUploadingImage(true);
                 try {
                     const uploadedUrls: string[] = [];
-                    
+
                     // Subir cada imagen con compresión automática
                     for (const file of selectedImageFiles) {
                         console.log(`📸 Procesando imagen: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
-                        
+
                         // Comprimir imagen antes de subir si es muy grande
                         let processedFile = file;
                         if (file.size > 2 * 1024 * 1024) { // Si es mayor a 2MB
@@ -177,11 +177,11 @@ export default function ProductosAdminPage() {
                                 console.warn('⚠️ Error al comprimir, usando archivo original:', compressionError);
                             }
                         }
-                        
+
                         const formData = new FormData();
                         formData.append('file', processedFile);
                         formData.append('folder', 'productos');
-                        
+
                         const uploadResult = await uploadImageAction(formData);
                         if (uploadResult.success && uploadResult.url) {
                             uploadedUrls.push(uploadResult.url);
@@ -192,9 +192,9 @@ export default function ProductosAdminPage() {
                             return;
                         }
                     }
-                    
+
                     finalProductForm.imagenes = uploadedUrls;
-                    
+
                     // Limpiar las URLs de preview locales
                     productForm.imagenes?.forEach(imageUrl => {
                         if (imageUrl.startsWith('blob:')) {
@@ -260,7 +260,7 @@ export default function ProductosAdminPage() {
                 URL.revokeObjectURL(imageUrl);
             }
         });
-        
+
         setProductForm({
             titulo: '',
             descripcion: '',
@@ -285,7 +285,7 @@ export default function ProductosAdminPage() {
     const handleEditProduct = (product: AdminProduct) => {
         // Limpiar cualquier archivo seleccionado previamente
         setSelectedImageFiles([]);
-        
+
         setEditingProduct(product);
         setProductForm({
             titulo: product.titulo,
@@ -323,13 +323,13 @@ export default function ProductosAdminPage() {
                 setUploadingImage(true);
                 try {
                     const uploadedUrls: string[] = [];
-                    
+
                     // Subir cada nueva imagen
                     for (const file of selectedImageFiles) {
                         const formData = new FormData();
                         formData.append('file', file);
                         formData.append('folder', 'productos');
-                        
+
                         const uploadResult = await uploadImageAction(formData);
                         if (uploadResult.success && uploadResult.url) {
                             uploadedUrls.push(uploadResult.url);
@@ -338,11 +338,11 @@ export default function ProductosAdminPage() {
                             return;
                         }
                     }
-                    
+
                     // Combinar imágenes existentes con las nuevas
                     const existingImages = productForm.imagenes?.filter(url => !url.startsWith('blob:')) || [];
                     finalProductForm.imagenes = [...existingImages, ...uploadedUrls];
-                    
+
                     // Limpiar las URLs de preview locales
                     productForm.imagenes?.forEach(imageUrl => {
                         if (imageUrl.startsWith('blob:')) {
@@ -481,7 +481,7 @@ export default function ProductosAdminPage() {
                                     crossOrigin="anonymous"
                                     onError={(e) => {
                                         console.warn('⚠️ Error cargando imagen:', product.imagenes?.[0]);
-                                        
+
                                         // Intentar una sola recarga con cache-busting
                                         if (!e.currentTarget.dataset.retried) {
                                             console.log('🔄 Reintentando carga de imagen...');
@@ -494,10 +494,10 @@ export default function ProductosAdminPage() {
                                             }, 500);
                                             return;
                                         }
-                                        
+
                                         // Si falló el retry, mostrar placeholder simple
                                         console.error('❌ No se pudo cargar la imagen:', product.imagenes?.[0]);
-                                        
+
                                         const placeholder = document.createElement('div');
                                         placeholder.className = 'w-full h-48 bg-gray-100 border-2 border-gray-200 rounded-xl mb-4 flex items-center justify-center';
                                         placeholder.innerHTML = `
@@ -511,7 +511,7 @@ export default function ProductosAdminPage() {
                                                 </button>
                                             </div>
                                         `;
-                                        
+
                                         const originalImg = e.currentTarget as HTMLImageElement;
                                         if (originalImg.parentNode) {
                                             originalImg.parentNode.replaceChild(placeholder, originalImg);
@@ -562,13 +562,13 @@ export default function ProductosAdminPage() {
                                 )}
                             </div>
                             <div className="mt-4 flex gap-2">
-                                <button 
+                                <button
                                     onClick={() => handleEditProduct(product)}
                                     className="flex-1 bg-barfer-green hover:bg-green-600 text-white py-2 rounded-xl text-sm font-medium transition-colors font-nunito"
                                 >
                                     Editar
                                 </button>
-                                <button 
+                                <button
                                     onClick={() => handleDeleteProduct(product._id!)}
                                     className="flex-1 bg-barfer-orange hover:bg-orange-600 text-white py-2 rounded-xl text-sm font-medium transition-colors font-nunito"
                                 >
@@ -741,7 +741,7 @@ export default function ProductosAdminPage() {
                                                 </span>
                                             </p>
                                         )}
-                                        
+
                                         {/* Preview de imágenes */}
                                         {productForm.imagenes && productForm.imagenes.length > 0 && (
                                             <div className="mt-4">
@@ -829,7 +829,7 @@ export default function ProductosAdminPage() {
                                                 <input
                                                     type="number"
                                                     min="0"
-                                                    step="0.01"
+                                                    step="0.001"
                                                     value={productForm.dimensiones?.peso ?? ''}
                                                     onChange={(e) => {
                                                         const value = e.target.value;
@@ -842,9 +842,9 @@ export default function ProductosAdminPage() {
                                                         }));
                                                     }}
                                                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-barfer-green focus:border-barfer-green text-sm"
-                                                    placeholder="0.45"
+                                                    placeholder="0.045"
                                                 />
-                                                <label className="block text-xs text-gray-500 mt-1 text-center">Peso (kg) - Ej: 0.45 o 0.115</label>
+                                                <label className="block text-xs text-gray-500 mt-1 text-center">Peso (kg) - Ej: 0.045 (45g) o 0.4 (400g)</label>
                                             </div>
                                         </div>
                                     </div>
@@ -883,8 +883,8 @@ export default function ProductosAdminPage() {
                                             disabled={isSubmitting || uploadingImage}
                                             className="flex-1 bg-barfer-green hover:bg-green-600 disabled:bg-gray-400 text-white py-3 rounded-2xl font-semibold transition-colors"
                                         >
-                                            {isSubmitting 
-                                                ? (editingProduct ? 'Actualizando...' : 'Creando...') 
+                                            {isSubmitting
+                                                ? (editingProduct ? 'Actualizando...' : 'Creando...')
                                                 : (editingProduct ? 'Actualizar Producto' : 'Crear Producto')
                                             }
                                         </button>

@@ -81,35 +81,35 @@ const ANIMAL_PRODUCT_PHOTOS = [
         id: 1,
         src: '/amigos/1.jpeg',
         alt: 'Mascota feliz con productos RAW',
-        animal: 'Luna',
+        animal: '',
         product: 'Productos Premium'
     },
     {
         id: 2,
         src: '/amigos/2.jpeg',
         alt: 'Mascota disfrutando snacks naturales',
-        animal: 'Milo',
+        animal: '',
         product: 'Snacks Naturales'
     },
     {
         id: 3,
         src: '/amigos/3.jpeg',
         alt: 'Mascota saludable con productos RAW',
-        animal: 'Rocky',
+        animal: '',
         product: 'Alimentación Natural'
     },
     {
         id: 4,
         src: '/amigos/4.jpeg',
         alt: 'Mascota contenta con productos premium',
-        animal: 'Bella',
+        animal: '',
         product: 'Productos Premium'
     },
     {
         id: 5,
         src: '/amigos/5.jpeg',
         alt: 'Mascota disfrutando snacks saludables',
-        animal: 'Max',
+        animal: '',
         product: 'Snacks Saludables'
     }
 ];
@@ -686,11 +686,10 @@ export function PublicHome({ locale, dictionary, isAuthenticated }: PublicHomePr
                                         {/* Mensaje de estado */}
                                         {contactStatus.type && (
                                             <div
-                                                className={`p-4 rounded-xl text-center ${
-                                                    contactStatus.type === 'success'
+                                                className={`p-4 rounded-xl text-center ${contactStatus.type === 'success'
                                                         ? 'bg-green-100 text-green-800 border border-green-300'
                                                         : 'bg-red-100 text-red-800 border border-red-300'
-                                                }`}
+                                                    }`}
                                             >
                                                 {contactStatus.message}
                                             </div>
@@ -807,7 +806,7 @@ export function PublicHome({ locale, dictionary, isAuthenticated }: PublicHomePr
 // Componente Carrusel de Amigos
 function FriendCarousel() {
     const [currentIndex, setCurrentIndex] = useState(0);
-    
+
     // Configuración para diferentes pantallas
     const getVisibleCount = () => {
         if (typeof window !== 'undefined') {
@@ -857,9 +856,9 @@ function FriendCarousel() {
         <div className="relative max-w-6xl mx-auto">
             {/* Contenedor del carrusel */}
             <div className="overflow-hidden rounded-xl">
-                <div 
+                <div
                     className="flex transition-transform duration-500 ease-in-out"
-                    style={{ 
+                    style={{
                         transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
                         width: `${(ANIMAL_PRODUCT_PHOTOS.length / visibleCount) * 100}%`
                     }}
@@ -899,7 +898,7 @@ function FriendCarousel() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
             </button>
-            
+
             <button
                 onClick={nextSlide}
                 className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-barfer-orange p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-10"
@@ -916,11 +915,10 @@ function FriendCarousel() {
                     <button
                         key={index}
                         onClick={() => setCurrentIndex(index)}
-                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                            index === currentIndex 
-                                ? 'bg-barfer-orange scale-125' 
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex
+                                ? 'bg-barfer-orange scale-125'
                                 : 'bg-gray-300 hover:bg-gray-400'
-                        }`}
+                            }`}
                         aria-label={`Ir a grupo ${index + 1}`}
                     />
                 ))}
