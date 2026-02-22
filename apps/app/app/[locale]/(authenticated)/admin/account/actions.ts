@@ -1,11 +1,12 @@
 'use server';
+console.log('>>> ACTIONS MODULE LOADED <<<');
 
 import { revalidatePath } from 'next/cache';
 import {
     changePassword as changePasswordService,
 } from '@repo/auth/server';
-import { 
-    getAllCategorias 
+import {
+    getAllCategorias
 } from '@repo/data-services';
 // Importar directamente desde el archivo del servicio
 import { createGestorUser, updateGestorUser, deleteGestorUser } from '@repo/data-services/src/services/gestorUsersService';
@@ -134,9 +135,9 @@ export async function createUser(formData: FormData) {
         }
 
         // Crear usuario en la tabla users_gestor (usuarios creados por admin)
-        const result = await createGestorUser({ 
-            ...validated.data, 
-            role: validated.data.role as UserRole, 
+        const result = await createGestorUser({
+            ...validated.data,
+            role: validated.data.role as UserRole,
             password: validated.data.password,
             createdBy: currentUser.id
         });
@@ -175,9 +176,9 @@ export async function updateUser(userId: string, formData: FormData) {
         }
 
         // Actualizar usuario en la tabla users_gestor
-        const result = await updateGestorUser(userId, { 
-            ...validated.data, 
-            role: validated.data.role as UserRole 
+        const result = await updateGestorUser(userId, {
+            ...validated.data,
+            role: validated.data.role as UserRole
         });
 
         if (!result.success) {
@@ -254,7 +255,7 @@ export async function deleteUser(userId: string) {
 
         // Eliminar usuario de la tabla users_gestor
         const result = await deleteGestorUser(userId);
-        
+
         if (!result.success) {
             return { success: false, message: result.message || 'Error al eliminar el usuario de gestión' };
         }
@@ -268,11 +269,21 @@ export async function deleteUser(userId: string) {
     }
 }
 
+export async function testAction() {
+    console.log('>>> TEST ACTION CALLED <<<');
+    return { success: true, message: 'Test action successful' };
+}
+
 export async function updateDeliveryInfo(userId: string, formData: FormData) {
+    console.log('>>> SERVER ACTION: updateDeliveryInfo START <<<');
+    console.log('Parameters - userId:', userId);
     try {
         // Verificar que el usuario esté autenticado y editando su propia información
         const currentUser = await getCurrentUser();
+        console.log('UpdateDeliveryInfo - currentUser ID:', currentUser?.id);
+
         if (!currentUser || currentUser.id !== userId) {
+            console.log('UpdateDeliveryInfo - AUTH FAILURE: currentUser.id !== userId');
             return { success: false, message: 'Solo puedes actualizar tu propia información.' };
         }
 
@@ -284,11 +295,20 @@ export async function updateDeliveryInfo(userId: string, formData: FormData) {
         const postalCode = formData.get('postalCode') as string;
         const notes = formData.get('notes') as string;
 
-        // Validación básica
-        if (!phone || !street || !city || !province || !postalCode) {
-            return { 
-                success: false, 
-                message: 'Por favor completa todos los campos obligatorios: teléfono, dirección, ciudad, provincia y código postal.' 
+        console.log('Form data received:', { phone, street, apartment, city, province, postalCode, notes });
+
+        const missingFields = [];
+        if (!phone) missingFields.push('teléfono');
+        if (!street) missingFields.push('dirección');
+        if (!city) missingFields.push('ciudad');
+        if (!province) missingFields.push('provincia');
+        if (!postalCode) missingFields.push('código postal');
+
+        if (missingFields.length > 0) {
+            console.log('UpdateDeliveryInfo - VALIDATION FAILURE: Missing fields:', missingFields.join(', '));
+            return {
+                success: false,
+                message: `Por favor completa los siguientes campos obligatorios: ${missingFields.join(', ')}.`
             };
         }
 
@@ -306,28 +326,33 @@ export async function updateDeliveryInfo(userId: string, formData: FormData) {
             address: addressData
         };
 
+        console.log('Calling updateUserProfile with:', JSON.stringify(updateData, null, 2));
+
         // Actualizar usando el servicio de MongoDB (busca en ambas tablas)
         const result = await updateUserProfile(userId, updateData);
-        
+
+        console.log('updateUserProfile Result:', result);
+
         if (!result.success) {
-            return { 
-                success: false, 
-                message: result.message || 'Error al actualizar la información de entrega' 
+            return {
+                success: false,
+                message: result.message || 'Error al actualizar la información de entrega'
             };
         }
 
         revalidatePath('/admin/account');
-        
-        return { 
-            success: true, 
-            message: 'Información de entrega actualizada exitosamente' 
+        revalidatePath('/[locale]/(authenticated)/admin/account', 'page');
+
+        return {
+            success: true,
+            message: 'Información de entrega actualizada exitosamente'
         };
 
     } catch (error) {
         console.error('Error updating delivery info:', error);
-        return { 
-            success: false, 
-            message: 'Error al actualizar la información de entrega' 
+        return {
+            success: false,
+            message: 'Error al actualizar la información de entrega'
         };
     }
-} 
+}

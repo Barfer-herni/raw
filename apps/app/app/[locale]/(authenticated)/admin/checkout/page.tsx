@@ -62,26 +62,26 @@ export default function CheckoutPage() {
         const loadData = async () => {
             console.log('🛒 Checkout: Iniciando carga de datos...');
             console.log('🛒 Checkout: localStorage disponible:', typeof window !== 'undefined' && window.localStorage);
-            
+
             // Verificar que localStorage esté disponible
             if (typeof window === 'undefined' || !window.localStorage) {
                 console.error('🛒 Checkout: localStorage no disponible');
                 setIsLoading(false);
                 return;
             }
-            
+
             // Cargar carrito
             const savedCart = localStorage.getItem('barfer-cart');
             console.log('🛒 Checkout: Contenido de localStorage (raw):', savedCart);
             console.log('🛒 Checkout: Tipo de contenido:', typeof savedCart);
-            
+
             if (savedCart && savedCart !== 'undefined' && savedCart !== 'null') {
                 try {
                     const parsedCart = JSON.parse(savedCart);
                     console.log('🛒 Checkout: Carrito parseado exitosamente:', parsedCart);
                     console.log('🛒 Checkout: Es array:', Array.isArray(parsedCart));
                     console.log('🛒 Checkout: Longitud del carrito:', parsedCart.length);
-                    
+
                     if (Array.isArray(parsedCart)) {
                         setCart(parsedCart);
                     } else {
@@ -115,7 +115,7 @@ export default function CheckoutPage() {
                         notes: ''
                     }
                 });
-                
+
                 // Inicializar dirección de envío con datos del usuario
                 setShippingAddress({
                     name: user.name || '',
@@ -129,6 +129,7 @@ export default function CheckoutPage() {
             }
 
             setIsLoading(false);
+            window.scrollTo(0, 0);
             console.log('🛒 Checkout: Carga de datos completada');
         };
 
@@ -175,7 +176,7 @@ export default function CheckoutPage() {
     // Handler para calcular envío
     const handleCalculateShipping = () => {
         console.log('🔍 [CHECKOUT] Verificando dirección y calculando envío...');
-        
+
         if (!isAddressComplete()) {
             alert('Por favor completa todos los campos obligatorios de la dirección antes de calcular el envío.');
             return;
@@ -200,10 +201,10 @@ export default function CheckoutPage() {
     const getTotalPrice = () => {
         return cart.reduce((total, item) => {
             console.log('🛒 Checkout: Calculando precio para item:', item);
-            
+
             // Manejar diferentes formatos de precios
             let price = 0;
-            
+
             // Si el producto está en oferta, usar precio de oferta
             if (item.isOnOffer && item.offerPrice) {
                 if (item.offerPrice.includes(' - ')) {
@@ -229,11 +230,11 @@ export default function CheckoutPage() {
                     price = parseInt(item.priceRange.replace(/[^0-9]/g, '')) || 0;
                 }
             }
-            
+
             console.log('🛒 Checkout: Precio calculado:', price, 'Cantidad:', item.quantity);
             const itemTotal = price * item.quantity;
             console.log('🛒 Checkout: Total del item:', itemTotal);
-            
+
             return total + itemTotal;
         }, 0);
     };
@@ -261,7 +262,7 @@ export default function CheckoutPage() {
             // Preparar los items para la orden
             const orderItems = cart.map(item => {
                 let price = 0;
-                
+
                 // Calcular precio del item
                 if (item.isOnOffer && item.offerPrice) {
                     if (item.offerPrice.includes(' - ')) {
@@ -300,6 +301,14 @@ export default function CheckoutPage() {
             });
 
             const subTotal = getTotalPrice();
+            const MIN_PURCHASE = 15000;
+
+            if (subTotal < MIN_PURCHASE) {
+                alert(`El monto mínimo de compra es de $${MIN_PURCHASE.toLocaleString()}. Tu subtotal actual es de $${subTotal.toLocaleString()}. Por favor, agrega más productos para continuar.`);
+                setIsProcessing(false);
+                return;
+            }
+
             const shippingPrice = selectedShipping?.cost || 0;
             const total = subTotal + shippingPrice;
 
@@ -349,7 +358,7 @@ export default function CheckoutPage() {
             }).join('\n');
 
             // Información de envío detallada
-            const envioInfo = selectedShipping 
+            const envioInfo = selectedShipping
                 ? `� *ENVÍO SELECCIONADO:*
    Transportista: ${selectedShipping.carrier}
    Servicio: ${selectedShipping.service}
@@ -389,10 +398,10 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
             localStorage.removeItem('barfer-cart');
             setCart([]);
             setIsProcessing(false);
-            
+
             // Abrir WhatsApp
             window.open(whatsappUrl, '_blank');
-            
+
             // Redirigir de vuelta a la tienda
             router.push('/admin');
         } catch (error) {
@@ -618,30 +627,30 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-barfer-green focus:border-barfer-green bg-barfer-white text-gray-900"
                                             >
                                                 <option value="">Seleccionar provincia</option>
-                                                <option value="CF">Ciudad Autónoma de Buenos Aires (CABA)</option>
-                                                <option value="BA">Buenos Aires</option>
-                                                <option value="CA">Catamarca</option>
-                                                <option value="CC">Chaco</option>
-                                                <option value="CT">Chubut</option>
-                                                <option value="CB">Córdoba</option>
-                                                <option value="CR">Corrientes</option>
-                                                <option value="ER">Entre Ríos</option>
-                                                <option value="FM">Formosa</option>
-                                                <option value="JY">Jujuy</option>
-                                                <option value="LP">La Pampa</option>
-                                                <option value="LR">La Rioja</option>
-                                                <option value="MZ">Mendoza</option>
-                                                <option value="MN">Misiones</option>
-                                                <option value="NQ">Neuquén</option>
-                                                <option value="RN">Río Negro</option>
-                                                <option value="SA">Salta</option>
-                                                <option value="SJ">San Juan</option>
-                                                <option value="SL">San Luis</option>
-                                                <option value="SC">Santa Cruz</option>
-                                                <option value="SF">Santa Fe</option>
-                                                <option value="SE">Santiago del Estero</option>
-                                                <option value="TF">Tierra del Fuego</option>
-                                                <option value="TM">Tucumán</option>
+                                                <option value="Ciudad Autónoma de Buenos Aires">Ciudad Autónoma de Buenos Aires (CABA)</option>
+                                                <option value="Buenos Aires">Buenos Aires</option>
+                                                <option value="Catamarca">Catamarca</option>
+                                                <option value="Chaco">Chaco</option>
+                                                <option value="Chubut">Chubut</option>
+                                                <option value="Córdoba">Córdoba</option>
+                                                <option value="Corrientes">Corrientes</option>
+                                                <option value="Entre Ríos">Entre Ríos</option>
+                                                <option value="Formosa">Formosa</option>
+                                                <option value="Jujuy">Jujuy</option>
+                                                <option value="La Pampa">La Pampa</option>
+                                                <option value="La Rioja">La Rioja</option>
+                                                <option value="Mendoza">Mendoza</option>
+                                                <option value="Misiones">Misiones</option>
+                                                <option value="Neuquén">Neuquén</option>
+                                                <option value="Río Negro">Río Negro</option>
+                                                <option value="Salta">Salta</option>
+                                                <option value="San Juan">San Juan</option>
+                                                <option value="San Luis">San Luis</option>
+                                                <option value="Santa Cruz">Santa Cruz</option>
+                                                <option value="Santa Fe">Santa Fe</option>
+                                                <option value="Santiago del Estero">Santiago del Estero</option>
+                                                <option value="Tierra del Fuego">Tierra del Fuego</option>
+                                                <option value="Tucumán">Tucumán</option>
                                             </select>
                                         </div>
                                     </div>
@@ -674,14 +683,13 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
                                             type="button"
                                             onClick={handleCalculateShipping}
                                             disabled={!isAddressComplete()}
-                                            className={`px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-lg ${
-                                                isAddressComplete()
-                                                    ? 'bg-barfer-green hover:bg-green-600 text-white hover:shadow-xl transform hover:scale-105'
-                                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                            }`}
+                                            className={`px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-lg ${isAddressComplete()
+                                                ? 'bg-barfer-green hover:bg-green-600 text-white hover:shadow-xl transform hover:scale-105'
+                                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                }`}
                                         >
-                                            {isAddressComplete() 
-                                                ? '🚚 Calcular Opciones de Envío' 
+                                            {isAddressComplete()
+                                                ? '🚚 Calcular Opciones de Envío'
                                                 : '⚠️ Completa la Dirección Primero'}
                                         </button>
                                     </div>
@@ -690,7 +698,7 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
 
                             {/* Opciones de Envío - DESPUÉS de completar dirección y hacer clic en calcular */}
                             {cart.length > 0 && showShippingOptions && (
-                                <ShippingOptions 
+                                <ShippingOptions
                                     cartItems={cart.map(item => ({
                                         id: item.id,
                                         name: item.name,
@@ -711,7 +719,7 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
                                     <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
                                         <p className="text-green-800 font-medium flex items-center">
                                             <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                             </svg>
                                             Envío verificado: {selectedShipping.carrier} - {selectedShipping.service}
                                         </p>
@@ -735,7 +743,7 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
                                         ) : (
                                             <>
                                                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.109"/>
+                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.109" />
                                                 </svg>
                                                 Finalizar por WhatsApp - $${(getTotalPrice() + (selectedShipping?.cost || 0)).toFixed(0)}
                                             </>
@@ -803,7 +811,7 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
                                             <p className="font-semibold text-gray-900 dark:text-white">
                                                 ${(() => {
                                                     let price = 0;
-                                                    
+
                                                     // Si el producto está en oferta, usar precio de oferta
                                                     if (item.isOnOffer && item.offerPrice) {
                                                         if (item.offerPrice.includes(' - ')) {
@@ -842,8 +850,8 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-gray-600 dark:text-gray-400">Envío:</span>
                                     <span className={`font-semibold ${selectedShipping?.cost === 0 || !selectedShipping ? 'text-green-600 dark:text-green-400' : 'text-barfer-orange'}`}>
-                                        {selectedShipping ? 
-                                            (selectedShipping.cost === 0 ? 'Gratis' : `$${selectedShipping.cost.toFixed(0)}`) 
+                                        {selectedShipping ?
+                                            (selectedShipping.cost === 0 ? 'Gratis' : `$${selectedShipping.cost.toFixed(0)}`)
                                             : 'Seleccionar envío'
                                         }
                                     </span>

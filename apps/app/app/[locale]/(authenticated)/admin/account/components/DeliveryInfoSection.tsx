@@ -8,8 +8,42 @@ import { Label } from '@repo/design-system/components/ui/label';
 import { Textarea } from '@repo/design-system/components/ui/textarea';
 import { useToast } from '@repo/design-system/hooks/use-toast';
 import { MapPin } from 'lucide-react';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from '@repo/design-system/components/ui/select';
 import type { Dictionary } from '@repo/internationalization';
 import { updateDeliveryInfo } from '../actions';
+
+const ARGENTINA_PROVINCES = [
+    "Buenos Aires",
+    "Ciudad Autónoma de Buenos Aires",
+    "Catamarca",
+    "Chaco",
+    "Chubut",
+    "Córdoba",
+    "Corrientes",
+    "Entre Ríos",
+    "Formosa",
+    "Jujuy",
+    "La Pampa",
+    "La Rioja",
+    "Mendoza",
+    "Misiones",
+    "Neuquén",
+    "Río Negro",
+    "Salta",
+    "San Juan",
+    "San Luis",
+    "Santa Cruz",
+    "Santa Fe",
+    "Santiago del Estero",
+    "Tierra del Fuego",
+    "Tucumán"
+];
 
 interface DeliveryInfoSectionProps {
     currentUser: any;
@@ -35,6 +69,16 @@ export function DeliveryInfoSection({ currentUser, dictionary }: DeliveryInfoSec
 
     const handleDeliveryUpdate = async () => {
         if (!currentUser) return;
+
+        // Validación básica en el cliente para feedback inmediato
+        if (!deliveryForm.phone || !deliveryForm.street || !deliveryForm.city || !deliveryForm.province || !deliveryForm.postalCode) {
+            toast({
+                title: "Campos incompletos",
+                description: "Por favor completa todos los campos obligatorios (*)",
+                variant: "destructive",
+            });
+            return;
+        }
 
         startTransition(async () => {
             const formData = new FormData();
@@ -90,7 +134,7 @@ export function DeliveryInfoSection({ currentUser, dictionary }: DeliveryInfoSec
                             Incluye código de área. Será usado para coordinar la entrega.
                         </p>
                     </div>
-                    
+
                     <div className="space-y-2">
                         <Label htmlFor="street">Dirección *</Label>
                         <Input
@@ -126,13 +170,22 @@ export function DeliveryInfoSection({ currentUser, dictionary }: DeliveryInfoSec
 
                     <div className="space-y-2">
                         <Label htmlFor="province">Provincia *</Label>
-                        <Input
-                            id="province"
-                            placeholder="Ej: Buenos Aires"
+                        <Select
                             value={deliveryForm.province}
-                            onChange={(e) => setDeliveryForm(prev => ({ ...prev, province: e.target.value }))}
+                            onValueChange={(value) => setDeliveryForm(prev => ({ ...prev, province: value }))}
                             disabled={!canEditProfile || isPending}
-                        />
+                        >
+                            <SelectTrigger id="province">
+                                <SelectValue placeholder="Selecciona una provincia" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {ARGENTINA_PROVINCES.map((prov) => (
+                                    <SelectItem key={prov} value={prov}>
+                                        {prov}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div className="space-y-2">

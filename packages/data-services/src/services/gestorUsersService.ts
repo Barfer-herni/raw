@@ -11,6 +11,14 @@ export interface GestorUser {
     phone?: string;
     role: 'user' | 'admin';
     permissions: string[];
+    address?: {
+        street: string;
+        apartment?: string;
+        city: string;
+        province: string;
+        postalCode: string;
+        notes?: string;
+    };
     createdAt: Date;
     updatedAt: Date;
     createdBy?: string; // ID del admin que lo creó
@@ -25,6 +33,14 @@ export interface CreateGestorUserData {
     phone?: string;
     role?: 'user' | 'admin';
     permissions?: string[];
+    address?: {
+        street: string;
+        apartment?: string;
+        city: string;
+        province: string;
+        postalCode: string;
+        notes?: string;
+    };
     createdBy?: string;
 }
 
@@ -107,7 +123,7 @@ export async function createGestorUser(data: CreateGestorUserData) {
 export async function getAllGestorUsers(excludeUserId?: string) {
     try {
         const gestorUsersCollection = await getCollection('users_gestor');
-        
+
         const filter = excludeUserId ? { _id: { $ne: new ObjectId(excludeUserId) } } : {};
         const users = await gestorUsersCollection.find(filter).sort({ createdAt: -1 }).toArray();
 
@@ -120,8 +136,8 @@ export async function getAllGestorUsers(excludeUserId?: string) {
             email: user.email,
             phone: user.phone,
             role: user.role,
-            permissions: Array.isArray(user.permissions) && user.permissions.length > 0 
-                ? user.permissions 
+            permissions: Array.isArray(user.permissions) && user.permissions.length > 0
+                ? user.permissions
                 : defaultPermissions,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
@@ -147,8 +163,8 @@ export async function getGestorUserById(userId: string) {
 
         // Asegurar que siempre haya permisos por defecto para usuarios normales
         const defaultPermissions = ['account:view_own', 'account:edit_own'];
-        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0 
-            ? user.permissions 
+        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0
+            ? user.permissions
             : defaultPermissions;
 
         // Retornar usuario sin contraseña
@@ -184,8 +200,8 @@ export async function getGestorUserByEmail(email: string) {
 
         // Asegurar que siempre haya permisos por defecto para usuarios normales
         const defaultPermissions = ['account:view_own', 'account:edit_own'];
-        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0 
-            ? user.permissions 
+        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0
+            ? user.permissions
             : defaultPermissions;
 
         // Retornar usuario con contraseña (para autenticación)
@@ -226,7 +242,7 @@ export async function updateGestorUser(userId: string, data: Partial<CreateGesto
         if (data.phone) updateData.phone = data.phone;
         if (data.role) updateData.role = data.role;
         if (data.permissions) updateData.permissions = data.permissions;
-        
+
         // Si se proporciona una nueva contraseña, hashearla
         if (data.password) {
             updateData.password = await bcrypt.hash(data.password, 12);
@@ -318,8 +334,8 @@ export async function getAllUsersIncludingGestor(excludeUserId?: string) {
                 email: user.email,
                 phone: user.phone,
                 role: user.role,
-                permissions: Array.isArray(user.permissions) && user.permissions.length > 0 
-                    ? user.permissions 
+                permissions: Array.isArray(user.permissions) && user.permissions.length > 0
+                    ? user.permissions
                     : defaultPermissions,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt,
@@ -332,8 +348,8 @@ export async function getAllUsersIncludingGestor(excludeUserId?: string) {
                 email: user.email,
                 phone: user.phone,
                 role: user.role,
-                permissions: Array.isArray(user.permissions) && user.permissions.length > 0 
-                    ? user.permissions 
+                permissions: Array.isArray(user.permissions) && user.permissions.length > 0
+                    ? user.permissions
                     : defaultPermissions,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt,

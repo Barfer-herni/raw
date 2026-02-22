@@ -98,7 +98,25 @@ export function ProfileSection({ currentUser, dictionary }: ProfileSectionProps)
                     </div>
                 </div>
 
+
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t gap-4">
+                    {currentUser?.role === 'admin' && (
+                        <div className="space-y-1">
+                            <p className="text-sm font-medium">Rol actual</p>
+                            <Badge variant="default" className="capitalize">
+                                Administrador
+                            </Badge>
+                            {!canEditProfile && (
+                                <p className="text-xs text-muted-foreground">
+                                    Solo lectura - Sin permisos de edición
+                                </p>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Si tienes botones u otros elementos a la derecha (por el justify-between), irían aquí */}
+
+                    {/* <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t gap-4">
                     <div className="space-y-1">
                         <p className="text-sm font-medium">Rol actual</p>
                         <Badge variant="default" className="capitalize">
@@ -109,7 +127,7 @@ export function ProfileSection({ currentUser, dictionary }: ProfileSectionProps)
                                 Solo lectura - Sin permisos de edición
                             </p>
                         )}
-                    </div>
+                    </div> */}
                     {canEditProfile && (
                         <Button
                             className="w-full sm:w-auto"

@@ -159,8 +159,8 @@ export async function loginUser(data: LoginData) {
         // Crear la sesión del usuario
         // Asegurar que siempre haya permisos por defecto para usuarios normales
         const defaultPermissions = ['account:view_own', 'account:edit_own'];
-        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0 
-            ? user.permissions 
+        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0
+            ? user.permissions
             : defaultPermissions;
 
         const userData = {
@@ -199,7 +199,14 @@ export async function loginUser(data: LoginData) {
 export async function getUserById(userId: string) {
     try {
         const usersCollection = await getCollection('users');
-        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        const gestorUsersCollection = await getCollection('users_gestor');
+
+        const [regularUser, gestorUser] = await Promise.all([
+            usersCollection.findOne({ _id: new ObjectId(userId) }),
+            gestorUsersCollection.findOne({ _id: new ObjectId(userId) })
+        ]);
+
+        const user = regularUser || gestorUser;
 
         if (!user) {
             return null;
@@ -207,10 +214,12 @@ export async function getUserById(userId: string) {
 
         // Asegurar que siempre haya permisos por defecto para usuarios normales
         const defaultPermissions = ['account:view_own', 'account:edit_own'];
-        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0 
-            ? user.permissions 
+        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0
+            ? user.permissions
             : defaultPermissions;
 
+
+        console.log("user : ", user)
         // Retornar usuario sin contraseña
         return {
             id: user._id.toString(),
@@ -223,6 +232,7 @@ export async function getUserById(userId: string) {
             permissions: userPermissions,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
+            isGestorUser: !!user.isGestorUser
         };
     } catch (error) {
         console.error('Error al obtener usuario por ID:', error);
@@ -236,6 +246,7 @@ export async function getUserById(userId: string) {
 export async function updateUserProfile(userId: string, data: UpdateProfileData) {
     try {
         const usersCollection = await getCollection('users');
+        const gestorUsersCollection = await getCollection('users_gestor');
 
         const updateData: any = {
             updatedAt: new Date(),
@@ -246,16 +257,54 @@ export async function updateUserProfile(userId: string, data: UpdateProfileData)
         if (data.phone) updateData.phone = data.phone;
         if (data.address) updateData.address = data.address;
 
-        const result = await usersCollection.updateOne(
-            { _id: new ObjectId(userId) },
-            { $set: updateData }
-        );
+        console.log('--- DATABASE UPDATE START ---');
+        console.log('User ID:', userId);
+        console.log('Update Data:', JSON.stringify(updateData, null, 2));
 
-        if (result.matchedCount === 0) {
+        // Find which collection the user belongs to
+        const [regularUser, gestorUser] = await Promise.all([
+            usersCollection.findOne({ _id: new ObjectId(userId) }),
+            gestorUsersCollection.findOne({ _id: new ObjectId(userId) })
+        ]);
+
+        let result;
+        let collectionType = '';
+
+        if (regularUser) {
+            collectionType = 'users';
+            console.log('User found in "users" collection');
+            result = await usersCollection.updateOne(
+                { _id: new ObjectId(userId) },
+                { $set: updateData }
+            );
+        } else if (gestorUser) {
+            collectionType = 'users_gestor';
+            console.log('User found in "users_gestor" collection');
+            result = await gestorUsersCollection.updateOne(
+                { _id: new ObjectId(userId) },
+                { $set: updateData }
+            );
+        } else {
+            console.log('User NOT FOUND in any collection');
             return {
                 success: false,
                 message: 'Usuario no encontrado',
                 error: 'USER_NOT_FOUND'
+            };
+        }
+
+        console.log(`Update result for ${collectionType}:`, {
+            matchedCount: result.matchedCount,
+            modifiedCount: result.modifiedCount,
+            acknowledged: result.acknowledged
+        });
+        console.log('--- DATABASE UPDATE END ---');
+
+        if (result.matchedCount === 0) {
+            return {
+                success: false,
+                message: 'No se pudo actualizar el perfil',
+                error: 'UPDATE_FAILED'
             };
         }
 
@@ -311,8 +360,8 @@ export async function changePassword(userId: string, currentPassword: string, ne
         // Actualizar contraseña
         await usersCollection.updateOne(
             { _id: new ObjectId(userId) },
-            { 
-                $set: { 
+            {
+                $set: {
                     password: hashedNewPassword,
                     updatedAt: new Date()
                 }
@@ -340,7 +389,7 @@ export async function getCurrentUser() {
     try {
         const cookieStore = await cookies();
         const userSession = cookieStore.get('auth-token');
-        
+
         if (!userSession) {
             return null;
         }
@@ -374,8 +423,8 @@ export async function getCurrentUser() {
 
         // Asegurar que siempre haya permisos por defecto para usuarios normales
         const defaultPermissions = ['account:view_own', 'account:edit_own'];
-        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0 
-            ? user.permissions 
+        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0
+            ? user.permissions
             : defaultPermissions;
 
         // Retornar usuario sin contraseña
@@ -405,8 +454,8 @@ export async function createUserSession(user: any) {
         const cookieStore = await cookies();
         // Asegurar que siempre haya permisos por defecto para usuarios normales
         const defaultPermissions = ['account:view_own', 'account:edit_own'];
-        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0 
-            ? user.permissions 
+        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0
+            ? user.permissions
             : defaultPermissions;
 
         const sessionData = {
@@ -451,11 +500,11 @@ export async function clearUserSession() {
  */
 export async function loginWithSession(data: LoginData) {
     const loginResult = await loginUser(data);
-    
+
     if (loginResult.success && loginResult.user) {
         await createUserSession(loginResult.user);
     }
-    
+
     return loginResult;
 }
 
@@ -538,7 +587,7 @@ export async function createUser(data: RegisterData & { role?: 'user' | 'admin';
 export async function getAllUsers(excludeUserId?: string) {
     try {
         const usersCollection = await getCollection('users');
-        
+
         const filter = excludeUserId ? { _id: { $ne: new ObjectId(excludeUserId) } } : {};
         const users = await usersCollection.find(filter).sort({ createdAt: -1 }).toArray();
 
@@ -552,8 +601,8 @@ export async function getAllUsers(excludeUserId?: string) {
             phone: user.phone,
             address: user.address,
             role: user.role,
-            permissions: Array.isArray(user.permissions) && user.permissions.length > 0 
-                ? user.permissions 
+            permissions: Array.isArray(user.permissions) && user.permissions.length > 0
+                ? user.permissions
                 : defaultPermissions,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt

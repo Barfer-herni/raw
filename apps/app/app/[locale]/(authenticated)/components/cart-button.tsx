@@ -23,7 +23,7 @@ export function CartButton() {
                 title="Carrito de Compras"
             >
                 <ShoppingCart className="h-6 w-6" />
-                
+
                 {/* Badge con cantidad de items */}
                 {getTotalItems() > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold">
@@ -122,7 +122,23 @@ export function CartButton() {
                                                 ${getTotalPrice().toFixed(0)}
                                             </span>
                                         </div>
+
+                                        {getTotalPrice() < 15000 && (
+                                            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm transition-all animate-in fade-in slide-in-from-top-2">
+                                                <p className="text-red-700 font-medium mb-1 flex items-center">
+                                                    <svg className="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                    </svg>
+                                                    Mínimo de compra: $15.000
+                                                </p>
+                                                <p className="text-red-600">
+                                                    Te faltan <span className="font-bold">${(15000 - getTotalPrice()).toFixed(0)}</span> para alcanzar el mínimo y realizar tu pedido.
+                                                </p>
+                                            </div>
+                                        )}
+
                                         <Button
+                                            disabled={getTotalPrice() < 15000}
                                             onClick={() => {
                                                 console.log('🛒 CartButton: Botón checkout clickeado');
                                                 console.log('🛒 CartButton: Estado actual del carrito:', cart);
@@ -131,9 +147,9 @@ export function CartButton() {
                                                 setIsCartOpen(false); // Cerrar el carrito antes de ir al checkout
                                                 checkout();
                                             }}
-                                            className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                                            className="w-full bg-orange-600 hover:bg-orange-700 text-white disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed h-12 text-base font-bold shadow-md hover:shadow-lg transition-all"
                                         >
-                                            Proceder al Checkout
+                                            {getTotalPrice() < 15000 ? 'Mínimo de compra no alcanzado' : 'Proceder al Checkout'}
                                         </Button>
                                     </div>
                                 </>

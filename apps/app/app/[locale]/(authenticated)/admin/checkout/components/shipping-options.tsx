@@ -55,7 +55,7 @@ export function ShippingOptions({ cartItems, address, onShippingSelect, selected
     // Función para obtener las opciones de envío
     const fetchShippingOptions = async () => {
         console.log('\n🎯 [SHIPPING OPTIONS] ========== INICIO fetchShippingOptions ==========');
-        
+
         if (!isAddressComplete()) {
             console.log('🎯 [SHIPPING OPTIONS] ⚠️ Dirección incompleta. Esperando datos...');
             setShippingOptions([]);
@@ -81,12 +81,29 @@ export function ShippingOptions({ cartItems, address, onShippingSelect, selected
         setIsLoading(true);
         setError(null);
 
+        // Si es CABA, mostrar solo la opción de envío propia
+        if (address.state === 'Ciudad Autónoma de Buenos Aires' || address.state === 'CF') {
+            console.log('🎯 [SHIPPING OPTIONS] 🏙️ Es CABA. Mostrando opción de envío local...');
+
+            const cabaShippingOption: EnviaShippingOption = {
+                carrier: 'Envío Propio (Raw)',
+                service: 'Entregas los Miércoles de 12 a 19hs',
+                cost: 3000,
+                currency: 'ARS',
+                delivery_estimate: 'Próximo Miércoles',
+            };
+
+            setShippingOptions([cabaShippingOption]);
+            setIsLoading(false);
+            return;
+        }
+
         try {
-            console.log('🎯 [SHIPPING OPTIONS] � Llamando a getShippingOptionsAction...');
-            
-            // Intentar obtener opciones reales de Envía
+            console.log('🎯 [SHIPPING OPTIONS] 🌐 Llamando a getShippingOptionsAction...');
+
+            // Intentar obtener opciones reales de Envía para el resto del país
             const result = await getShippingOptionsAction(cartItems, address);
-            
+
             console.log('🎯 [SHIPPING OPTIONS] 📥 Resultado recibido:', {
                 success: result.success,
                 message: result.message,
@@ -207,11 +224,10 @@ export function ShippingOptions({ cartItems, address, onShippingSelect, selected
                 {shippingOptions.map((option, index) => (
                     <div
                         key={index}
-                        className={`border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-md ${
-                            selectedOption === option
+                        className={`border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-md ${selectedOption === option
                                 ? 'border-barfer-green bg-green-50'
                                 : 'border-gray-200 hover:border-barfer-green'
-                        }`}
+                            }`}
                         onClick={() => onShippingSelect(option)}
                     >
                         <div className="flex items-center justify-between">
@@ -239,9 +255,8 @@ export function ShippingOptions({ cartItems, address, onShippingSelect, selected
                                 </div>
                             </div>
                             <div className="text-right">
-                                <p className={`font-bold text-lg ${
-                                    option.cost === 0 ? 'text-green-600' : 'text-barfer-orange'
-                                }`}>
+                                <p className={`font-bold text-lg ${option.cost === 0 ? 'text-green-600' : 'text-barfer-orange'
+                                    }`}>
                                     {formatPrice(option.cost, option.currency)}
                                 </p>
                                 <p className="text-sm text-gray-500">
