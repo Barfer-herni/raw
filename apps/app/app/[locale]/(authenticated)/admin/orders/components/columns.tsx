@@ -175,7 +175,7 @@ export const columns: ColumnDef<Order>[] = [
             const order = row.original;
             const subTotal = order.subTotal || 0;
             const shippingPrice = order.shippingPrice || 0;
-            const total = parseFloat(row.getValue('total') as string);
+            const total = subTotal + shippingPrice;
 
             const formatCurrency = (amount: number) => {
                 return new Intl.NumberFormat('es-AR', {

@@ -43,7 +43,8 @@ export async function getBalanceMonthly(
         // Convertimos createdAt a tipo Date si es un string para que funcionen los operadores de fecha
         ordersPipeline.push({
             $addFields: {
-                createdAtDate: { $toDate: '$createdAt' }
+                createdAtDate: { $toDate: '$createdAt' },
+                deliveryDayDate: { $toDate: '$deliveryDay' }
             }
         });
 
@@ -60,9 +61,9 @@ export async function getBalanceMonthly(
             end = new Date(currentYear, 11, 31, 23, 59, 59); // Año actual
         }
 
-        ordersMatch.createdAtDate = {};
-        if (start) ordersMatch.createdAtDate.$gte = start;
-        if (end) ordersMatch.createdAtDate.$lte = end;
+        ordersMatch.deliveryDayDate = {};
+        if (start) ordersMatch.deliveryDayDate.$gte = start;
+        if (end) ordersMatch.deliveryDayDate.$lte = end;
 
         ordersPipeline.push({ $match: ordersMatch });
 
@@ -70,10 +71,10 @@ export async function getBalanceMonthly(
             {
                 $group: {
                     _id: {
-                        year: { $year: '$createdAtDate' },
-                        month: { $month: '$createdAtDate' }
+                        year: { $year: { date: '$deliveryDayDate', timezone: 'America/Argentina/Buenos_Aires' } },
+                        month: { $month: { date: '$deliveryDayDate', timezone: 'America/Argentina/Buenos_Aires' } }
                     },
-                    totalEntradas: { $sum: '$total' },
+                    totalEntradas: { $sum: { $add: [{ $ifNull: ['$subTotal', 0] }, { $ifNull: ['$shippingPrice', 0] }] } },
                     totalOrdenes: { $sum: 1 },
                     totalItems: { $sum: { $size: { $ifNull: ['$items', []] } } }
                 }
