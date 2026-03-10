@@ -13,6 +13,8 @@ export {
     createUserSession,
     clearUserSession,
     loginWithSession as mongoLoginWithSession,
+    loginWithGoogle as mongoLoginWithGoogle,
+    loginWithGoogleSession as mongoLoginWithGoogleSession,
     signOut as mongoSignOut,
     createUser as mongoCreateUser,
     getAllUsers as mongoGetAllUsers,

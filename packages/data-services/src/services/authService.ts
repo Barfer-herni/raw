@@ -3,6 +3,9 @@
 import { getCollection, ObjectId } from '@repo/database';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
+import { OAuth2Client } from 'google-auth-library';
+
+const googleClient = new OAuth2Client(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID);
 
 export interface User {
     _id?: ObjectId;
@@ -22,6 +25,8 @@ export interface User {
     };
     role: 'user' | 'admin';
     permissions: string[];
+    authProvider?: string;
+    picture?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -192,6 +197,88 @@ export async function loginUser(data: LoginData) {
         };
     }
 }
+
+/**
+ * Iniciar sesión con Google
+ */
+export async function loginWithGoogle(credential: string) {
+    try {
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        if (!payload || !payload.email) {
+            return { success: false, message: 'Token de Google inválido', error: 'INVALID_TOKEN' };
+        }
+
+        const usersCollection = await getCollection('users');
+        const gestorUsersCollection = await getCollection('users_gestor');
+
+        const [regularUser, gestorUser] = await Promise.all([
+            usersCollection.findOne({ email: payload.email }),
+            gestorUsersCollection.findOne({ email: payload.email })
+        ]);
+
+        let user: any = regularUser || gestorUser;
+
+        if (!user) {
+            // Auto-register
+            const randomPassword = Math.random().toString(36).slice(-10) + 'Go0gle!';
+            const hashedPassword = await bcrypt.hash(randomPassword, 12);
+
+            const newUser: Omit<User, '_id' | 'id'> = {
+                name: payload.given_name || payload.name || '',
+                lastName: payload.family_name || '',
+                email: payload.email,
+                password: hashedPassword,
+                role: 'user',
+                permissions: [
+                    'account:view_own',
+                    'account:edit_own',
+                    'products:view',
+                    'products:purchase',
+                    'cart:view',
+                    'cart:checkout',
+                ],
+                authProvider: 'google',
+                picture: payload.picture,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            };
+
+            const result = await usersCollection.insertOne(newUser as any);
+            user = { ...newUser, _id: result.insertedId };
+        }
+
+        const defaultPermissions = ['account:view_own', 'account:edit_own'];
+        const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0
+            ? user.permissions
+            : defaultPermissions;
+
+        const userData = {
+            id: user._id.toString(),
+            name: user.name,
+            lastName: user.lastName,
+            email: user.email,
+            phone: user.phone,
+            address: user.address,
+            role: user.role,
+            permissions: userPermissions,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            picture: user.picture || payload.picture,
+        };
+
+        return { success: true, user: userData };
+
+    } catch (error) {
+        console.error('Error al iniciar sesión con Google:', error);
+        return { success: false, message: 'Error al verificar token de Google', error: 'SERVER_ERROR' };
+    }
+}
+
 
 /**
  * Obtener usuario por ID
@@ -500,6 +587,19 @@ export async function clearUserSession() {
  */
 export async function loginWithSession(data: LoginData) {
     const loginResult = await loginUser(data);
+
+    if (loginResult.success && loginResult.user) {
+        await createUserSession(loginResult.user);
+    }
+
+    return loginResult;
+}
+
+/**
+ * Login con Google completo con creación de sesión
+ */
+export async function loginWithGoogleSession(credential: string) {
+    const loginResult = await loginWithGoogle(credential);
 
     if (loginResult.success && loginResult.user) {
         await createUserSession(loginResult.user);

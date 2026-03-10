@@ -3,6 +3,7 @@ import { registerUser } from '@repo/auth/server';
 import { Dictionary } from '@repo/internationalization';
 import { SignUpButton } from './SignUpButton';
 import { PasswordInput } from './PasswordInput';
+import { GoogleLoginButton } from './GoogleLoginButton';
 import Link from 'next/link';
 
 interface SignUpProps {
@@ -132,6 +133,8 @@ export const SignUp = ({ dictionary, error }: SignUpProps) => {
                 />
 
                 <SignUpButton dictionary={dictionary} />
+
+                <GoogleLoginButton />
             </form>
 
             {/* Navigation to Sign In */}

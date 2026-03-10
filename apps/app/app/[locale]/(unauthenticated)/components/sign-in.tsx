@@ -3,6 +3,7 @@ import { loginWithSession } from '@repo/auth/server';
 import { Dictionary } from '@repo/internationalization';
 import { SignInButton } from './SignInButton';
 import { PasswordInput } from './PasswordInput';
+import { GoogleLoginButton } from './GoogleLoginButton';
 import Link from 'next/link';
 
 interface SignInProps {
@@ -68,6 +69,8 @@ export const SignIn = ({ dictionary }: SignInProps) => {
                 />
 
                 <SignInButton dictionary={dictionary} />
+
+                <GoogleLoginButton />
             </form>
 
             {/* Navigation to Sign Up */}
