@@ -60,7 +60,7 @@ export default function RemitoPage(props: RemitoPageProps) {
                 {/* Header */}
                 <div className="flex justify-between items-start mb-8 border-b pb-4">
                     <div className="flex flex-col">
-                        <h1 className="text-3xl font-bold mb-2">Raw & & Fun</h1>
+                        <h1 className="text-3xl font-bold mb-2">Raw & Fun</h1>
                         <p className="text-sm text-gray-500">Snacks deshidratados para 🐶 y😺</p>
                         <p className="text-sm text-gray-500">Tel: 11 2867-8999</p>
                     </div>
