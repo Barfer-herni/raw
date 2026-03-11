@@ -87,7 +87,7 @@ export function ShippingOptions({ cartItems, address, onShippingSelect, selected
 
             const cabaShippingOption: EnviaShippingOption = {
                 carrier: 'Envío Propio (Raw)',
-                service: 'Miércoles de 12 a 19hs',
+                service: 'Envio: Miercoles de 12 a 19hs',
                 cost: 3000,
                 currency: 'ARS',
                 delivery_estimate: 'Próximo Miércoles',
