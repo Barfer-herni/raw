@@ -99,6 +99,37 @@ export async function createOrder(data: z.infer<typeof createOrderSchema>): Prom
         // Validar los datos de entrada
         const validatedData = createOrderSchema.parse(data);
 
+        // Validar precios y disponibilidad mayorista si corresponde
+        if (validatedData.orderType === 'mayorista') {
+            const productsCollection = await getCollection('productos');
+            const productIds = validatedData.items.map(item => new ObjectId(item.id));
+            const products = await productsCollection.find({ _id: { $in: productIds } }).toArray();
+
+            for (const item of validatedData.items) {
+                const product = products.find(p => p._id.toString() === item.id);
+                if (!product) {
+                    return { success: false, error: `Producto no encontrado: ${item.name}` };
+                }
+
+                // Verificar que tenga precio mayorista o sea solo mayorista
+                const hasWholesalePrice = product.precioMayorista && product.precioMayorista > 0;
+                if (!hasWholesalePrice && !product.soloMayorista) {
+                    return { success: false, error: `El producto ${item.name} no está disponible para venta mayorista` };
+                }
+
+                // Verificar que el precio enviado coincida con el precio mayorista actual (snapshot)
+                // Usamos el precio del primer option para validar el precio unitario
+                const sentUnitPrice = item.options[0]?.price;
+                const actualWholesalePrice = product.precioMayorista || 0;
+
+                if (sentUnitPrice !== actualWholesalePrice) {
+                    console.warn(`Price discrepancy for ${item.name}: sent ${sentUnitPrice}, expected ${actualWholesalePrice}`);
+                    // Podríamos forzar el precio correcto aquí o rechazar la orden
+                    // Por ahora permitimos discrepancias si son manuales dsd admin, pero es bueno registrarlo
+                }
+            }
+        }
+
         const collection = await getCollection('orders');
 
         // Normalizar el formato de deliveryDay si está presente

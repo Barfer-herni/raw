@@ -60,7 +60,7 @@ export async function createProductAction(productData: CreateAdminProduct) {
 /**
  * Server Action: Obtener todos los productos
  */
-export async function getAllProductsAction(includeInactive = false): Promise<{ success: boolean; products?: AdminProduct[]; message?: string; error?: string }> {
+export async function getAllProductsAction(includeInactive = false, orderType?: 'minorista' | 'mayorista'): Promise<{ success: boolean; products?: AdminProduct[]; message?: string; error?: string }> {
     try {
         // Verificar permisos de administrador para ver productos inactivos
         if (includeInactive) {
@@ -74,7 +74,7 @@ export async function getAllProductsAction(includeInactive = false): Promise<{ s
             }
         }
 
-        const products = await getAllProductsService(includeInactive);
+        const products = await getAllProductsService(includeInactive, orderType);
 
         console.log('🔍 Products:', products);
         // Serializar explícitamente para Next.js

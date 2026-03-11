@@ -138,7 +138,9 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
             // Use the correct price based on orderType, fallback to stored price if product not found
             let price = item.options?.[0]?.price || item.price || 0;
             if (product) {
-                price = orderType === 'mayorista' ? product.precioMayorista : product.precioMinorista;
+                price = orderType === 'mayorista'
+                    ? (product.precioMayorista && product.precioMayorista > 0 ? product.precioMayorista : product.precioMinorista)
+                    : product.precioMinorista;
             }
             return {
                 productId: item.id || '',
@@ -204,7 +206,9 @@ export function OrdersDataTable<TData extends { _id: string }, TValue>({
                     if (product) {
                         return {
                             ...productItem,
-                            price: value === 'mayorista' ? product.precioMayorista : product.precioMinorista
+                            price: value === 'mayorista'
+                                ? (product.precioMayorista && product.precioMayorista > 0 ? product.precioMayorista : product.precioMinorista)
+                                : product.precioMinorista
                         };
                     }
                     return productItem;

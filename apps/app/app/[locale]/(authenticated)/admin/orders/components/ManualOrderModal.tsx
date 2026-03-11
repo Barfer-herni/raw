@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useMemo } from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
@@ -55,6 +55,16 @@ export function ManualOrderModal({ open, onOpenChange, products, onSuccess }: Ma
         selectedProducts: [] as { productId: string; quantity: number; price: number }[],
     });
 
+    const filteredProducts = useMemo(() => {
+        const wholesale = editValues.orderType === 'mayorista';
+        return products.filter(p => {
+            if (wholesale) {
+                return (p.precioMayorista && p.precioMayorista > 0) || p.soloMayorista;
+            }
+            return !p.soloMayorista;
+        });
+    }, [products, editValues.orderType]);
+
     const handleValueChange = (field: string, value: any) => {
         setEditValues((prev) => {
             let processedValue = value;
@@ -98,7 +108,7 @@ export function ManualOrderModal({ open, onOpenChange, products, onSuccess }: Ma
             e.preventDefault();
             e.stopPropagation();
         }
-        const validProducts = products.filter(p => p._id && p._id.trim() !== '');
+        const validProducts = filteredProducts.filter(p => p._id && p._id.trim() !== '');
         const firstProduct = validProducts[0];
         if (!firstProduct) return;
         const price = editValues.orderType === 'mayorista' ? (firstProduct.precioMayorista || 0) : (firstProduct.precioMinorista || 0);
@@ -339,9 +349,9 @@ export function ManualOrderModal({ open, onOpenChange, products, onSuccess }: Ma
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {products.map((prod) => (
+                                                {filteredProducts.map((prod) => (
                                                     <SelectItem key={prod._id} value={prod._id || ''}>
-                                                        {prod.titulo}
+                                                        {prod.titulo} {editValues.orderType === 'mayorista' ? `($${prod.precioMayorista})` : `($${prod.precioMinorista})`}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>

@@ -77,11 +77,23 @@ export async function createProduct(productData: CreateAdminProduct, createdBy: 
 /**
  * Obtener todos los productos
  */
-export async function getAllProducts(includeInactive = false): Promise<AdminProduct[]> {
+export async function getAllProducts(includeInactive = false, orderType?: 'minorista' | 'mayorista'): Promise<AdminProduct[]> {
     try {
         const productsCollection = await getCollection('productos');
 
-        const filter = includeInactive ? {} : { isActive: true };
+        let filter: any = includeInactive ? {} : { isActive: true };
+
+        // Aplicar filtro de tipo de orden si se especifica
+        if (orderType === 'mayorista') {
+            filter = {
+                ...filter,
+                $or: [
+                    { precioMayorista: { $gt: 0 } },
+                    { soloMayorista: true }
+                ]
+            };
+        }
+
         const products = await productsCollection.find(filter).sort({ precioOferta: -1, createdAt: -1 }).toArray();
 
         return products.map(product => ({
