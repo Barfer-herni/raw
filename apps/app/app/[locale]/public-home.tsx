@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getProductsForHomeAction } from '@repo/data-services/src/client-safe';
+import { getProductsForHomeAction, getAllCategoriesAction, type ProductCategory } from '@repo/data-services/src/client-safe';
 import { useCart, type Product } from './(authenticated)/components/cart-context';
 import { ProductCard } from './(authenticated)/admin/components/product-card';
 import { CartNotification } from './(authenticated)/components/cart-notification';
@@ -255,7 +255,10 @@ const SAMPLE_PRODUCTS: Product[] = [
 export function PublicHome({ locale, dictionary, isAuthenticated }: PublicHomeProps) {
     const router = useRouter();
     const [products, setProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<ProductCategory[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+    const [isLoadingCategories, setIsLoadingCategories] = useState(true);
     const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
     const [currentClientPhotoIndex, setCurrentClientPhotoIndex] = useState(0);
     const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
@@ -384,23 +387,43 @@ export function PublicHome({ locale, dictionary, isAuthenticated }: PublicHomePr
     };
 
     useEffect(() => {
-        const loadProducts = async () => {
+        const loadCategories = async () => {
             try {
-                const result = await getProductsForHomeAction();
+                const result = await getAllCategoriesAction(false); // solo activas
+                if (result.success && result.categories) {
+                    setCategories(result.categories);
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            } finally {
+                setIsLoadingCategories(false);
+            }
+        };
+
+        loadCategories();
+    }, []);
+
+    useEffect(() => {
+        const loadProducts = async () => {
+            setIsLoadingProducts(true);
+            try {
+                // Pasamos la categoría seleccionada al backend
+                const result = await getProductsForHomeAction('minorista', selectedCategory || undefined);
                 if (result.success && result.products && result.products.length > 0) {
                     setProducts(result.products);
                 } else {
-                    setProducts(SAMPLE_PRODUCTS);
+                    setProducts(selectedCategory ? [] : SAMPLE_PRODUCTS);
                 }
             } catch (error) {
-                setProducts(SAMPLE_PRODUCTS);
+                console.error('Error loading products:', error);
+                setProducts(selectedCategory ? [] : SAMPLE_PRODUCTS);
             } finally {
                 setIsLoadingProducts(false);
             }
         };
 
         loadProducts();
-    }, []);
+    }, [selectedCategory]); // Re-fetch products when selectedCategory changes
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -510,9 +533,52 @@ export function PublicHome({ locale, dictionary, isAuthenticated }: PublicHomePr
                             </div>
                         </div>
 
-                        {/* Lista de Productos */}
+                        {/* Lista de Productos y Filtros */}
                         <ScrollReveal>
-                            <div className="container mx-auto px-4 mb-12">
+                            <div className="container mx-auto px-4 mb-12 mt-12">
+                                {/* Filtros por categoría */}
+                                <div className="mb-8">
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-4 font-poppins text-center">
+                                        Nuestros Productos
+                                    </h3>
+
+                                    {isLoadingCategories ? (
+                                        <div className="flex justify-center flex-wrap gap-2">
+                                            {[1, 2, 3, 4].map((n) => (
+                                                <div key={`sk-cat-${n}`} className="h-10 w-24 bg-gray-200 rounded-full animate-pulse" />
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="flex overflow-x-auto pb-4 justify-start md:justify-center gap-2 hide-scrollbar">
+                                            <button
+                                                onClick={() => setSelectedCategory(null)}
+                                                className={`px-6 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all shadow-sm
+                                                    ${selectedCategory === null
+                                                        ? 'bg-barfer-orange text-white shadow-md transform scale-105'
+                                                        : 'bg-white text-gray-700 border border-gray-200 hover:border-barfer-orange hover:text-barfer-orange'
+                                                    }`}
+                                            >
+                                                Todos
+                                            </button>
+
+                                            {categories.map((category) => (
+                                                <button
+                                                    key={category._id}
+                                                    onClick={() => setSelectedCategory(category._id || null)}
+                                                    className={`px-6 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all shadow-sm
+                                                        ${selectedCategory === category._id
+                                                            ? 'bg-barfer-orange text-white shadow-md transform scale-105'
+                                                            : 'bg-white text-gray-700 border border-gray-200 hover:border-barfer-orange hover:text-barfer-orange'
+                                                        }`}
+                                                >
+                                                    {category.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Grilla de Productos */}
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
                                     {isLoadingProducts ? (
                                         [1, 2, 3, 4].map((n) => (
@@ -524,7 +590,7 @@ export function PublicHome({ locale, dictionary, isAuthenticated }: PublicHomePr
                                                 </div>
                                             </div>
                                         ))
-                                    ) : (
+                                    ) : products.length > 0 ? (
                                         products.map((product) => (
                                             <ProductCard
                                                 key={product.id}
@@ -532,6 +598,16 @@ export function PublicHome({ locale, dictionary, isAuthenticated }: PublicHomePr
                                                 onAddToCart={handleAddToCart}
                                             />
                                         ))
+                                    ) : (
+                                        <div className="col-span-full py-16 text-center bg-white rounded-2xl border border-dashed border-gray-300">
+                                            <p className="text-gray-500 text-lg mb-2">No hay productos en esta categoría.</p>
+                                            <button
+                                                onClick={() => setSelectedCategory(null)}
+                                                className="text-barfer-green font-semibold hover:underline"
+                                            >
+                                                Ver todos los productos
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -687,8 +763,8 @@ export function PublicHome({ locale, dictionary, isAuthenticated }: PublicHomePr
                                         {contactStatus.type && (
                                             <div
                                                 className={`p-4 rounded-xl text-center ${contactStatus.type === 'success'
-                                                        ? 'bg-green-100 text-green-800 border border-green-300'
-                                                        : 'bg-red-100 text-red-800 border border-red-300'
+                                                    ? 'bg-green-100 text-green-800 border border-green-300'
+                                                    : 'bg-red-100 text-red-800 border border-red-300'
                                                     }`}
                                             >
                                                 {contactStatus.message}
@@ -916,8 +992,8 @@ function FriendCarousel() {
                         key={index}
                         onClick={() => setCurrentIndex(index)}
                         className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex
-                                ? 'bg-barfer-orange scale-125'
-                                : 'bg-gray-300 hover:bg-gray-400'
+                            ? 'bg-barfer-orange scale-125'
+                            : 'bg-gray-300 hover:bg-gray-400'
                             }`}
                         aria-label={`Ir a grupo ${index + 1}`}
                     />

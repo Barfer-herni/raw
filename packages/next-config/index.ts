@@ -69,4 +69,4 @@ export const config: NextConfig = {
 };
 
 export const withAnalyzer = (sourceConfig: NextConfig): NextConfig =>
-  withBundleAnalyzer()(sourceConfig);
+  (withBundleAnalyzer() as any)(sourceConfig);

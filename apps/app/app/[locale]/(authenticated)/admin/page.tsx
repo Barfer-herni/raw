@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getProductsForHomeAction } from '@repo/data-services/src/client-safe';
+import { getProductsForHomeAction, getAllCategoriesAction, type ProductCategory } from '@repo/data-services/src/client-safe';
 import { useCart, type Product } from '../components/cart-context';
 import { ProductCard } from './components/product-card';
 import { CartNotification } from '../components/cart-notification';
@@ -457,8 +457,8 @@ function FriendCarousel() {
                         key={index}
                         onClick={() => setCurrentIndex(index)}
                         className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex
-                                ? 'bg-barfer-orange scale-125'
-                                : 'bg-gray-300 hover:bg-gray-400'
+                            ? 'bg-barfer-orange scale-125'
+                            : 'bg-gray-300 hover:bg-gray-400'
                             }`}
                         aria-label={`Ir a grupo ${index + 1}`}
                     />
@@ -470,7 +470,10 @@ function FriendCarousel() {
 
 export default function AdminPage() {
     const [products, setProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<ProductCategory[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+    const [isLoadingCategories, setIsLoadingCategories] = useState(true);
     const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
     const [currentClientPhotoIndex, setCurrentClientPhotoIndex] = useState(0);
     const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
@@ -626,7 +629,25 @@ export default function AdminPage() {
 
     // Cargar productos reales desde la base de datos
     useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                const result = await getAllCategoriesAction(false); // solo activas
+                if (result.success && result.categories) {
+                    setCategories(result.categories);
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            } finally {
+                setIsLoadingCategories(false);
+            }
+        };
+
+        loadCategories();
+    }, []);
+
+    useEffect(() => {
         const loadProducts = async () => {
+            setIsLoadingProducts(true);
             try {
                 console.log('🏠 Cargando productos para el home...');
 
@@ -636,34 +657,35 @@ export default function AdminPage() {
 
                 if (useExampleProducts) {
                     console.log('🏷️ Usando productos de ejemplo con ofertas');
-                    setProducts(SAMPLE_PRODUCTS);
+                    setProducts(selectedCategory ? [] : SAMPLE_PRODUCTS);
                     setIsLoadingProducts(false);
                     return;
                 }
 
-                const result = await getProductsForHomeAction();
+                // Pasamos la categoría seleccionada al backend
+                const result = await getProductsForHomeAction('minorista', selectedCategory || undefined);
                 if (result.success && result.products && result.products.length > 0) {
                     console.log('📦 Productos cargados desde la base de datos:', result.products.length);
                     // Usar productos de la base de datos si existen
                     setProducts(result.products);
                 } else {
-                    console.error('Error cargando productos o no hay productos:', result.message);
-                    console.log('🏷️ Usando productos de ejemplo como fallback');
-                    // Fallback a productos de ejemplo si falla la carga o no hay productos
-                    setProducts(SAMPLE_PRODUCTS);
+                    console.error('Error cargando productos o no hay productos:', result?.message);
+                    console.log('🏷️ Usando productos de ejemplo como fallback o lista vacía si hay filtro');
+                    // Fallback a productos de ejemplo si falla la carga o no hay productos, vacío si hay categoría
+                    setProducts(selectedCategory ? [] : SAMPLE_PRODUCTS);
                 }
             } catch (error) {
                 console.error('Error cargando productos:', error);
-                console.log('🏷️ Usando productos de ejemplo por error');
-                // Fallback a productos de ejemplo si falla la carga
-                setProducts(SAMPLE_PRODUCTS);
+                console.log('🏷️ Usando productos de ejemplo por error o vacío si hay filtro');
+                // Fallback a productos de ejemplo si falla la carga, vacío si hay categoría
+                setProducts(selectedCategory ? [] : SAMPLE_PRODUCTS);
             } finally {
                 setIsLoadingProducts(false);
             }
         };
 
         loadProducts();
-    }, []);
+    }, [selectedCategory]); // Re-fetch products when selectedCategory changes
 
     // Auto-play del carrusel principal
     useEffect(() => {
@@ -795,40 +817,93 @@ export default function AdminPage() {
 
                 {/* Lista de Productos */}
                 <ScrollReveal>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-6 mb-12">
-                        {isLoadingProducts ? (
-                            // Skeleton loading para productos
-                            Array.from({ length: 8 }).map((_, index) => (
-                                <div key={index} className="p-4 animate-pulse">
-                                    <div className="mb-4">
-                                        <div className="bg-gray-300 w-full h-64 lg:h-80 rounded-lg"></div>
+                    <div className="container mx-auto px-4 mb-12 mt-12">
+                        {/* Filtros por categoría */}
+                        <div className="mb-8">
+                            <h3 className="text-2xl font-bold text-gray-900 mb-4 font-poppins text-center">
+                                Nuestros Productos
+                            </h3>
+
+                            {isLoadingCategories ? (
+                                <div className="flex justify-center flex-wrap gap-2">
+                                    {[1, 2, 3, 4].map((n) => (
+                                        <div key={`sk-cat-${n}`} className="h-10 w-24 bg-gray-200 rounded-full animate-pulse" />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="flex overflow-x-auto pb-4 justify-start md:justify-center gap-2 hide-scrollbar">
+                                    <button
+                                        onClick={() => setSelectedCategory(null)}
+                                        className={`px-6 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all shadow-sm
+                                            ${selectedCategory === null
+                                                ? 'bg-barfer-orange text-white shadow-md transform scale-105'
+                                                : 'bg-white text-gray-700 border border-gray-200 hover:border-barfer-orange hover:text-barfer-orange'
+                                            }`}
+                                    >
+                                        Todos
+                                    </button>
+
+                                    {categories.map((category) => (
+                                        <button
+                                            key={category._id}
+                                            onClick={() => setSelectedCategory(category._id || null)}
+                                            className={`px-6 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all shadow-sm
+                                                ${selectedCategory === category._id
+                                                    ? 'bg-barfer-orange text-white shadow-md transform scale-105'
+                                                    : 'bg-white text-gray-700 border border-gray-200 hover:border-barfer-orange hover:text-barfer-orange'
+                                                }`}
+                                        >
+                                            {category.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Grilla de Productos */}
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-6 mb-12">
+                            {isLoadingProducts ? (
+                                // Skeleton loading para productos
+                                Array.from({ length: 8 }).map((_, index) => (
+                                    <div key={index} className="p-4 animate-pulse">
+                                        <div className="mb-4">
+                                            <div className="bg-gray-300 w-full h-64 lg:h-80 rounded-lg"></div>
+                                        </div>
+                                        <div className="bg-gray-300 h-6 rounded mb-2"></div>
+                                        <div className="bg-gray-300 h-4 rounded mb-2"></div>
+                                        <div className="bg-gray-300 h-5 rounded w-20 mb-4"></div>
+                                        <div className="bg-gray-300 h-10 rounded"></div>
                                     </div>
-                                    <div className="bg-gray-300 h-6 rounded mb-2"></div>
-                                    <div className="bg-gray-300 h-4 rounded mb-2"></div>
-                                    <div className="bg-gray-300 h-5 rounded w-20 mb-4"></div>
-                                    <div className="bg-gray-300 h-10 rounded"></div>
+                                ))
+                            ) : products.length > 0 ? (
+                                products.map((product) => (
+                                    <ProductCard
+                                        key={product.id}
+                                        product={product}
+                                        onAddToCart={handleAddToCart}
+                                    />
+                                ))
+                            ) : (
+                                // Mensaje cuando no hay productos
+                                <div className="col-span-full text-center py-12">
+                                    <div className="text-gray-500 dark:text-gray-400">
+                                        <svg className="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M9 21h6" />
+                                        </svg>
+                                        <p className="text-lg font-medium mb-2">No hay productos disponibles</p>
+                                        <p className="text-sm mb-4">Los productos aparecerán aquí una vez que sean agregados por el administrador.</p>
+                                        {selectedCategory && (
+                                            <button
+                                                onClick={() => setSelectedCategory(null)}
+                                                className="text-barfer-green font-semibold hover:underline"
+                                            >
+                                                Ver todos los productos
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
-                            ))
-                        ) : products.length > 0 ? (
-                            products.map((product) => (
-                                <ProductCard
-                                    key={product.id}
-                                    product={product}
-                                    onAddToCart={handleAddToCart}
-                                />
-                            ))
-                        ) : (
-                            // Mensaje cuando no hay productos
-                            <div className="col-span-full text-center py-12">
-                                <div className="text-gray-500 dark:text-gray-400">
-                                    <svg className="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M9 21h6" />
-                                    </svg>
-                                    <p className="text-lg font-medium mb-2">No hay productos disponibles</p>
-                                    <p className="text-sm">Los productos aparecerán aquí una vez que sean agregados por el administrador.</p>
-                                </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </ScrollReveal>
 
@@ -984,8 +1059,8 @@ export default function AdminPage() {
                                 {contactStatus.type && (
                                     <div
                                         className={`p-4 rounded-xl text-center ${contactStatus.type === 'success'
-                                                ? 'bg-green-100 text-green-800 border border-green-300'
-                                                : 'bg-red-100 text-red-800 border border-red-300'
+                                            ? 'bg-green-100 text-green-800 border border-green-300'
+                                            : 'bg-red-100 text-red-800 border border-red-300'
                                             }`}
                                     >
                                         {contactStatus.message}

@@ -1,12 +1,13 @@
 'use server'
 
-import { 
-    createProduct as createProductService, 
+import {
+    createProduct as createProductService,
     getAllProducts as getAllProductsService,
     updateProduct as updateProductService,
     deleteProduct as deleteProductService,
     getProductById as getProductByIdService,
-    searchProducts as searchProductsService
+    searchProducts as searchProductsService,
+    getProductsByCategory as getProductsByCategoryService
 } from './productosService';
 import { requireAdminRole } from './authHelpers';
 import type { CreateAdminProduct, AdminProduct } from '../types/barfer';
@@ -36,7 +37,7 @@ export async function createProductAction(productData: CreateAdminProduct) {
         }
 
         const result = await createProductService(productData, adminCheck.user.id);
-        
+
         // Serializar explícitamente el resultado para Next.js
         if (result.success && result.product) {
             return {
@@ -44,7 +45,7 @@ export async function createProductAction(productData: CreateAdminProduct) {
                 product: JSON.parse(JSON.stringify(result.product))
             };
         }
-        
+
         return result;
     } catch (error) {
         console.error('Error en createProductAction:', error);
@@ -97,7 +98,7 @@ export async function getAllProductsAction(includeInactive = false): Promise<{ s
 export async function getProductByIdAction(productId: string): Promise<{ success: boolean; product?: AdminProduct; message?: string; error?: string }> {
     try {
         const product = await getProductByIdService(productId);
-        
+
         if (!product) {
             return {
                 success: false,
@@ -137,7 +138,7 @@ export async function updateProductAction(productId: string, updateData: Partial
         }
 
         const result = await updateProductService(productId, updateData);
-        
+
         // Serializar explícitamente el resultado para Next.js
         if (result.success && result.product) {
             return {
@@ -145,7 +146,7 @@ export async function updateProductAction(productId: string, updateData: Partial
                 product: JSON.parse(JSON.stringify(result.product))
             };
         }
-        
+
         return result;
     } catch (error) {
         console.error('Error en updateProductAction:', error);
@@ -173,7 +174,7 @@ export async function deleteProductAction(productId: string) {
         }
 
         const result = await deleteProductService(productId);
-        
+
         // Serializar explícitamente para Next.js
         return JSON.parse(JSON.stringify(result));
     } catch (error) {
@@ -211,36 +212,38 @@ export async function searchProductsAction(searchTerm: string): Promise<{ succes
  * Transforma los datos de AdminProduct al formato esperado por la UI
  * Filtra productos soloMayorista si el usuario es minorista (por defecto)
  */
-export async function getProductsForHomeAction(userType: 'minorista' | 'mayorista' = 'minorista'): Promise<{ success: boolean; products?: any[]; message?: string; error?: string }> {
+export async function getProductsForHomeAction(userType: 'minorista' | 'mayorista' = 'minorista', categoryId?: string): Promise<{ success: boolean; products?: any[]; message?: string; error?: string }> {
     try {
-        const result = await getAllProductsService(false); // Solo productos activos
-        
+        const result = categoryId
+            ? await getProductsByCategoryService(categoryId)
+            : await getAllProductsService(false); // Solo productos activos
+
         // Filtrar productos según el tipo de usuario
         // Si es minorista, excluir productos soloMayorista
-        const filteredProducts = userType === 'minorista' 
+        const filteredProducts = userType === 'minorista'
             ? result.filter(product => !product.soloMayorista)
             : result;
-        
+
         // Transformar los datos al formato esperado por la página de inicio
         const transformedProducts = filteredProducts.map(product => {
-            
+
             // Precio normal (solo minorista)
             const normalPrice = product.precioMinorista?.toString() || 'Consultar precio';
-            
+
             // Detectar si tiene oferta
             const hasOffer = !!product.precioOferta;
-            
+
             // Precio de oferta
             const offerPrice = hasOffer && product.precioOferta ? product.precioOferta.toString() : null;
-            
+
             const transformedProduct = {
                 id: product._id,
                 name: product.titulo,
                 description: product.descripcion,
                 priceRange: normalPrice,
                 category: product.categoria,
-                image: (product.imagenes && product.imagenes.length > 0) 
-                    ? product.imagenes[0] 
+                image: (product.imagenes && product.imagenes.length > 0)
+                    ? product.imagenes[0]
                     : 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
                 stock: product.stock || 0,
                 // Campos para ofertas (simplificado)
