@@ -288,12 +288,6 @@ export function PublicHome({ locale, dictionary, isAuthenticated }: PublicHomePr
     const { addToCart } = useCart();
 
     const handleAddToCart = (product: Product, quantity: number) => {
-        if (!isAuthenticated) {
-            // Redirect to sign in if not authenticated
-            router.push(`/${locale}/sign-in`);
-            return;
-        }
-
         addToCart(product, quantity);
         setNotification({
             isVisible: true,

@@ -1,5 +1,6 @@
 import '@repo/design-system/styles/globals.css';
 import { DesignSystemProvider } from '@repo/design-system';
+import { CartProvider } from './(authenticated)/components/cart-context';
 import { fonts } from '../../lib/fonts';
 import { Toolbar } from '@repo/feature-flags/components/toolbar';
 import { createMetadata } from '@repo/seo/metadata';
@@ -24,7 +25,9 @@ const RootLayout = async ({ children, params }: RootLayoutProperties) => {
   return (
     <html lang={locale} className={fonts} suppressHydrationWarning>
       <body>
-        <DesignSystemProvider>{children}</DesignSystemProvider>
+        <DesignSystemProvider>
+          <CartProvider locale={locale}>{children}</CartProvider>
+        </DesignSystemProvider>
         <Toolbar />
       </body>
     </html>

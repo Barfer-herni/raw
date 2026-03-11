@@ -5,7 +5,6 @@ import { checkAdminRoleAction } from '@repo/data-services/src/actions';
 import { AdminButton } from '../../components/admin-button';
 import { CartButton } from '../../components/cart-button';
 import { UserHeaderClient } from '../../components/user-header/userHeaderClient';
-import { CartProvider } from '../../components/cart-context';
 import { Dictionary } from '@repo/internationalization';
 
 interface AdminPageWrapperProps {
@@ -44,7 +43,7 @@ export function AdminPageWrapper({ children, logo, title, dictionary, locale }: 
     );
 
     return (
-        <CartProvider locale={locale}>
+        <>
             {/* Sidebar vertical izquierdo con iconos */}
             <AdminButton locale={locale} isAdmin={isAdmin} isLoadingAdmin={isLoadingAdmin} />
 
@@ -64,6 +63,6 @@ export function AdminPageWrapper({ children, logo, title, dictionary, locale }: 
                     </main>
                 </div>
             </div>
-        </CartProvider>
+        </>
     );
 }

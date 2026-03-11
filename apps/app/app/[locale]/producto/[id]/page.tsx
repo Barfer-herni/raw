@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useCart } from '../../../components/cart-context';
+import { useCart, type CartItem } from '../../(authenticated)/components/cart-context';
 import { getProductByIdAction } from '@repo/data-services/src/actions';
 import type { AdminProduct } from '@repo/data-services/src/types/barfer';
 
@@ -11,7 +11,7 @@ export default function ProductDetailPage() {
     const params = useParams();
     const router = useRouter();
     const { addToCart, cart } = useCart();
-    
+
     const [product, setProduct] = useState<AdminProduct | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -27,7 +27,7 @@ export default function ProductDetailPage() {
 
     const productId = params.id as string;
     const locale = params.locale as string;
-    
+
     // Debug: verificar parámetros
     console.log('ProductDetailPage Debug:', {
         productId,
@@ -36,7 +36,7 @@ export default function ProductDetailPage() {
     });
 
     // Obtener la cantidad actual de este producto en el carrito
-    const cartItem = cart.find(item => item.id === productId);
+    const cartItem = cart.find((item: CartItem) => item.id === productId);
     const cartQuantity = cartItem ? cartItem.quantity : 0;
 
     useEffect(() => {
@@ -66,26 +66,19 @@ export default function ProductDetailPage() {
         if (!product) return;
 
         console.log('🔍 Producto completo:', product);
-        console.log('🔍 Dimensiones del producto:', product.dimensiones);
-        console.log('🔍 Peso del producto:', product.dimensiones?.peso);
-        console.log('🔍 ¿Tiene dimensiones?', !!product.dimensiones);
-        console.log('🔍 ¿Tiene peso?', !!product.dimensiones?.peso);
-
         const productForCart = {
             id: product._id!,
             name: product.titulo,
             description: product.descripcion || '',
             priceRange: product.precioMinorista.toString(),
             category: product.categoria,
-            image: (product.imagenes && product.imagenes.length > 0) 
-                ? product.imagenes[0] 
+            image: (product.imagenes && product.imagenes.length > 0)
+                ? product.imagenes[0]
                 : 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
             stock: product.stock || 0,
-            // Campos de oferta simplificados
             isOnOffer: !!product.precioOferta,
             originalPrice: product.precioOferta ? product.precioMinorista.toString() : undefined,
             offerPrice: product.precioOferta ? product.precioOferta.toString() : undefined,
-            // Campos para envío
             dimensions: product.dimensiones ? {
                 alto: product.dimensiones.alto || 10,
                 ancho: product.dimensiones.ancho || 15,
@@ -95,13 +88,12 @@ export default function ProductDetailPage() {
         };
 
         addToCart(productForCart, quantity);
-        
+
         setNotification({
             isVisible: true,
             message: `¡Agregado! ${quantity} x ${product.titulo}`
         });
 
-        // Ocultar notificación después de 3 segundos
         setTimeout(() => {
             setNotification({ isVisible: false, message: '' });
         }, 3000);
@@ -118,12 +110,12 @@ export default function ProductDetailPage() {
     };
 
     const goBack = () => {
-        router.push(`/${locale}/admin`);
+        router.push(`/${locale}`);
     };
 
     const nextImage = () => {
         if (product?.imagenes && product.imagenes.length > 1) {
-            setCurrentImageIndex((prev) => 
+            setCurrentImageIndex((prev) =>
                 prev === product.imagenes!.length - 1 ? 0 : prev + 1
             );
         }
@@ -131,7 +123,7 @@ export default function ProductDetailPage() {
 
     const prevImage = () => {
         if (product?.imagenes && product.imagenes.length > 1) {
-            setCurrentImageIndex((prev) => 
+            setCurrentImageIndex((prev) =>
                 prev === 0 ? product.imagenes!.length - 1 : prev - 1
             );
         }
@@ -206,42 +198,36 @@ export default function ProductDetailPage() {
                                             alt={`${product.titulo} - Imagen ${currentImageIndex + 1}`}
                                             className="w-full h-full object-cover"
                                         />
-                                        
-                                        {/* Controles del carrusel (solo si hay más de 1 imagen) */}
+
                                         {product.imagenes.length > 1 && (
                                             <>
-                                                {/* Botón anterior */}
                                                 <button
                                                     onClick={prevImage}
                                                     className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-colors"
                                                 >
                                                     <ChevronLeft className="w-5 h-5" />
                                                 </button>
-                                                
-                                                {/* Botón siguiente */}
+
                                                 <button
                                                     onClick={nextImage}
                                                     className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 hover:bg-black/70 transition-colors"
                                                 >
                                                     <ChevronRight className="w-5 h-5" />
                                                 </button>
-                                                
-                                                {/* Indicadores de puntos */}
+
                                                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
                                                     {product.imagenes.map((_, index) => (
                                                         <button
                                                             key={index}
                                                             onClick={() => goToImage(index)}
-                                                            className={`w-3 h-3 rounded-full transition-all ${
-                                                                index === currentImageIndex
-                                                                    ? 'bg-white scale-125'
-                                                                    : 'bg-white/50 hover:bg-white/75'
-                                                            }`}
+                                                            className={`w-3 h-3 rounded-full transition-all ${index === currentImageIndex
+                                                                ? 'bg-white scale-125'
+                                                                : 'bg-white/50 hover:bg-white/75'
+                                                                }`}
                                                         />
                                                     ))}
                                                 </div>
-                                                
-                                                {/* Contador de imágenes */}
+
                                                 <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
                                                     {currentImageIndex + 1} / {product.imagenes.length}
                                                 </div>
@@ -256,19 +242,17 @@ export default function ProductDetailPage() {
                                     />
                                 )}
                             </div>
-                            
-                            {/* Miniaturas (si hay más de 1 imagen) */}
+
                             {product.imagenes && product.imagenes.length > 1 && (
                                 <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex gap-2 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg">
                                     {product.imagenes.map((imageUrl, index) => (
                                         <button
                                             key={index}
                                             onClick={() => goToImage(index)}
-                                            className={`flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden border-2 transition-all ${
-                                                index === currentImageIndex
-                                                    ? 'border-barfer-orange scale-110'
-                                                    : 'border-gray-300 hover:border-gray-400'
-                                            }`}
+                                            className={`flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden border-2 transition-all ${index === currentImageIndex
+                                                ? 'border-barfer-orange scale-110'
+                                                : 'border-gray-300 hover:border-gray-400'
+                                                }`}
                                         >
                                             <img
                                                 src={imageUrl}
@@ -284,12 +268,10 @@ export default function ProductDetailPage() {
                         {/* Información del producto */}
                         <div className="p-8 flex flex-col justify-between">
                             <div>
-                                {/* Título */}
                                 <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 font-poppins mb-4">
                                     {product.titulo}
                                 </h1>
 
-                                {/* Precios */}
                                 <div className="mb-6">
                                     {product.precioOferta ? (
                                         <div className="flex items-center gap-3">
@@ -310,7 +292,6 @@ export default function ProductDetailPage() {
                                     )}
                                 </div>
 
-                                {/* Descripción */}
                                 {product.descripcion && (
                                     <div className="mb-6">
                                         <h3 className="text-lg font-semibold text-gray-900 mb-2 font-poppins">
@@ -322,7 +303,6 @@ export default function ProductDetailPage() {
                                     </div>
                                 )}
 
-                                {/* Stock - Solo mostrar cuando sea 0 */}
                                 {product.stock === 0 && (
                                     <div className="mb-6">
                                         <div className="flex items-center gap-2">
@@ -334,7 +314,6 @@ export default function ProductDetailPage() {
                                     </div>
                                 )}
 
-                                {/* Dimensiones */}
                                 {product.dimensiones && (
                                     <div className="mb-6">
                                         <h3 className="text-lg font-semibold text-gray-900 mb-2 font-poppins">
@@ -370,16 +349,13 @@ export default function ProductDetailPage() {
                                 )}
                             </div>
 
-                            {/* Sección de compra */}
                             <div className="border-t pt-6">
-                                {/* Indicador de carrito */}
                                 {cartQuantity > 0 && (
                                     <div className="mb-4 text-sm text-green-600 font-medium bg-green-50 px-3 py-2 rounded-lg border border-green-200">
                                         ✓ Ya tienes {cartQuantity} unidad{cartQuantity !== 1 ? 'es' : ''} en el carrito
                                     </div>
                                 )}
 
-                                {/* Contador de cantidad */}
                                 <div className="flex items-center gap-4 mb-6">
                                     <span className="text-lg font-semibold text-gray-900">Cantidad:</span>
                                     <div className="flex items-center border border-gray-300 rounded-lg">
@@ -403,14 +379,13 @@ export default function ProductDetailPage() {
                                     </div>
                                 </div>
 
-                                {/* Botón agregar al carrito */}
                                 <button
                                     onClick={handleAddToCart}
                                     disabled={product.stock <= 0}
                                     className="w-full bg-barfer-green hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-4 rounded-2xl font-bold text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
                                 >
-                                    {product.stock <= 0 
-                                        ? 'Sin stock' 
+                                    {product.stock <= 0
+                                        ? 'Sin stock'
                                         : `Agregar ${quantity} al carrito`
                                     }
                                 </button>
@@ -420,7 +395,6 @@ export default function ProductDetailPage() {
                 </div>
             </div>
 
-            {/* Notificación */}
             {notification.isVisible && (
                 <div className="fixed bottom-4 right-4 z-50">
                     <div className="bg-green-600 text-white p-4 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in-up">
@@ -428,7 +402,7 @@ export default function ProductDetailPage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                         <span className="font-semibold">{notification.message}</span>
-                        <button 
+                        <button
                             onClick={() => setNotification({ isVisible: false, message: '' })}
                             className="ml-auto text-white/80 hover:text-white"
                         >

@@ -17,14 +17,14 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     const { cart } = useCart();
     const pathname = usePathname();
     const [localQuantity, setLocalQuantity] = useState(1);
-    
+
     // Extraer locale del pathname
     const locale = pathname.split('/')[1] || 'es';
-    
+
     // Obtener la cantidad actual de este producto en el carrito
     const cartItem = cart.find(item => item.id === product.id);
     const cartQuantity = cartItem ? cartItem.quantity : 0;
-    
+
     // Sincronizar el contador local con la cantidad del carrito
     useEffect(() => {
         if (cartQuantity > 0) {
@@ -45,7 +45,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             cartQuantity,
             quantityToAdd
         });
-        
+
         if (quantityToAdd > 0) {
             console.log('🛒 ProductCard: Llamando a onAddToCart con:', { product, quantity: quantityToAdd });
             onAddToCart(product, quantityToAdd);
@@ -92,7 +92,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
                     </div>
                 </div>
             ) : (
-                <Link href={`/${locale}/admin/producto/${product.id}`} className="block">
+                <Link href={`/${locale}/producto/${product.id}`} className="block">
                     <div className="relative overflow-hidden bg-gray-50">
                         <img
                             src={product.image}
@@ -117,7 +117,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
                         {product.name}
                     </h3>
                 ) : (
-                    <Link href={`/${locale}/admin/producto/${product.id}`}>
+                    <Link href={`/${locale}/producto/${product.id}`}>
                         <h3 className="text-base lg:text-lg font-bold text-gray-900 line-clamp-2 min-h-[3rem] flex items-center justify-center text-center hover:text-barfer-green transition-colors cursor-pointer">
                             {product.name}
                         </h3>
@@ -188,15 +188,15 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
                             disabled={localQuantity <= cartQuantity || localQuantity > (product.stock || 0)}
                             className="w-full sm:flex-1 bg-barfer-green hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-4 py-3 sm:py-2.5 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 disabled:transform-none text-sm sm:text-base"
                         >
-                            {cartQuantity > 0 
-                                ? (localQuantity > cartQuantity 
+                            {cartQuantity > 0
+                                ? (localQuantity > cartQuantity
                                     ? <span className="block sm:hidden">+{localQuantity - cartQuantity}</span>
                                     : <span className="block sm:hidden">Ya agregado</span>
                                 )
                                 : <span className="block sm:hidden">🛒 Agregar</span>
                             }
                             <span className="hidden sm:block">
-                                {cartQuantity > 0 
+                                {cartQuantity > 0
                                     ? (localQuantity > cartQuantity ? `Agregar ${localQuantity - cartQuantity} más` : 'Ya agregado')
                                     : 'Agregar'
                                 }

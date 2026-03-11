@@ -24,7 +24,7 @@ export interface Product {
     };
 }
 
-interface CartItem extends Product {
+export interface CartItem extends Product {
     quantity: number;
 }
 
@@ -49,22 +49,22 @@ export function CartProvider({ children, locale }: { children: ReactNode; locale
     useEffect(() => {
         console.log('🛒 CartContext: Inicializando carrito...');
         console.log('🛒 CartContext: localStorage disponible:', typeof window !== 'undefined' && window.localStorage);
-        
+
         if (typeof window === 'undefined' || !window.localStorage) {
             console.error('🛒 CartContext: localStorage no disponible');
             return;
         }
-        
+
         try {
             const savedCart = localStorage.getItem('barfer-cart');
             console.log('🛒 CartContext: Contenido raw de localStorage:', savedCart);
             console.log('🛒 CartContext: Tipo de contenido:', typeof savedCart);
-            
+
             if (savedCart && savedCart !== 'undefined' && savedCart !== 'null') {
                 const parsedCart = JSON.parse(savedCart);
                 console.log('🛒 CartContext: Carrito parseado:', parsedCart);
                 console.log('🛒 CartContext: Es array:', Array.isArray(parsedCart));
-                
+
                 if (Array.isArray(parsedCart)) {
                     setCart(parsedCart);
                 } else {
@@ -100,7 +100,7 @@ export function CartProvider({ children, locale }: { children: ReactNode; locale
             const existingItem = prevCart.find(item => item.id === product.id);
             if (existingItem) {
                 const newCart = prevCart.map(item =>
-                    item.id === product.id 
+                    item.id === product.id
                         ? { ...item, quantity: item.quantity + quantity }
                         : item
                 );
@@ -136,7 +136,7 @@ export function CartProvider({ children, locale }: { children: ReactNode; locale
         }
         setCart(prevCart => {
             const newCart = prevCart.map(item =>
-                item.id === productId 
+                item.id === productId
                     ? { ...item, quantity }
                     : item
             );
@@ -155,7 +155,7 @@ export function CartProvider({ children, locale }: { children: ReactNode; locale
         const total = cart.reduce((total, item) => {
             // Manejar diferentes formatos de precios
             let price = 0;
-            
+
             // Si el producto está en oferta, usar precio de oferta
             if (item.isOnOffer && item.offerPrice) {
                 if (item.offerPrice.includes(' - ')) {

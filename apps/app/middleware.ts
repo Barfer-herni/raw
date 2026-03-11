@@ -59,6 +59,7 @@ const PUBLIC_ROUTES = [
   '/api/webhooks',
   '/api/cron',
   '/access-denied',
+  '/producto',
 ];
 
 // Authentication cookie name
