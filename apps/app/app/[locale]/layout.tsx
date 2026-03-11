@@ -7,7 +7,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 export const metadata: Metadata = createMetadata({
-  title: 'Barfer',
+  title: 'Raw & Fun',
   description: 'Los mejores snacks para tu peludo',
 });
 

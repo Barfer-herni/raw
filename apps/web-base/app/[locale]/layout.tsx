@@ -10,8 +10,8 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 export const metadata: Metadata = createMetadata({
-  title: 'Barfer',
-  description: 'Comida natural para mascotas',
+  title: 'Raw & Fun',
+  description: 'Los mejores snacks para tu peludo',
 });
 import { Footer } from './components/footer';
 import { Header } from './components/header';

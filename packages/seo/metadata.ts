@@ -1,19 +1,19 @@
 import merge from 'lodash.merge';
 import type { Metadata } from 'next';
 
-type MetadataGenerator = Omit<Metadata, 'description' | 'title'> & {
+type MetadataGenerator = Omit<Metadata, 'description'> & {
   title: string;
   description: string;
   image?: string;
 };
 
-const applicationName = 'Barfer';
+const applicationName = '';
 const author: Metadata['authors'] = {
-  name: 'Barfer',
+  name: 'Raw & Fun',
   url: 'https://barfer.app/',
 };
-const publisher = 'Barfer';
-const twitterHandle = '@barfer';
+const publisher = 'Raw & Fun';
+const twitterHandle = '';
 
 export const createMetadata = ({
   title,
@@ -21,7 +21,7 @@ export const createMetadata = ({
   image,
   ...properties
 }: MetadataGenerator): Metadata => {
-  const parsedTitle = `${title} | ${applicationName}`;
+  const parsedTitle = `${title} ${applicationName}`;
   const defaultMetadata: Metadata = {
     title: parsedTitle,
     description,
