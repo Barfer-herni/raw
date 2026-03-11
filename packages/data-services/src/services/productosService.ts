@@ -9,11 +9,11 @@ import type { AdminProduct, CreateAdminProduct } from '../types/barfer';
 export async function createProduct(productData: CreateAdminProduct, createdBy: string): Promise<{ success: boolean; product?: AdminProduct; message?: string; error?: string }> {
     try {
         const productsCollection = await getCollection('productos');
-        
+
         // Verificar que la categoría existe
         const categoriesCollection = await getCollection('categorias');
         const categoryExists = await categoriesCollection.findOne({ _id: new ObjectId(productData.categoria) });
-        
+
         if (!categoryExists) {
             return {
                 success: false,
@@ -80,9 +80,9 @@ export async function createProduct(productData: CreateAdminProduct, createdBy: 
 export async function getAllProducts(includeInactive = false): Promise<AdminProduct[]> {
     try {
         const productsCollection = await getCollection('productos');
-        
+
         const filter = includeInactive ? {} : { isActive: true };
-        const products = await productsCollection.find(filter).sort({ createdAt: -1 }).toArray();
+        const products = await productsCollection.find(filter).sort({ precioOferta: -1, createdAt: -1 }).toArray();
 
         return products.map(product => ({
             _id: product._id.toString(),
@@ -155,7 +155,7 @@ export async function updateProduct(productId: string, updateData: Partial<Creat
         if (updateData.categoria) {
             const categoriesCollection = await getCollection('categorias');
             const categoryExists = await categoriesCollection.findOne({ _id: new ObjectId(updateData.categoria) });
-            
+
             if (!categoryExists) {
                 return {
                     success: false,
@@ -168,14 +168,14 @@ export async function updateProduct(productId: string, updateData: Partial<Creat
         // Redondear precios a 2 decimales para evitar problemas de punto flotante
         const updateFields = {
             ...updateData,
-            ...(updateData.precioMinorista !== undefined && { 
-                precioMinorista: Math.round(updateData.precioMinorista * 100) / 100 
+            ...(updateData.precioMinorista !== undefined && {
+                precioMinorista: Math.round(updateData.precioMinorista * 100) / 100
             }),
-            ...(updateData.precioMayorista !== undefined && { 
-                precioMayorista: Math.round(updateData.precioMayorista * 100) / 100 
+            ...(updateData.precioMayorista !== undefined && {
+                precioMayorista: Math.round(updateData.precioMayorista * 100) / 100
             }),
-            ...(updateData.precioOferta !== undefined && { 
-                precioOferta: Math.round(updateData.precioOferta * 100) / 100 
+            ...(updateData.precioOferta !== undefined && {
+                precioOferta: Math.round(updateData.precioOferta * 100) / 100
             }),
             updatedAt: new Date().toISOString(),
         };
@@ -217,7 +217,7 @@ export async function deleteProduct(productId: string): Promise<{ success: boole
         const productsCollection = await getCollection('productos');
 
         console.log(`🗑️ Intentando eliminar producto completamente con ID: ${productId}`);
-        
+
         const result = await productsCollection.deleteOne(
             { _id: new ObjectId(productId) }
         );
@@ -257,10 +257,10 @@ export async function deleteProduct(productId: string): Promise<{ success: boole
 export async function getProductsByCategory(categoryId: string): Promise<AdminProduct[]> {
     try {
         const productsCollection = await getCollection('productos');
-        
-        const products = await productsCollection.find({ 
-            categoria: categoryId, 
-            isActive: true 
+
+        const products = await productsCollection.find({
+            categoria: categoryId,
+            isActive: true
         }).sort({ createdAt: -1 }).toArray();
 
         return products.map(product => ({
@@ -292,8 +292,8 @@ export async function getProductsByCategory(categoryId: string): Promise<AdminPr
 export async function searchProducts(searchTerm: string): Promise<AdminProduct[]> {
     try {
         const productsCollection = await getCollection('productos');
-        
-        const products = await productsCollection.find({ 
+
+        const products = await productsCollection.find({
             $and: [
                 { isActive: true },
                 {
