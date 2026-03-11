@@ -28,7 +28,7 @@ interface CartItem extends Product {
 export default function CheckoutPage() {
     const router = useRouter();
     const [isProcessing, setIsProcessing] = useState(false);
-    const [cart, setCart] = useState<CartItem[]>([]);
+    const { cart, clearCart, getTotalPrice: getCartTotalPrice } = useCart();
     const [isLoading, setIsLoading] = useState(true);
     const [selectedShipping, setSelectedShipping] = useState<EnviaShippingOption | null>(null);
     const [shippingVerified, setShippingVerified] = useState(false);
@@ -68,34 +68,6 @@ export default function CheckoutPage() {
                 console.error('🛒 Checkout: localStorage no disponible');
                 setIsLoading(false);
                 return;
-            }
-
-            // Cargar carrito
-            const savedCart = localStorage.getItem('barfer-cart');
-            console.log('🛒 Checkout: Contenido de localStorage (raw):', savedCart);
-            console.log('🛒 Checkout: Tipo de contenido:', typeof savedCart);
-
-            if (savedCart && savedCart !== 'undefined' && savedCart !== 'null') {
-                try {
-                    const parsedCart = JSON.parse(savedCart);
-                    console.log('🛒 Checkout: Carrito parseado exitosamente:', parsedCart);
-                    console.log('🛒 Checkout: Es array:', Array.isArray(parsedCart));
-                    console.log('🛒 Checkout: Longitud del carrito:', parsedCart.length);
-
-                    if (Array.isArray(parsedCart)) {
-                        setCart(parsedCart);
-                    } else {
-                        console.error('🛒 Checkout: El carrito parseado no es un array:', parsedCart);
-                        setCart([]);
-                    }
-                } catch (error) {
-                    console.error('🛒 Checkout: Error parseando carrito:', error);
-                    console.error('🛒 Checkout: Contenido que causó el error:', savedCart);
-                    setCart([]);
-                }
-            } else {
-                console.log('🛒 Checkout: No hay carrito válido en localStorage');
-                setCart([]);
             }
 
             // Cargar datos del usuario
@@ -199,44 +171,7 @@ export default function CheckoutPage() {
     };
 
     const getTotalPrice = () => {
-        return cart.reduce((total, item) => {
-            console.log('🛒 Checkout: Calculando precio para item:', item);
-
-            // Manejar diferentes formatos de precios
-            let price = 0;
-
-            // Si el producto está en oferta, usar precio de oferta
-            if (item.isOnOffer && item.offerPrice) {
-                if (item.offerPrice.includes(' - ')) {
-                    // Formato "1500 - 2200"
-                    const parts = item.offerPrice.split(' - ');
-                    const min = parseInt(parts[0]) || 0;
-                    const max = parseInt(parts[1]) || 0;
-                    price = (min + max) / 2;
-                } else {
-                    // Formato simple "1500" 
-                    price = parseInt(item.offerPrice.replace(/[^0-9]/g, '')) || 0;
-                }
-            } else if (item.priceRange) {
-                // Usar precio normal
-                if (item.priceRange.includes(' - ')) {
-                    // Formato "3000 - 4000"
-                    const parts = item.priceRange.split(' - ');
-                    const min = parseInt(parts[0]) || 0;
-                    const max = parseInt(parts[1]) || 0;
-                    price = (min + max) / 2;
-                } else {
-                    // Formato simple "3000" 
-                    price = parseInt(item.priceRange.replace(/[^0-9]/g, '')) || 0;
-                }
-            }
-
-            console.log('🛒 Checkout: Precio calculado:', price, 'Cantidad:', item.quantity);
-            const itemTotal = price * item.quantity;
-            console.log('🛒 Checkout: Total del item:', itemTotal);
-
-            return total + itemTotal;
-        }, 0);
+        return getCartTotalPrice();
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -395,15 +330,11 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
             const whatsappUrl = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
 
             // Limpiar carrito
-            localStorage.removeItem('barfer-cart');
-            setCart([]);
-            setIsProcessing(false);
+            clearCart();
+            // No reseteamos isProcessing para que no se muestre el mensaje de carrito vacío durante la redirección
 
-            // Abrir WhatsApp
-            window.open(whatsappUrl, '_blank');
-
-            // Redirigir de vuelta a la tienda
-            router.push('/admin');
+            // Abrir WhatsApp usando redirección directa para evitar bloqueos de popups
+            window.location.href = whatsappUrl;
         } catch (error) {
             console.error('🛒 Checkout: Error en el proceso de checkout:', error);
             alert('Error al procesar el pedido. Por favor, inténtalo de nuevo.');
@@ -424,7 +355,7 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
     }
 
     // Carrito vacío
-    if (cart.length === 0) {
+    if (cart.length === 0 && !isProcessing) {
         console.log('🛒 Checkout: Carrito detectado como vacío, mostrando mensaje de carrito vacío');
         console.log('🛒 Checkout: Estado actual del carrito:', cart);
         return (

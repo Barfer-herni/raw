@@ -36,6 +36,7 @@ interface CartContextType {
     getTotalItems: () => number;
     getTotalPrice: () => number;
     checkout: () => void;
+    clearCart: () => void;
     showNotification: (productName: string, quantity: number) => void;
 }
 
@@ -43,6 +44,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children, locale }: { children: ReactNode; locale: string }) {
     const [cart, setCart] = useState<CartItem[]>([]);
+    const [isInitialized, setIsInitialized] = useState(false);
     const router = useRouter();
 
     // Cargar carrito desde localStorage al inicializar
@@ -78,13 +80,15 @@ export function CartProvider({ children, locale }: { children: ReactNode; locale
         } catch (error) {
             console.error('🛒 CartContext: Error cargando carrito desde localStorage:', error);
             setCart([]);
+        } finally {
+            setIsInitialized(true);
         }
     }, []);
 
-    // Guardar carrito en localStorage cada vez que cambie (evitar guardar array vacío inicial)
+    // Guardar carrito en localStorage cada vez que cambie
     useEffect(() => {
-        // Solo guardar si el carrito ha sido inicializado (no es el estado inicial vacío)
-        if (cart.length > 0) {
+        // Solo guardar si el contexto ha sido inicializado para evitar sobreescribir con el estado inicial vacío
+        if (isInitialized) {
             try {
                 localStorage.setItem('barfer-cart', JSON.stringify(cart));
                 console.log('🛒 CartContext: Carrito guardado en localStorage:', cart);
@@ -92,7 +96,7 @@ export function CartProvider({ children, locale }: { children: ReactNode; locale
                 console.error('🛒 CartContext: Error guardando carrito en localStorage:', error);
             }
         }
-    }, [cart]);
+    }, [cart, isInitialized]);
 
     const addToCart = (product: Product, quantity: number = 1) => {
         console.log('🛒 CartContext: Agregando al carrito:', { product, quantity });
@@ -192,6 +196,11 @@ export function CartProvider({ children, locale }: { children: ReactNode; locale
         router.push(`/${locale}/admin/checkout`);
     };
 
+    const clearCart = () => {
+        console.log('🛒 CartContext: Limpiando carrito...');
+        setCart([]);
+    };
+
     return (
         <CartContext.Provider value={{
             cart,
@@ -201,6 +210,7 @@ export function CartProvider({ children, locale }: { children: ReactNode; locale
             getTotalItems,
             getTotalPrice,
             checkout,
+            clearCart,
             showNotification
         }}>
             {children}
