@@ -87,7 +87,7 @@ export function ShippingOptions({ cartItems, address, onShippingSelect, selected
 
             const cabaShippingOption: EnviaShippingOption = {
                 carrier: 'Envío Propio (Raw)',
-                service: 'Entregas los Miércoles de 12 a 19hs',
+                service: 'Miércoles de 12 a 19hs',
                 cost: 3000,
                 currency: 'ARS',
                 delivery_estimate: 'Próximo Miércoles',
@@ -225,8 +225,8 @@ export function ShippingOptions({ cartItems, address, onShippingSelect, selected
                     <div
                         key={index}
                         className={`border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-md ${selectedOption === option
-                                ? 'border-barfer-green bg-green-50'
-                                : 'border-gray-200 hover:border-barfer-green'
+                            ? 'border-barfer-green bg-green-50'
+                            : 'border-gray-200 hover:border-barfer-green'
                             }`}
                         onClick={() => onShippingSelect(option)}
                     >
