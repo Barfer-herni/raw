@@ -34,11 +34,10 @@ export function GoogleLoginButton({ locale = 'es' }: GoogleLoginButtonProps) {
                                 const result = await loginWithGoogleAction(credentialResponse.credential);
                                 if (result?.success) {
                                     if (result.userRole === 'admin') {
-                                        router.push(`/${locale}/admin/orders`);
+                                        window.location.href = `/${locale}/admin/orders`;
                                     } else {
-                                        router.push(`/${locale}/user`);
+                                        window.location.href = `/${locale}/user`;
                                     }
-                                    router.refresh();
                                 } else {
                                     setError(result?.message || 'Error al iniciar sesión con Google');
                                 }
