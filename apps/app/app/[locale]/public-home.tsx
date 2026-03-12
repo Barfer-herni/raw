@@ -20,6 +20,7 @@ interface PublicHomeProps {
     locale: string;
     dictionary: Dictionary;
     isAuthenticated: boolean;
+    user?: any;
 }
 
 // Imágenes del carrusel de perros
@@ -252,7 +253,7 @@ const SAMPLE_PRODUCTS: Product[] = [
     }
 ];
 
-export function PublicHome({ locale, dictionary, isAuthenticated }: PublicHomeProps) {
+export function PublicHome({ locale, dictionary, isAuthenticated, user }: PublicHomeProps) {
     const router = useRouter();
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<ProductCategory[]>([]);
@@ -467,6 +468,7 @@ export function PublicHome({ locale, dictionary, isAuthenticated }: PublicHomePr
                 title=""
                 extraItems={headerExtraItems}
                 dictionary={dictionary}
+                user={user}
                 locale={locale}
             />
 

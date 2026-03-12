@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { getDictionary } from '@repo/internationalization';
 import { AdminPageWrapper } from './components/admin-page-wrapper';
+import { getCurrentUser } from '@repo/auth/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import logo from '@/public/barfer.png';
@@ -15,6 +16,7 @@ type AdminLayoutProps = {
 export default async function AdminLayout({ children, params }: AdminLayoutProps) {
     const { locale } = await params;
     const dictionary = await getDictionary(locale);
+    const user = await getCurrentUser();
 
     return (
         <AdminPageWrapper
@@ -26,8 +28,9 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
             title=""
             dictionary={dictionary}
             locale={locale}
+            initialUser={user}
         >
             {children}
         </AdminPageWrapper>
     );
-} 
+}

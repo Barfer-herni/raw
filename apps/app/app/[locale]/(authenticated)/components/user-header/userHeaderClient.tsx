@@ -1,6 +1,5 @@
 'use client';
 
-import { getCurrentUser } from '@repo/auth/server';
 import { ReactNode } from 'react';
 import { UserMenu } from '../user-menu';
 import { LanguageSwitcher } from '../language-switcher';
