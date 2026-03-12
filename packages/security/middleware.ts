@@ -15,8 +15,10 @@ export const noseconeOptions: NoseconeOptions = {
   // to configure it.
   contentSecurityPolicy: false,
   // Disable Cross-Origin-Embedder-Policy to allow loading Cloudinary images
-  // This prevents ERR_BLOCKED_BY_RESPONSE.NotSameOriginAfterDefaultedToSameOriginByCoep errors
   crossOriginEmbedderPolicy: false,
+  // Disable Cross-Origin-Opener-Policy to allow Google popup to communicate with the main window
+  // This prevents the "white screen" issue after choosing a Google account
+  crossOriginOpenerPolicy: false,
 };
 
 export const noseconeOptionsWithToolbar: NoseconeOptions =

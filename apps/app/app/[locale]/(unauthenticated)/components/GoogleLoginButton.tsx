@@ -51,6 +51,7 @@ export function GoogleLoginButton({ locale = 'es' }: GoogleLoginButtonProps) {
                         setError('Falló el inicio de sesión con Google');
                     }}
                     useOneTap={false}
+                    use_fedcm_for_prompt={true}
                     ux_mode="popup"
                     shape="rectangular"
                     theme="filled_black"
