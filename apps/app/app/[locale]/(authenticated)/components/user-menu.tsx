@@ -74,7 +74,7 @@ export function UserMenu({ userName, dictionary, locale = 'es' }: UserMenuProps)
                     </>
                 )}
                 <DropdownMenuItem asChild>
-                    <Link href={`/${locale}/admin/account`} className="flex items-center cursor-pointer">
+                    <Link href={`/${locale}/user/account`} className="flex items-center cursor-pointer">
                         <User className="mr-2 h-5 w-5" />
                         Mi perfil
                     </Link>

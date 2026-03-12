@@ -17,6 +17,7 @@ interface AdminPageWrapperProps {
 
 export function AdminPageWrapper({ children, logo, title, dictionary, locale }: AdminPageWrapperProps) {
     const [isAdmin, setIsAdmin] = useState(false);
+    const [user, setUser] = useState<any>(null);
     const [isLoadingAdmin, setIsLoadingAdmin] = useState(true);
 
     // Verificar permisos de administrador
@@ -25,6 +26,7 @@ export function AdminPageWrapper({ children, logo, title, dictionary, locale }: 
             try {
                 const result = await checkAdminRoleAction();
                 setIsAdmin(result.isAdmin);
+                setUser(result.user);
             } catch (error) {
                 console.error('Error verificando rol de admin:', error);
                 setIsAdmin(false);
@@ -53,6 +55,7 @@ export function AdminPageWrapper({ children, logo, title, dictionary, locale }: 
                     title={title}
                     extraItems={headerExtraItems}
                     dictionary={dictionary}
+                    user={user}
                     locale={locale}
                 />
 

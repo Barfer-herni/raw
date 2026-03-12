@@ -39,7 +39,7 @@ export function UserHeaderClient({ logo, title = 'Barfer', extraItems, dictionar
                 </div>
                 <div className="flex items-center gap-3">
                     {/* <LanguageSwitcher /> */}
-                    <UserMenu userName={user?.name} dictionary={dictionary} locale={locale} />
+                    {user && <UserMenu userName={user?.name} dictionary={dictionary} locale={locale} />}
                     {extraItems}
                 </div>
             </div>
