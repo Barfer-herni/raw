@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getAllOrders, updateOrder, deleteOrder, createOrder } from '@repo/data-services/src/services/barfer';
+import { getAllOrders, updateOrder, deleteOrder, createOrder } from '@repo/data-services/src/services/raw/orders';
 import { requireAdmin } from '@repo/auth/server-permissions';
 import type { Order } from '@repo/data-services/src/types/barfer';
 

@@ -1,6 +1,6 @@
 'use server';
 
-import { createOrder } from '@repo/data-services/src/services/barfer';
+import { createOrder } from '@repo/data-services/src/services/raw/orders';
 
 interface CreateOrderInput {
     total: number;

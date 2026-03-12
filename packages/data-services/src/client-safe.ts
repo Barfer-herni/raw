@@ -4,13 +4,12 @@
  */
 
 // Client-safe actions
-export { getProductsForHomeAction } from './services/productosActions';
+export { getProductsForHomeAction, getAllCategoriesAction } from './services/raw/products';
 export { getShippingOptionsAction } from './actions/enviaActions';
-export { getAllCategoriesAction } from './services/categoriasActions';
 
 // Types (always safe for client)
 export type { Product } from './types/barfer';
-export type { ProductCategory } from './services/categoriasProductosService';
+export type { ProductCategory } from './services/raw/products/categoriesService';
 export type { EnviaShippingOption, EnviaShippingRateResponse } from './types/envia';
 
 // Utility functions (no server dependencies)

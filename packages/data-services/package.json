@@ -3,6 +3,12 @@
   "version": "0.0.0",
   "main": "./index.ts",
   "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./src/actions": "./src/actions/index.ts",
+    "./src/services": "./src/services/index.ts",
+    "./src/types": "./src/types/index.ts"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",

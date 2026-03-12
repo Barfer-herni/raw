@@ -9,9 +9,9 @@ import {
     getAllCategorias
 } from '@repo/data-services';
 // Importar directamente desde el archivo del servicio
-import { createGestorUser, updateGestorUser, deleteGestorUser } from '@repo/data-services/src/services/gestorUsersService';
+import { createGestorUser, updateGestorUser, deleteGestorUser } from '@repo/data-services/src/services/auth/gestorUsersService';
 // Importar funciones de MongoDB para actualizar perfil de usuario
-import { updateUserProfile } from '@repo/data-services/src/services/authService';
+import { updateUserProfile } from '@repo/data-services/src/services/auth';
 import { z } from 'zod';
 import type { UserRole } from '@repo/database';
 import { hasPermission } from '@repo/auth/server-permissions';

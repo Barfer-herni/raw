@@ -6,10 +6,9 @@ export * from './src/types';
 export * from './src/actions';
 
 // Specific service exports for backward compatibility
-export * from './src/services/dataService';
-export * from './src/services/imageService';
-export * from './src/services/barfer';
-export * from './src/services/barfer/campaignsService';
+export * from './src/services/system/dataService';
+export * from './src/services/storage/imageService';
+export * from './src/services/raw';
 
 // Specific type exports for backward compatibility
 export * from './src/types/data';

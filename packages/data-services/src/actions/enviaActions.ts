@@ -1,6 +1,6 @@
 'use server';
 
-import { getShippingRatesForCheckout } from '../services/enviaService';
+import { getShippingRatesForCheckout } from '../services/shipping/envia';
 import type { EnviaShippingRateResponse } from '../types/envia';
 
 export interface CartItemForShipping {

@@ -8,7 +8,7 @@ import { DeliveryInfoSection } from './components/DeliveryInfoSection';
 import { UsersSection } from './components/UsersSection';
 import { CategoryPermissionsManager } from './components/CategoryPermissionsManager';
 // Importar directamente desde el archivo del servicio
-import { getAllGestorUsers } from '@repo/data-services/src/services/gestorUsersService';
+import { getAllGestorUsers } from '@repo/data-services/src/services/auth/gestorUsersService';
 
 interface AccountPageProps {
     params: Promise<{ locale: string }>;

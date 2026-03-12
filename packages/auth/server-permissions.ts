@@ -1,4 +1,4 @@
-import { getCurrentUser } from '@repo/data-services/src/services/authService';
+import { getCurrentUser } from '@repo/data-services/src/services/auth';
 
 /**
  * Sistema de permisos del lado del servidor

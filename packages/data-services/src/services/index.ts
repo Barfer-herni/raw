@@ -1,121 +1,43 @@
 // ==========================================
-// SERVICIOS DEL SISTEMA (PostgreSQL/Prisma)
+// AUTENTICACIÓN Y USUARIOS
 // ==========================================
-
-// Auth Service (MongoDB) - prefixed with 'mongo'
-export {
-    registerUser as mongoRegisterUser,
-    loginUser as mongoLoginUser,
-    getUserById as mongoGetUserById,
-    updateUserProfile as mongoUpdateUserProfile,
-    changePassword as mongoChangePassword,
-    getCurrentUser as mongoGetCurrentUser,
-    createUserSession,
-    clearUserSession,
-    loginWithSession as mongoLoginWithSession,
-    loginWithGoogle as mongoLoginWithGoogle,
-    loginWithGoogleSession as mongoLoginWithGoogleSession,
-    signOut as mongoSignOut,
-    createUser as mongoCreateUser,
-    getAllUsers as mongoGetAllUsers,
-    updateUser as mongoUpdateUser,
-    deleteUser as mongoDeleteUser,
-    // Types from authService
-    type User as MongoUser,
-    type RegisterData as MongoRegisterData,
-    type LoginData as MongoLoginData,
-    type UpdateProfileData as MongoUpdateProfileData
-} from './authService';
-
-// Gestor Users Service (MongoDB) - usuarios de gestión creados por admin
-export {
-    createGestorUser,
-    getAllGestorUsers,
-    getGestorUserById,
-    getGestorUserByEmail,
-    updateGestorUser,
-    deleteGestorUser,
-    getAllUsersIncludingGestor,
-    type GestorUser,
-    type CreateGestorUserData
-} from './gestorUsersService';
-
-// User Service (PostgreSQL/Prisma) - main user service
-export {
-    createUser,
-    getUserById,
-    getAllUsers,
-    updateUser,
-    deleteUser,
-    verifyUserCredentials,
-    changePassword
-} from './userService';
-
-export * from './dataService';
-export * from './imageService';
-export * from './uploadR2Image';
-export * from './templateService';
-export * from './pricesService';
-export * from './salidasService';
-export * from './salidasMongoService';
-export * from './salidasAnalyticsService';
-export * from './salidasAnalyticsMongoService';
-export { getSalidasDetailsByCategory } from './salidasService';
-export * from './balanceService';
-export * from './categoriasService';
-export * from './metodosPagoService';
-
-// Nuevos servicios para productos
-export * from './productosService';
-export * from './categoriasProductosService';
-export * from './cloudinaryService';
-export * from './authHelpers';
-
-// Server Actions para componentes cliente
-export * from './productosActions';
-export * from './categoriasActions';
-export * from './cloudinaryActions';
-export * from './authActions';
+export * from './auth';
 
 // ==========================================
-// SERVICIOS DE BARFER E-COMMERCE (MongoDB)
+// ALMACENAMIENTO (Imágenes, Cloudinary, R2)
 // ==========================================
-export * from './mongoService';
+export * from './storage';
 
-// Servicio de Envía para opciones de envío
-export * from './enviaService';
+// ==========================================
+// FINANZAS (Salidas, Saldos, Analytics)
+// ==========================================
+export * from './finances';
 
-// Exportar servicios de Barfer - Solo Analytics que se usan
-export {
-    // Analytics (desde barfer/analytics/)
-    getOrdersByDay,
-    getRevenueByDay,
-    getAverageOrderValue,
-    getCustomerFrequency,
-    getCustomerInsights,
-    getProductSales,
-    getPaymentMethodStats,
-    getPaymentsByTimePeriod,
-    getProductsByTimePeriod,
-    getOrdersByMonth,
-    getCategorySales,
-    // Client Management (desde barfer/analytics/)
-    getClientCategorization,
-    getClientsByCategory,
-    getClientsByCategoryPaginated,
-    getClientGeneralStats,
-    type ClientGeneralStats,
-    getClientCategoriesStats,
-    type ClientCategoriesStats,
-    getClientsPaginated,
-    getClientsPaginatedWithStatus,
-    type ClientForTable,
-    type ClientForTableWithStatus,
-    type PaginatedClientsResponse,
-    type PaginatedClientsWithStatusResponse,
-    type ClientsPaginationOptions,
-    getPurchaseFrequency,
-    // WhatsApp Contact Management
-    markWhatsAppContacted,
-    getWhatsAppContactStatus,
-} from './barfer';
+// ==========================================
+// PAGOS (Métodos de pago)
+// ==========================================
+export * from './payments';
+
+// ==========================================
+// SISTEMA (Configuración global, Mongo)
+// ==========================================
+export * from './system';
+
+// ==========================================
+// PLANTILLAS (Email templates)
+// ==========================================
+export * from './templates';
+
+// ==========================================
+// RAW E-COMMERCE (MongoDB) - Productos, Órdenes, Clientes
+// ==========================================
+export * from './raw';
+
+// ==========================================
+// ENVÍO (Servicios de Envía)
+// ==========================================
+export * from './shipping';
+
+// Explicitly export dataService and imageService
+export * from './system/dataService';
+export * from './storage/imageService';

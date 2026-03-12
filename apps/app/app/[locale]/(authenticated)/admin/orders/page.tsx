@@ -1,4 +1,4 @@
-import { getAllOrders } from '@repo/data-services/src/services/barfer';
+import { getAllOrders } from '@repo/data-services/src/services/raw/orders';
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import { columns } from './components/columns';
 import { OrdersDataTable } from './components/OrdersDataTable';
