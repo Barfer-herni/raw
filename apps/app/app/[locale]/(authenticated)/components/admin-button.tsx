@@ -22,7 +22,7 @@ export function AdminButton({ locale = 'es', isAdmin, isLoadingAdmin }: AdminBut
     const isActiveRoute = (route: string) => pathname.includes(route);
 
     return (
-        <div className="fixed left-0 top-0 h-screen w-20 bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 z-40 flex flex-col items-center pt-20 gap-4">
+        <div className="hidden md:flex fixed left-0 top-0 h-screen w-20 bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 z-40 flex flex-col items-center pt-20 gap-4">
             {/* Botón de Precios */}
             <Link href={`/${locale}/admin/productos`}>
                 <Button

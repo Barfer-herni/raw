@@ -56,8 +56,8 @@ export function AdminPageWrapper({ children, logo, title, dictionary, locale }: 
                     locale={locale}
                 />
 
-                {/* Ajustar margen izquierdo para el sidebar (80px = w-20) */}
-                <div className="pt-16 flex w-full h-full ml-20">
+                {/* Ajustar margen izquierdo para el sidebar (80px = w-20) solo para admin en desktop */}
+                <div className={`pt-16 flex w-full h-full ${isAdmin ? 'md:ml-20' : ''}`}>
                     <main className="bg-gradient-to-br from-barfer-white to-gray-50 flex-1 min-h-screen pb-20 md:pb-0">
                         {children}
                     </main>
