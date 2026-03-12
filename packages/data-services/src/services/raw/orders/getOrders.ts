@@ -45,16 +45,16 @@ export async function getOrders({
             baseFilter.deliveryDay = {};
 
             if (from && from.trim() !== '') {
-                // Crear fecha desde string sin manipulación de zona horaria
+                // Crear fecha desde string en UTC
                 const [year, month, day] = from.split('-').map(Number);
-                const fromDateObj = new Date(year, month - 1, day, 0, 0, 0, 0);
+                const fromDateObj = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
                 baseFilter.deliveryDay.$gte = fromDateObj;
             }
 
             if (to && to.trim() !== '') {
-                // Crear fecha desde string sin manipulación de zona horaria
+                // Crear fecha desde string en UTC
                 const [year, month, day] = to.split('-').map(Number);
-                const toDateObj = new Date(year, month - 1, day, 23, 59, 59, 999);
+                const toDateObj = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
                 baseFilter.deliveryDay.$lte = toDateObj;
             }
         }

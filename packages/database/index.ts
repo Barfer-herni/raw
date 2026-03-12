@@ -28,5 +28,32 @@ if (process.env.NODE_ENV !== 'production' && isDatabaseConfigured) {
   globalForPrisma.prisma = database;
 }
 
-export * from './generated/client';
+// Explicitly export symbols to avoid "export * from CJS" issues in RSC
+export { PrismaClient, Prisma, $Enums } from './generated/client';
+
+// Enums
+export {
+  UserRole,
+  CampaignStatus,
+  PriceSection,
+  PriceType,
+  TipoSalida,
+  TipoRegistro
+} from './generated/client';
+
+// Types (exported as types for better bundler optimization)
+export type {
+  User,
+  EmailTemplate,
+  WhatsAppTemplate,
+  ScheduledEmailCampaign,
+  ScheduledWhatsAppCampaign,
+  Price,
+  Categoria,
+  Producto,
+  MetodoPago,
+  Salida,
+  PrismaPromise
+} from './generated/client';
+
 export * from './mongo-connection';

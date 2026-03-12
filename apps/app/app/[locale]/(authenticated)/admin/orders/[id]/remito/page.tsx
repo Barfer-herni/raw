@@ -39,7 +39,15 @@ export default function RemitoPage(props: RemitoPageProps) {
     }
 
     const { user, address, items, deliveryDay, createdAt, paymentMethod, notes } = order;
-    const date = deliveryDay ? new Date(deliveryDay) : new Date(createdAt);
+
+    // Si hay deliveryDay, usamos métodos UTC para evitar desfase de zona horaria
+    let date: Date;
+    if (deliveryDay) {
+        const d = new Date(deliveryDay);
+        date = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+    } else {
+        date = new Date(createdAt);
+    }
 
     return (
         <div className="bg-white min-h-screen p-8 text-black print:p-0">

@@ -368,7 +368,15 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                             >
                                 <CalendarIcon className="mr-2 h-3 w-3" />
                                 {editValues.deliveryDay ? (
-                                    format(editValues.deliveryDay, "dd-MMM", { locale: es })
+                                    format(
+                                        new Date(
+                                            editValues.deliveryDay.getUTCFullYear(),
+                                            editValues.deliveryDay.getUTCMonth(),
+                                            editValues.deliveryDay.getUTCDate()
+                                        ),
+                                        "dd-MMM",
+                                        { locale: es }
+                                    )
                                 ) : (
                                     <span>Fecha</span>
                                 )}

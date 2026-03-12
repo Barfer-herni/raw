@@ -86,7 +86,7 @@ export function ShippingOptions({ cartItems, address, onShippingSelect, selected
             console.log('🎯 [SHIPPING OPTIONS] 🏙️ Es CABA. Mostrando opción de envío local...');
 
             const cabaShippingOption: EnviaShippingOption = {
-                carrier: 'Envío Propio (Raw)',
+                carrier: '',
                 service: 'Envio: Miercoles de 12 a 19hs',
                 cost: 3000,
                 currency: 'ARS',

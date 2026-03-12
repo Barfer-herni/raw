@@ -39,10 +39,18 @@ export const columns: ColumnDef<Order>[] = [
             }
 
             const date = new Date(dateToUse);
-            const formatted = format(date, 'dd-MMM', { locale: es });
 
-            // Colores por día de la semana
-            const day = date.getDay();
+            // Si es deliveryDay, lo tratamos como UTC para evitar el desfase de un día
+            // date-fns format usa la fecha local, así que creamos una fecha local 
+            // que tenga el mismo día/mes que el UTC.
+            const displayDate = row.original.deliveryDay
+                ? new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+                : date;
+
+            const formatted = format(displayDate, 'dd-MMM', { locale: es });
+
+            // Colores por día de la semana (usando UTC si es deliveryDay)
+            const day = row.original.deliveryDay ? date.getUTCDay() : date.getDay();
             const bgColor = DAY_COLORS[day as keyof typeof DAY_COLORS] || '';
 
             return (

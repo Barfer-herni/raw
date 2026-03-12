@@ -60,7 +60,7 @@ const createOrderSchema = z.object({
     deliveryDay: z.union([z.string(), z.date()]),
 });
 
-// Función para normalizar el formato de fecha deliveryDay
+// Función para normalizar el formato de fecha deliveryDay a UTC 00:00:00
 function normalizeDeliveryDay(dateInput: string | Date | { $date: string }): Date {
     if (!dateInput) return new Date();
 
@@ -74,10 +74,10 @@ function normalizeDeliveryDay(dateInput: string | Date | { $date: string }): Dat
     else if (dateInput instanceof Date) {
         date = dateInput;
     } else {
-        // Si es string formato YYYY-MM-DD, parsear manualmente para evitar problemas de zona horaria
+        // Si es string formato YYYY-MM-DD, parsear como UTC para evitar problemas de zona horaria
         if (typeof dateInput === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
             const [year, month, day] = dateInput.split('-').map(Number);
-            return new Date(year, month - 1, day);
+            return new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
         }
         // Si es otro tipo de string, parsear normal
         date = new Date(dateInput);
@@ -88,10 +88,10 @@ function normalizeDeliveryDay(dateInput: string | Date | { $date: string }): Dat
         throw new Error('Invalid date');
     }
 
-    // Crear fecha local (solo año, mes, día) y retornar como objeto Date
-    const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    // Crear fecha en UTC 00:00:00
+    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0));
 
-    return localDate;
+    return utcDate;
 }
 
 export async function createOrder(data: z.infer<typeof createOrderSchema>): Promise<{ success: boolean; order?: Order; error?: string }> {
