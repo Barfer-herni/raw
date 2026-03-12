@@ -1,4 +1,5 @@
 'use client';
+import { useMemo } from 'react';
 
 import {
     flexRender,
@@ -92,6 +93,16 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
             onSortingChange(newSorting);
         },
     });
+
+    const filteredProducts = useMemo(() => {
+        const isWholesale = editValues?.orderType === 'mayorista';
+        return products.filter(p => {
+            if (isWholesale) {
+                return (p.precioMayorista && p.precioMayorista > 0) || p.soloMayorista;
+            }
+            return !p.soloMayorista;
+        });
+    }, [products, editValues?.orderType]);
 
     // Función para renderizar celdas editables
     const renderEditableCell = (columnId: string, original: any, editValues: any, onChange: any, products: any[]) => {
@@ -196,7 +207,7 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                                             <SelectValue placeholder="Producto" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {products.filter(p => p._id && p._id.trim() !== '').map((p) => (
+                                            {filteredProducts.filter(p => p._id && p._id.trim() !== '').map((p) => (
                                                 <SelectItem key={p._id} value={p._id || 'unknown'} className="text-[10px]">
                                                     {p.titulo}
                                                 </SelectItem>
@@ -238,7 +249,7 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                const validProducts = products.filter(p => p._id && p._id.trim() !== '');
+                                const validProducts = filteredProducts.filter(p => p._id && p._id.trim() !== '');
                                 if (validProducts.length === 0) return;
 
                                 const firstProduct = validProducts[0];

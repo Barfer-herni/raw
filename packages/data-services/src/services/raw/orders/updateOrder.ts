@@ -61,6 +61,26 @@ export async function updateOrder(id: string, data: any) {
     const updateData = updateOrderSchema.parse(data);
     updateData.updatedAt = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
 
+    // Validar precios y disponibilidad mayorista si corresponde
+    if (updateData.orderType === 'mayorista' && updateData.items) {
+        const productsCollection = await getCollection('productos');
+        const productIds = updateData.items.map((item: any) => new ObjectId(item.id));
+        const products = await productsCollection.find({ _id: { $in: productIds } }).toArray();
+
+        for (const item of updateData.items) {
+            const product = products.find(p => p._id.toString() === item.id);
+            if (!product) {
+                throw new Error(`Producto no encontrado: ${item.name}`);
+            }
+
+            // Verificar que tenga precio mayorista o sea solo mayorista
+            const hasWholesalePrice = product.precioMayorista && product.precioMayorista > 0;
+            if (!hasWholesalePrice && !product.soloMayorista) {
+                throw new Error(`El producto ${item.name} no está disponible para venta mayorista`);
+            }
+        }
+    }
+
     // Normalizar el formato de deliveryDay si está presente
     if (updateData.deliveryDay) {
         updateData.deliveryDay = normalizeDeliveryDay(updateData.deliveryDay);
