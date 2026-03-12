@@ -19,7 +19,7 @@ export default async function UserLayout({ children, params }: UserLayoutProps) 
     return (
         <AdminPageWrapper
             logo={
-                <Link href={`/${locale}`}>
+                <Link href={`/${locale}/user`}>
                     <Image src={logo} alt="RAW" width={48} height={48} className="cursor-pointer hover:opacity-80 transition-opacity" />
                 </Link>
             }

@@ -19,7 +19,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
     return (
         <AdminPageWrapper
             logo={
-                <Link href={`/${locale}`}>
+                <Link href={`/${locale}/admin/orders`}>
                     <Image src={logo} alt="RAW" width={48} height={48} className="cursor-pointer hover:opacity-80 transition-opacity" />
                 </Link>
             }
