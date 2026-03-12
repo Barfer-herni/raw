@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { loginWithGoogleAction } from '../actions';
 
-export function GoogleLoginButton() {
+interface GoogleLoginButtonProps {
+    locale?: string;
+}
+
+export function GoogleLoginButton({ locale = 'es' }: GoogleLoginButtonProps) {
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
@@ -34,9 +38,9 @@ export function GoogleLoginButton() {
                                     const result = await loginWithGoogleAction(credentialResponse.credential);
                                     if (result?.success) {
                                         if (result.userRole === 'admin') {
-                                            router.push('/admin');
+                                            router.push(`/${locale}/admin/orders`);
                                         } else {
-                                            router.push('/');
+                                            router.push(`/${locale}/user`);
                                         }
                                         router.refresh();
                                     } else {

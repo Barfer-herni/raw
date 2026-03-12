@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getProductsForHomeAction, getAllCategoriesAction, type ProductCategory } from '@repo/data-services/src/client-safe';
 import { useCart, type Product } from '../components/cart-context';
-import { ProductCard } from './components/product-card';
+import { ProductCard } from '../admin/components/product-card';
 import { CartNotification } from '../components/cart-notification';
 import { ScrollReveal } from '../components/scroll-reveal';
 import emailjs from '@emailjs/browser';

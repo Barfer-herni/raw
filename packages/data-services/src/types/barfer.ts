@@ -39,27 +39,21 @@ export interface AdminProduct {
     _id?: string;
     titulo: string;
     descripcion?: string;
-    precioMinorista: number;  // Precio normal
-    precioMayorista?: number; // Precio para mayoristas
+    precioMinorista: number;  
+    precioMayorista?: number; 
     stock: number;
-    imagenes?: string[];      // Array de URLs de Cloudinary
-    categoria: string;        // ID de la categoría
-    
-    // Precio de oferta
-    precioOferta?: number;    // Precio con descuento
-    
-    // Medidas del paquete
+    imagenes?: string[];     
+    categoria: string;        
+    precioOferta?: number;  
     dimensiones?: {
-        alto?: number;        // en cm
-        ancho?: number;       // en cm
-        profundidad?: number; // en cm
-        peso?: number;        // en kg
+        alto?: number;  
+        ancho?: number;     
+        profundidad?: number;
+        peso?: number;     
     };
-    
-    // Metadatos
     isActive: boolean;
-    soloMayorista?: boolean;  // Si es true, solo disponible para mayoristas
-    createdBy: string;        // ID del usuario admin que lo creó
+    soloMayorista?: boolean; 
+    createdBy: string;       
     createdAt: string;
     updatedAt: string;
 }

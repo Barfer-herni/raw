@@ -143,8 +143,8 @@
         }
       },
       "layout": {
-        "title": "Barfer Administration Panel",
-        "description": "Access Barfer's administrative tools to manage your business efficiently."
+        "title": "Raw Administration Panel",
+        "description": "Access your administration tools to manage your business efficiently."
       }
     },
     "client": {
@@ -202,8 +202,8 @@
         }
       },
       "layout": {
-        "title": "Barfer Administration Panel",
-        "description": "Access Barfer's administrative tools to manage your business efficiently."
+        "title": "Welcome to Raw",
+        "description": "Log in to manage your account and place orders."
       }
     },
     "tablePage": {
@@ -244,8 +244,8 @@
       }
     },
     "layout": {
-      "title": "Barfer Administration Panel",
-      "description": "Access Barfer's administrative tools to manage your business efficiently."
+      "title": "Welcome to Raw",
+      "description": "Log in to manage your account and place orders."
     }
   },
   "web": {

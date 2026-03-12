@@ -21,7 +21,7 @@ const SignInPage = async ({ params }: { params: Promise<{ locale: string }> }) =
         <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
       </div>
 
-      <SignIn dictionary={dictionary} />
+      <SignIn dictionary={dictionary} locale={locale} />
     </>
   );
 };

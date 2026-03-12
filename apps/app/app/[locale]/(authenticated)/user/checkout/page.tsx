@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { ShippingOptions } from './components/shipping-options';
 import type { EnviaShippingOption } from '@repo/data-services/src/client-safe';
 import { useCart, type Product } from '../../components/cart-context';
@@ -26,7 +26,9 @@ interface CartItem extends Product {
 }
 
 export default function CheckoutPage() {
+    const params = useParams();
     const router = useRouter();
+    const locale = params.locale as string;
     const [isProcessing, setIsProcessing] = useState(false);
     const { cart, clearCart, getTotalPrice: getCartTotalPrice } = useCart();
     const [isLoading, setIsLoading] = useState(true);
@@ -365,7 +367,7 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
                         Tu carrito está vacío
                     </h1>
                     <button
-                        onClick={() => router.push('/admin')}
+                        onClick={() => router.push(`/${locale}`)}
                         className="bg-barfer-orange hover:bg-orange-600 text-barfer-white px-6 py-3 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg"
                     >
                         Volver a la Tienda
@@ -381,7 +383,7 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
                 {/* Header */}
                 <div className="mb-8">
                     <button
-                        onClick={() => router.push('/admin')}
+                        onClick={() => router.push(`/${locale}`)}
                         className="flex items-center text-barfer-green hover:text-green-600 mb-4 font-medium"
                     >
                         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -193,7 +193,7 @@ export function CartProvider({ children, locale }: { children: ReactNode; locale
 
     const checkout = () => {
         console.log('🛒 CartContext: Redirigiendo al checkout con carrito:', cart);
-        router.push(`/${locale}/admin/checkout`);
+        router.push(`/${locale}/user/checkout`);
     };
 
     const clearCart = () => {

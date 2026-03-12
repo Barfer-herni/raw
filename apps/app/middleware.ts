@@ -22,6 +22,11 @@ const ROUTE_PERMISSIONS: Record<string, string[]> = {
   '/admin/productos': ['products:view'], // Ver listado de productos
   '/admin/producto': ['products:view'], // Ver detalle de producto (incluye /admin/producto/[id])
   '/admin/checkout': ['cart:checkout'], // Acceder al checkout
+  '/user': ['account:view_own'], // Dashboard de usuario
+  '/user/account': ['account:view_own'], // Perfil del usuario
+  '/user/productos': ['products:view'], // Ver listado de productos (compra)
+  '/user/producto': ['products:view'], // Ver detalle de producto
+  '/user/checkout': ['cart:checkout'], // Acceder al checkout
 };
 
 // Role configuration with route permissions
@@ -36,8 +41,8 @@ const getDefaultRedirect = (userRole: Role, userPermissions: string[]): string =
     return '/admin';
   }
 
-  // Para usuarios normales, siempre pueden ir a su cuenta
-  return '/admin/account';
+  // Para usuarios normales, siempre pueden ir a su dashboard personal
+  return '/user';
 };
 
 // Map roles to their configurations
@@ -47,8 +52,8 @@ const ROLE_CONFIGURATION: Record<Role, RoleConfig> = {
     allowedRoutes: ['/admin']
   },
   [ROLES.USER]: {
-    defaultRedirect: '/admin/account',
-    allowedRoutes: ['/admin']
+    defaultRedirect: '/user',
+    allowedRoutes: ['/user', '/admin/account', '/admin/checkout']
   }
 };
 

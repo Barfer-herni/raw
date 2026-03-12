@@ -8,16 +8,17 @@ import Link from 'next/link';
 
 interface SignInProps {
     dictionary?: Dictionary;
+    locale?: string;
 }
 
-async function handleSignIn(formData: FormData) {
+async function handleSignIn(locale: string = 'es', formData: FormData) {
     'use server';
 
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
     if (!email || !password) {
-        redirect('/sign-in?error=empty-fields');
+        redirect(`/${locale}/sign-in?error=empty-fields`);
         return;
     }
 
@@ -28,12 +29,12 @@ async function handleSignIn(formData: FormData) {
             // Redirigir según el rol del usuario
             const userRole = result.user?.role || 'user';
             if (userRole === 'admin') {
-                redirect('/admin');
+                redirect(`/${locale}/admin/orders`);
             } else {
-                redirect('/'); // Usuarios normales van a la página de inicio
+                redirect(`/${locale}/user`); // Usuarios normales van a su dashboard personal
             }
         } else {
-            redirect('/sign-in?error=invalid-credentials');
+            redirect(`/${locale}/sign-in?error=invalid-credentials`);
         }
     } catch (err) {
         // No capturar NEXT_REDIRECT como error
@@ -44,10 +45,10 @@ async function handleSignIn(formData: FormData) {
     }
 }
 
-export const SignIn = ({ dictionary }: SignInProps) => {
+export const SignIn = ({ dictionary, locale = 'es' }: SignInProps) => {
     return (
         <div className="grid gap-6">
-            <form action={handleSignIn} className="space-y-4">
+            <form action={handleSignIn.bind(null, locale)} className="space-y-4">
                 <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium text-gray-900 dark:text-white">
                         {dictionary?.app?.auth?.signIn?.email || 'Correo Electrónico'}
@@ -70,13 +71,13 @@ export const SignIn = ({ dictionary }: SignInProps) => {
 
                 <SignInButton dictionary={dictionary} />
 
-                <GoogleLoginButton />
+                <GoogleLoginButton locale={locale} />
             </form>
 
             {/* Navigation to Sign Up */}
             <div className="text-center">
                 <Link
-                    href="/sign-up"
+                    href={`/${locale}/sign-up`}
                     className="text-sm text-barfer-green hover:text-barfer-green/80 dark:text-barfer-green dark:hover:text-barfer-green/80 transition-colors font-medium"
                 >
                     {dictionary?.app?.auth?.signIn?.goToSignUp || '¿No tienes cuenta? Crear cuenta'}
