@@ -15,6 +15,7 @@ export async function getCheckoutShippingRates(
     config: EnviaConfig,
     items: Array<{
         quantity: number;
+        unitPrice?: number;
         dimensions?: {
             alto: number;
             ancho: number;
@@ -28,29 +29,42 @@ export async function getCheckoutShippingRates(
     // Usar dirección de origen por defecto (Lanús)
     const origin = getDefaultOriginAddress();
 
-    // Crear un paquete individual para cada producto con sus dimensiones específicas
-    const packages: EnviaPackage[] = items.map((item, index) => {
-        // Usar las dimensiones del producto si están disponibles, sino usar valores por defecto
-        const dimensions = item.dimensions ? {
-            length: Math.max(item.dimensions.profundidad, 10), // Mínimo 10cm
-            width: Math.max(item.dimensions.ancho, 10),
-            height: Math.max(item.dimensions.alto, 10)
-        } : {
-            length: 20,
-            width: 15,
-            height: 10
-        };
+    // Consolidar todos los productos en UN SOLO paquete para reducir costos
+    // Los carriers cobran por bulto, así que enviamos todo junto
+    let totalWeight = 0;
+    let totalDeclaredValue = 0;
+    let maxLength = 20;
+    let maxWidth = 15;
+    let maxHeight = 10;
 
-        const packageData = {
-            content: `Producto ${index + 1}`,
-            amount: item.quantity,
-            type: 'box' as const,
-            weight: Math.max((item.dimensions?.peso || 50) / 1000, 0.1), // Mínimo 100g (0.1kg)
-            dimensions: dimensions,
-        };
+    for (const item of items) {
+        // Sumar peso total: peso unitario × cantidad
+        const itemWeight = item.dimensions?.peso || 0.1; // kg directamente
+        totalWeight += itemWeight * item.quantity;
 
-        return packageData;
-    });
+        // Sumar valor declarado: precio × cantidad
+        totalDeclaredValue += (item.unitPrice || 0) * item.quantity;
+
+        // Usar las dimensiones más grandes como referencia de la caja
+        if (item.dimensions) {
+            maxLength = Math.max(maxLength, item.dimensions.profundidad);
+            maxWidth = Math.max(maxWidth, item.dimensions.ancho);
+            maxHeight = Math.max(maxHeight, item.dimensions.alto);
+        }
+    }
+
+    const packages: EnviaPackage[] = [{
+        content: 'Pedido completo',
+        amount: 1, // 1 solo bulto
+        type: 'box' as const,
+        weight: Math.max(totalWeight, 0.1), // Mínimo 100g
+        dimensions: {
+            length: Math.max(maxLength, 10),
+            width: Math.max(maxWidth, 10),
+            height: Math.max(maxHeight, 10),
+        },
+        declaredValue: Math.max(totalDeclaredValue, 1000), // Mínimo 1000 ARS
+    }];
 
     // Crear dirección de destino completa
     const destination: EnviaAddress = {

@@ -36,6 +36,7 @@ import type { EnviaAddress, EnviaShippingRateResponse } from '../../../types/env
 export async function getShippingRatesForCheckout(
     cartItems: Array<{
         quantity: number;
+        unitPrice?: number;
         dimensions?: {
             alto: number;
             ancho: number;
@@ -57,6 +58,7 @@ export async function getShippingRatesForCheckout(
 ): Promise<EnviaShippingRateResponse> {
     const items = cartItems.map(item => ({
         quantity: item.quantity,
+        unitPrice: item.unitPrice,
         dimensions: item.dimensions
     }));
 

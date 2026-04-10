@@ -28,6 +28,7 @@ export interface EnviaPackage {
         width: number; // cm
         height: number; // cm
     };
+    declaredValue?: number;
 }
 
 export interface EnviaShippingOption {
@@ -57,5 +58,5 @@ export interface EnviaShippingRateResponse {
 export interface EnviaConfig {
     apiKey: string;
     baseUrl: string;
-    environment: 'sandbox';
+    environment: 'sandbox' | 'production';
 }

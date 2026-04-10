@@ -56,6 +56,8 @@ export async function getShippingRates(
                 origin: {
                     name: request.origin.name,
                     phone: request.origin.phone,
+                    street: request.origin.street,
+                    number: request.origin.number || '100',
                     city: request.origin.city,
                     state: request.origin.state,
                     country: request.origin.country,
@@ -64,6 +66,8 @@ export async function getShippingRates(
                 destination: {
                     name: request.destination.name,
                     phone: request.destination.phone,
+                    street: request.destination.street,
+                    number: request.destination.number || '100',
                     city: request.destination.city,
                     state: request.destination.state,
                     country: request.destination.country,
@@ -73,7 +77,7 @@ export async function getShippingRates(
                     type: pkg.type,
                     content: pkg.content,
                     amount: pkg.amount,
-                    declaredValue: 80000,
+                    declaredValue: pkg.declaredValue,
                     lengthUnit: 'CM',
                     weightUnit: 'KG',
                     weight: pkg.weight,
@@ -91,7 +95,7 @@ export async function getShippingRates(
 
             console.log('Request Body:', JSON.stringify(requestBody, null, 2));
 
-            const apiUrl = config.baseUrl ? `${config.baseUrl}/ship/rate` : 'https://api-test.envia.com/ship/rate';
+            const apiUrl = config.baseUrl ? `${config.baseUrl}/ship/rate` : 'https://api.envia.com/ship/rate';
 
             const response = await fetch(apiUrl, {
                 method: 'POST',

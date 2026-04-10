@@ -7,6 +7,7 @@ interface CartItem {
     id: string;
     name: string;
     quantity: number;
+    unitPrice?: number;
     dimensions?: {
         alto: number;
         ancho: number;
@@ -99,10 +100,17 @@ export function ShippingOptions({ cartItems, address, onShippingSelect, selected
         }
 
         try {
-            console.log('🎯 [SHIPPING OPTIONS] 🌐 Llamando a getShippingOptionsAction...');
+            // Clonamos los datos para evitar problemas de referencia en el Action
+            const itemsToFetch = cartItems.map(item => ({
+                id: item.id,
+                name: item.name,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                dimensions: item.dimensions ? { ...item.dimensions } : undefined
+            }));
 
             // Intentar obtener opciones reales de Envía para el resto del país
-            const result = await getShippingOptionsAction(cartItems, address);
+            const result = await getShippingOptionsAction(itemsToFetch, address);
 
             console.log('🎯 [SHIPPING OPTIONS] 📥 Resultado recibido:', {
                 success: result.success,

@@ -21,15 +21,9 @@ export function AdminPageWrapper({ children, logo, title, dictionary, locale, in
     const [user, setUser] = useState<any>(initialUser);
     const [isLoadingAdmin, setIsLoadingAdmin] = useState(!initialUser);
 
-    // Verificar permisos de administrador
+    // Verificar permisos de administrador (solo una vez al montar)
     useEffect(() => {
         const checkAdminRole = async () => {
-            // Si ya tenemos el usuario, solo necesitamos verificar si es admin si no lo sabemos
-            if (user && isAdmin) {
-                setIsLoadingAdmin(false);
-                return;
-            }
-
             try {
                 const result = await checkAdminRoleAction();
                 setIsAdmin(result.isAdmin);
@@ -43,7 +37,7 @@ export function AdminPageWrapper({ children, logo, title, dictionary, locale, in
         };
 
         checkAdminRole();
-    }, [user, isAdmin]);
+    }, []);
 
     const headerExtraItems = (
         <div className="flex items-center gap-2">
