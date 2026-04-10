@@ -571,20 +571,6 @@ export default function AdminPage() {
                 });
                 return;
             }
-
-            // Log para debugging
-            console.log('📧 Enviando email con EmailJS:', {
-                serviceId: serviceId.slice(0, 10) + '...',
-                templateId: templateId.slice(0, 10) + '...',
-                publicKey: publicKey.slice(0, 10) + '...',
-                datos: {
-                    nombre: contactForm.nombre,
-                    email: contactForm.email,
-                    asunto: contactForm.asunto,
-                    mensaje: contactForm.mensaje.substring(0, 50) + '...'
-                }
-            });
-
             // Inicializar EmailJS
             emailjs.init(publicKey);
 
@@ -601,8 +587,6 @@ export default function AdminPage() {
             // Enviar email
             const response = await emailjs.send(serviceId, templateId, templateParams);
 
-            console.log('✅ Email enviado exitosamente:', response.status, response.text);
-
             setContactStatus({
                 type: 'success',
                 message: '¡Mensaje enviado exitosamente! Te responderemos pronto.'
@@ -617,7 +601,6 @@ export default function AdminPage() {
             });
 
         } catch (error) {
-            console.error('❌ Error enviando mensaje:', error);
             setContactStatus({
                 type: 'error',
                 message: 'Error al enviar el mensaje. Por favor intenta nuevamente.'
@@ -649,35 +632,20 @@ export default function AdminPage() {
         const loadProducts = async () => {
             setIsLoadingProducts(true);
             try {
-                console.log('🏠 Cargando productos para el home...');
-
-                // TEMPORAL: Mostrar productos de ejemplo con ofertas para demostración
-                // Cambia esta línea para usar productos reales cuando tengas algunos en la DB
-                const useExampleProducts = false; // Ahora usando productos de DB
+                const useExampleProducts = false;
 
                 if (useExampleProducts) {
-                    console.log('🏷️ Usando productos de ejemplo con ofertas');
                     setProducts(selectedCategory ? [] : SAMPLE_PRODUCTS);
                     setIsLoadingProducts(false);
                     return;
                 }
-
-                // Pasamos la categoría seleccionada al backend
                 const result = await getProductsForHomeAction('minorista', selectedCategory || undefined);
                 if (result.success && result.products && result.products.length > 0) {
-                    console.log('📦 Productos cargados desde la base de datos:', result.products.length);
-                    // Usar productos de la base de datos si existen
                     setProducts(result.products);
                 } else {
-                    console.error('Error cargando productos o no hay productos:', result?.message);
-                    console.log('🏷️ Usando productos de ejemplo como fallback o lista vacía si hay filtro');
-                    // Fallback a productos de ejemplo si falla la carga o no hay productos, vacío si hay categoría
                     setProducts(selectedCategory ? [] : SAMPLE_PRODUCTS);
                 }
             } catch (error) {
-                console.error('Error cargando productos:', error);
-                console.log('🏷️ Usando productos de ejemplo por error o vacío si hay filtro');
-                // Fallback a productos de ejemplo si falla la carga, vacío si hay categoría
                 setProducts(selectedCategory ? [] : SAMPLE_PRODUCTS);
             } finally {
                 setIsLoadingProducts(false);
@@ -685,7 +653,7 @@ export default function AdminPage() {
         };
 
         loadProducts();
-    }, [selectedCategory]); // Re-fetch products when selectedCategory changes
+    }, [selectedCategory]);
 
     // Auto-play del carrusel principal
     useEffect(() => {

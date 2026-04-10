@@ -208,14 +208,10 @@ export async function deleteUser(userId: string) {
  */
 export async function verifyUserCredentials(email: string, password: string) {
     try {
-        console.log('email', email);
-        console.log('password', password);
         // Buscar usuario por email
         const user = await database.user.findUnique({
             where: { email },
         });
-
-        console.log('1');
         // Si no se encuentra el usuario, retornar fallo
         if (!user) {
             return { success: false, message: 'Credenciales inválidas' };
@@ -224,13 +220,10 @@ export async function verifyUserCredentials(email: string, password: string) {
         // Comparar contraseña hasheada
         const passwordMatch = await bcrypt.compare(password, user.password);
 
-        console.log('2');
         // Si las contraseñas no coinciden, retornar fallo
         if (!passwordMatch) {
             return { success: false, message: 'Credenciales inválidas' };
         }
-
-        console.log('3');
         // Retornar éxito con datos del usuario
         return {
             success: true,

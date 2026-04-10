@@ -227,34 +227,21 @@ export async function updateProduct(productId: string, updateData: Partial<Creat
 export async function deleteProduct(productId: string): Promise<{ success: boolean; message?: string; error?: string }> {
     try {
         const productsCollection = await getCollection('productos');
-
-        console.log(`🗑️ Intentando eliminar producto completamente con ID: ${productId}`);
-
         const result = await productsCollection.deleteOne(
             { _id: new ObjectId(productId) }
         );
-
-        console.log(`📊 Resultado de eliminación:`, {
-            deletedCount: result.deletedCount,
-            acknowledged: result.acknowledged
-        });
-
         if (result.deletedCount === 0) {
-            console.error(`❌ Producto no encontrado: ${productId}`);
             return {
                 success: false,
                 message: 'Producto no encontrado',
                 error: 'PRODUCT_NOT_FOUND'
             };
         }
-
-        console.log(`✅ Producto eliminado completamente: ${productId}`);
         return {
             success: true,
             message: 'Producto eliminado completamente'
         };
     } catch (error) {
-        console.error('Error al eliminar producto:', error);
         return {
             success: false,
             message: 'Error interno del servidor al eliminar el producto',

@@ -84,24 +84,17 @@ export function CategoriasManager() {
             });
             return;
         }
-
         setIsAddingCategoria(true);
         try {
-            console.log('[CategoriasManager] Attempting to create categoria:', newCategoriaNombre);
-            // Enviar el nombre tal como está (el backend se encarga de normalizarlo)
             const result = await createCategoriaAction(newCategoriaNombre);
-
-            console.log('[CategoriasManager] Create result:', result);
-
             if (result.success) {
                 toast({
                     title: "Categoría creada",
                     description: "La categoría ha sido creada exitosamente.",
                 });
                 setNewCategoriaNombre('');
-                loadCategorias(); // Recargar la lista
+                loadCategorias();
             } else {
-                console.error('[CategoriasManager] Create failed:', result);
                 toast({
                     title: "Error",
                     description: result.error || "Error al crear la categoría",
@@ -109,7 +102,6 @@ export function CategoriasManager() {
                 });
             }
         } catch (error: any) {
-            console.error('[CategoriasManager] Error creating categoria:', error);
             toast({
                 title: "Error",
                 description: error?.message || "Error inesperado al crear la categoría",

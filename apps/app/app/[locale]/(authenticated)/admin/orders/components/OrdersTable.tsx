@@ -393,12 +393,7 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                         </PopoverContent>
                     </Popover>
                 );
-
             default:
-                // Para cualquier columna no reconocida, intentar mostrar el valor actual
-                console.log('Columna no reconocida:', normalizedId, 'ColumnId original:', columnId);
-
-                // Intentar extraer el valor del original usando el columnId
                 const keys = normalizedId.split('.');
                 let value = original;
                 for (const key of keys) {
@@ -406,7 +401,6 @@ export function OrdersTable<TData extends { _id: string }, TValue>({
                         value = value[key];
                     }
                 }
-
                 return (
                     <div className="text-[10px] text-muted-foreground italic">
                         {typeof value === 'string' || typeof value === 'number' ? value : '-'}

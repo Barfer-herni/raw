@@ -39,18 +39,8 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     const handleAddToCart = () => {
         // Calcular cuánto agregar basado en la diferencia entre el contador local y lo que ya está en el carrito
         const quantityToAdd = localQuantity - cartQuantity;
-        console.log('🛒 ProductCard: Intentando agregar al carrito:', {
-            product,
-            localQuantity,
-            cartQuantity,
-            quantityToAdd
-        });
-
         if (quantityToAdd > 0) {
-            console.log('🛒 ProductCard: Llamando a onAddToCart con:', { product, quantity: quantityToAdd });
             onAddToCart(product, quantityToAdd);
-        } else {
-            console.log('🛒 ProductCard: No se puede agregar, quantityToAdd <= 0');
         }
     };
 

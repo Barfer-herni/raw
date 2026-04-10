@@ -304,9 +304,6 @@ export async function getUserById(userId: string) {
         const userPermissions = Array.isArray(user.permissions) && user.permissions.length > 0
             ? user.permissions
             : defaultPermissions;
-
-
-        console.log("user : ", user)
         // Retornar usuario sin contraseña
         return {
             id: user._id.toString(),
@@ -344,10 +341,6 @@ export async function updateUserProfile(userId: string, data: UpdateProfileData)
         if (data.phone) updateData.phone = data.phone;
         if (data.address) updateData.address = data.address;
 
-        console.log('--- DATABASE UPDATE START ---');
-        console.log('User ID:', userId);
-        console.log('Update Data:', JSON.stringify(updateData, null, 2));
-
         // Find which collection the user belongs to
         const [regularUser, gestorUser] = await Promise.all([
             usersCollection.findOne({ _id: new ObjectId(userId) }),
@@ -359,33 +352,23 @@ export async function updateUserProfile(userId: string, data: UpdateProfileData)
 
         if (regularUser) {
             collectionType = 'users';
-            console.log('User found in "users" collection');
             result = await usersCollection.updateOne(
                 { _id: new ObjectId(userId) },
                 { $set: updateData }
             );
         } else if (gestorUser) {
             collectionType = 'users_gestor';
-            console.log('User found in "users_gestor" collection');
             result = await gestorUsersCollection.updateOne(
                 { _id: new ObjectId(userId) },
                 { $set: updateData }
             );
         } else {
-            console.log('User NOT FOUND in any collection');
             return {
                 success: false,
                 message: 'Usuario no encontrado',
                 error: 'USER_NOT_FOUND'
             };
         }
-
-        console.log(`Update result for ${collectionType}:`, {
-            matchedCount: result.matchedCount,
-            modifiedCount: result.modifiedCount,
-            acknowledged: result.acknowledged
-        });
-        console.log('--- DATABASE UPDATE END ---');
 
         if (result.matchedCount === 0) {
             return {

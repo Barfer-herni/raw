@@ -155,47 +155,32 @@ export default function ProductosAdminPage() {
         setIsSubmitting(true);
         try {
             let finalProductForm = { ...productForm };
-
-            // Si hay imágenes seleccionadas, subirlas a Cloudinary primero
             if (selectedImageFiles.length > 0) {
                 setUploadingImage(true);
                 try {
                     const uploadedUrls: string[] = [];
-
-                    // Subir cada imagen con compresión automática
                     for (const file of selectedImageFiles) {
-                        console.log(`📸 Procesando imagen: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
-
-                        // Comprimir imagen antes de subir si es muy grande
                         let processedFile = file;
                         if (file.size > 2 * 1024 * 1024) { // Si es mayor a 2MB
-                            console.log('🔄 Comprimiendo imagen...');
                             try {
                                 processedFile = await compressImage(file, 0.8, 1920, 1080);
-                                console.log(`✅ Imagen comprimida: ${(processedFile.size / 1024 / 1024).toFixed(2)}MB`);
                             } catch (compressionError) {
                                 console.warn('⚠️ Error al comprimir, usando archivo original:', compressionError);
                             }
                         }
-
                         const formData = new FormData();
                         formData.append('file', processedFile);
                         formData.append('folder', 'productos');
-
                         const uploadResult = await uploadImageAction(formData);
                         if (uploadResult.success && uploadResult.url) {
                             uploadedUrls.push(uploadResult.url);
-                            console.log(`✅ Imagen subida exitosamente: ${uploadResult.url}`);
                         } else {
                             console.error(`❌ Error al subir ${file.name}:`, uploadResult.message);
                             alert(`Error al subir ${file.name}: ${uploadResult.message}`);
                             return;
                         }
                     }
-
                     finalProductForm.imagenes = uploadedUrls;
-
-                    // Limpiar las URLs de preview locales
                     productForm.imagenes?.forEach(imageUrl => {
                         if (imageUrl.startsWith('blob:')) {
                             URL.revokeObjectURL(imageUrl);
@@ -254,7 +239,6 @@ export default function ProductosAdminPage() {
     };
 
     const resetProductForm = () => {
-        // Limpiar URLs de preview si existen
         productForm.imagenes?.forEach(imageUrl => {
             if (imageUrl.startsWith('blob:')) {
                 URL.revokeObjectURL(imageUrl);
@@ -480,11 +464,7 @@ export default function ProductosAdminPage() {
                                     loading="lazy"
                                     crossOrigin="anonymous"
                                     onError={(e) => {
-                                        console.warn('⚠️ Error cargando imagen:', product.imagenes?.[0]);
-
-                                        // Intentar una sola recarga con cache-busting
                                         if (!e.currentTarget.dataset.retried) {
-                                            console.log('🔄 Reintentando carga de imagen...');
                                             e.currentTarget.dataset.retried = 'true';
                                             const imgElement = e.currentTarget as HTMLImageElement;
                                             setTimeout(() => {
@@ -494,10 +474,6 @@ export default function ProductosAdminPage() {
                                             }, 500);
                                             return;
                                         }
-
-                                        // Si falló el retry, mostrar placeholder simple
-                                        console.error('❌ No se pudo cargar la imagen:', product.imagenes?.[0]);
-
                                         const placeholder = document.createElement('div');
                                         placeholder.className = 'w-full h-48 bg-gray-100 border-2 border-gray-200 rounded-xl mb-4 flex items-center justify-center';
                                         placeholder.innerHTML = `

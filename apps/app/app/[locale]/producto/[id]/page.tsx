@@ -28,13 +28,6 @@ export default function ProductDetailPage() {
     const productId = params.id as string;
     const locale = params.locale as string;
 
-    // Debug: verificar parámetros
-    console.log('ProductDetailPage Debug:', {
-        productId,
-        locale,
-        params
-    });
-
     // Obtener la cantidad actual de este producto en el carrito
     const cartItem = cart.find((item: CartItem) => item.id === productId);
     const cartQuantity = cartItem ? cartItem.quantity : 0;
@@ -64,8 +57,6 @@ export default function ProductDetailPage() {
 
     const handleAddToCart = () => {
         if (!product) return;
-
-        console.log('🔍 Producto completo:', product);
         const productForCart = {
             id: product._id!,
             name: product.titulo,

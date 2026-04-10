@@ -74,10 +74,6 @@ export const EXAMPLE_DATA = {
     howToUse: `
         const stats = await getAverageOrderValue();
         
-        console.log('Ticket promedio:', stats.averageValue);
-        console.log('Total órdenes confirmadas:', stats.totalOrders);
-        console.log('Revenue total:', stats.totalRevenue);
-        
         // Para mostrar en UI
         const ticketPromedio = '$' + Math.round(stats.averageValue).toLocaleString();
         const conversion = ((stats.totalOrders / totalOrdersIncludingPending) * 100).toFixed(1) + '%';

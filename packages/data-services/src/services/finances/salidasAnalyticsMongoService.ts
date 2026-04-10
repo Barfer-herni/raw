@@ -4,7 +4,6 @@ import { getCollection, ObjectId } from '@repo/database';
 
 export async function getSalidasStatsByMonthMongo(year: number, month: number): Promise<{ success: boolean; stats?: any; error?: string }> {
     try {
-        console.log('getSalidasStatsByMonthMongo', year, month);
         const collection = await getCollection('salidas');
         const startDate = new Date(year, month - 1, 1);
         const endDate = new Date(year, month, 0, 23, 59, 59);

@@ -204,32 +204,21 @@ export async function canViewSalidaCategory(categoryName: string): Promise<boole
     if (!userWithPermissions) {
         return false;
     }
-
-    // Log temporal para debug
-    console.log(`🔍 Verificando categoría "${categoryName}" para usuario ${userWithPermissions.name}`);
-    console.log(`  Permisos: ${userWithPermissions.permissions.join(', ')}`);
-
     // Los admins pueden ver todo
     if (userWithPermissions.isAdmin) {
-        console.log(`  ✅ Admin - puede ver todo`);
         return true;
     }
 
     // Verificar si tiene el permiso general para ver todas las categorías
     if (userWithPermissions.permissions.includes('outputs:view_all_categories')) {
-        console.log(`  ✅ Tiene permiso para ver todas las categorías`);
         return true;
     }
 
     // Verificar permisos específicos por categoría
     const categoryPermission = `outputs:view_category:${categoryName.toUpperCase()}`;
     if (userWithPermissions.permissions.includes(categoryPermission)) {
-        console.log(`  ✅ Tiene permiso específico: ${categoryPermission}`);
         return true;
     }
-
-    // Si no tiene permisos específicos para esta categoría, no puede verla
-    console.log(`  ❌ No tiene permisos para esta categoría`);
     return false;
 }
 

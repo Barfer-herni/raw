@@ -140,10 +140,6 @@ export function CartButton() {
                                         <Button
                                             disabled={getTotalPrice() < 15000}
                                             onClick={() => {
-                                                console.log('🛒 CartButton: Botón checkout clickeado');
-                                                console.log('🛒 CartButton: Estado actual del carrito:', cart);
-                                                console.log('🛒 CartButton: Total de items:', getTotalItems());
-                                                console.log('🛒 CartButton: Precio total:', getTotalPrice());
                                                 setIsCartOpen(false); // Cerrar el carrito antes de ir al checkout
                                                 checkout();
                                             }}

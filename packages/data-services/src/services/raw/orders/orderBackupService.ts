@@ -99,12 +99,10 @@ export async function getLastBackup() {
  */
 export async function restoreLastBackup() {
     try {
-        console.log('Starting restoreLastBackup...');
         const { getCollection, ObjectId } = await getDatabaseConnection();
 
         // Obtener el último backup
         const backupResult = await getLastBackup();
-        console.log('Backup result:', backupResult);
 
         if (!backupResult.success) {
             return backupResult;
@@ -115,12 +113,6 @@ export async function restoreLastBackup() {
             return { success: false, error: 'Backup no encontrado' };
         }
 
-        console.log('Restoring backup:', {
-            orderId: backup.orderId,
-            action: backup.action,
-            hasPreviousData: !!backup.previousData
-        });
-
         if (backup.action === 'delete') {
             // Si fue eliminado, restaurar la orden
             const ordersCollection = await getCollection('orders');
@@ -129,28 +121,20 @@ export async function restoreLastBackup() {
             if (!result.insertedId) {
                 return { success: false, error: 'Error al restaurar la orden eliminada' };
             }
-            console.log('Order restored from deletion');
         } else if (backup.action === 'update') {
             // Si fue modificado, restaurar al estado anterior
             const ordersCollection = await getCollection('orders');
-            console.log('Updating order with previous data:', backup.previousData);
             const result = await ordersCollection.updateOne(
                 { _id: new ObjectId(backup.orderId) },
                 { $set: backup.previousData }
             );
-
-            console.log('Update result:', result);
             if (result.matchedCount === 0) {
                 return { success: false, error: 'Orden no encontrada para restaurar' };
             }
-            console.log('Order restored from update');
         }
-
         // Eliminar el backup usado
         const backupCollection = await getCollection('orderBackups');
         await backupCollection.deleteOne({ _id: (backup as any)._id });
-        console.log('Backup deleted successfully');
-
         return { success: true, restoredAction: backup.action };
     } catch (error) {
         console.error('Error restoring backup:', error);

@@ -73,10 +73,7 @@ export async function getAllProductsAction(includeInactive = false, orderType?: 
                 };
             }
         }
-
         const products = await getAllProductsService(includeInactive, orderType);
-
-        console.log('🔍 Products:', products);
         // Serializar explícitamente para Next.js
         return {
             success: true,

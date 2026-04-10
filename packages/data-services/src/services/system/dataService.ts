@@ -99,7 +99,6 @@ export async function createData(data: DataFormData) {
     "use server";
     try {
         // MOCKUP: Replace with actual database call
-        console.log('Creating data with:', data);
         return {
             id: '123',
             key: data.key,
@@ -131,8 +130,6 @@ export async function createData(data: DataFormData) {
 export async function updateData(dataId: string, data: DataFormData) {
     "use server";
     try {
-        // MOCKUP: Replace with actual database call
-        console.log('Updating data', dataId, 'with:', data);
         const updatedData = {
             id: dataId,
             key: data.key,
@@ -141,16 +138,6 @@ export async function updateData(dataId: string, data: DataFormData) {
             createdAt: new Date(),
             updatedAt: new Date()
         } as GenericData;
-
-        // Implementation example:
-        // const result = await db.data.update({
-        //     where: { id: dataId },
-        //     data: {
-        //         key: data.key,
-        //         value: data.value,
-        //         category: data.category,
-        //     },
-        // });
         revalidatePath('/admin/dashboard');
         return updatedData;
     } catch (error) {
@@ -166,7 +153,6 @@ export async function deleteData(dataId: string) {
     "use server";
     try {
         // MOCKUP: Replace with actual database call
-        console.log('Deleting data:', dataId);
 
         // Implementation example:
         // await db.data.delete({

@@ -14,40 +14,25 @@ export async function uploadImageAction(formData: FormData) {
         const file = formData.get('file') as File;
         const folder = formData.get('folder') as string || 'productos';
 
-        console.log(`📤 [Upload] Iniciando subida de imagen: ${file?.name} (${file ? (file.size / 1024 / 1024).toFixed(2) : 0}MB)`);
-
         if (!file) {
-            console.error('❌ [Upload] No se proporcionó archivo');
             return {
                 success: false,
                 message: 'No se proporcionó ningún archivo',
                 error: 'NO_FILE_PROVIDED'
             };
         }
-
         // Validar archivo
         const validation = validateImageFileService(file);
         if (!validation.isValid) {
-            console.error('❌ [Upload] Archivo no válido:', validation.message);
             return {
                 success: false,
                 message: validation.message || 'Archivo no válido',
                 error: 'INVALID_FILE'
             };
         }
-
-        console.log('✅ [Upload] Archivo validado correctamente, procediendo a subir...');
         const result = await uploadImageService(file, folder);
-
-        if (result.success) {
-            console.log('✅ [Upload] Imagen subida exitosamente:', result.url);
-        } else {
-            console.error('❌ [Upload] Error en el servicio:', result.message);
-        }
-
         return result;
     } catch (error) {
-        console.error('❌ [Upload] Error en uploadImageAction:', error);
         return {
             success: false,
             message: 'Error interno del servidor al subir imagen',

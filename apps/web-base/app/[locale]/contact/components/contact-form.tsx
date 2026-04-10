@@ -22,8 +22,6 @@ interface StatusMessage {
 }
 
 export const ContactForm = ({ dictionary }: ContactFormProps) => {
-  console.log('📝 ContactForm montándose...');
-  
   const [formData, setFormData] = useState<FormData>({
     nombre: '',
     email: '',
@@ -34,9 +32,6 @@ export const ContactForm = ({ dictionary }: ContactFormProps) => {
     message: ''
   });
   const [sending, setSending] = useState(false);
-  
-  console.log('📝 Estados inicializados:', { formData, status, sending });
-
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -46,28 +41,16 @@ export const ContactForm = ({ dictionary }: ContactFormProps) => {
   };
 
   const handleSubmit = async (e: FormEvent) => {
-    console.log('🚀 SUBMIT INICIADO - handleSubmit ejecutándose...');
     e.preventDefault();
-    console.log('🚀 preventDefault() ejecutado');
     setSending(true);
-    console.log('🚀 setSending(true) ejecutado');
 
     try {
-      console.log('🚀 Iniciando EmailJS con datos:', {
-        from_name: formData.nombre,
-        from_email: formData.email,
-        message: formData.mensaje.substring(0, 50) + '...'
-      });
-      
-      // Usar EmailJS para enviar el email
       const result = await emailJSService.sendContactEmail({
         from_name: formData.nombre,
         from_email: formData.email,
         message: formData.mensaje,
       });
-      
-      console.log('🚀 Resultado de EmailJS:', result);
-      
+
       if (result.error) {
         setStatus({
           type: 'error',
@@ -221,8 +204,6 @@ export const ContactForm = ({ dictionary }: ContactFormProps) => {
                   className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                   type="submit"
                   onClick={(e) => {
-                    console.log('🎯 BOTÓN CLICKEADO - React funcionando!');
-                    // No hacer preventDefault aquí, dejar que el onSubmit del form lo maneje
                   }}
                 >
                   {sending ? (dictionary.web.contact.form.sending || 'Enviando...') : (dictionary.web.contact.form.send_button || 'Enviar')}

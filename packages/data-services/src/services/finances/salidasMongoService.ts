@@ -77,7 +77,6 @@ export interface UpdateCategoriaProveedorMongoInput extends Partial<CreateCatego
 
 export async function getAllSalidasMongo(): Promise<{ success: boolean; salidas?: SalidaMongoData[]; error?: string }> {
     try {
-        console.log("ESTOY EJECUTANDO")
         const collection = await getCollection('salidas');
         const catCollection = await getCollection('categorias_salidas');
         const mpCollection = await getCollection('metodos_pago');
@@ -87,11 +86,6 @@ export async function getAllSalidasMongo(): Promise<{ success: boolean; salidas?
         const categorias = await catCollection.find({}).toArray();
         const metodosPago = await mpCollection.find({}).toArray();
         const proveedores = await provCollection.find({}).toArray();
-
-        console.log("rawSalidas", rawSalidas);
-        console.log("categorias", categorias);
-        console.log("metodosPago", metodosPago);
-        console.log("proveedores", proveedores);
 
         const catMap = new Map(categorias.map(c => [c._id.toString(), c]));
         const mpMap = new Map(metodosPago.map(m => [m._id.toString(), m]));
@@ -115,10 +109,6 @@ export async function getAllSalidasMongo(): Promise<{ success: boolean; salidas?
                 }
                 : undefined
         })) as unknown as SalidaMongoData[];
-
-
-        console.log("salidas", salidas);
-
         return { success: true, salidas };
     } catch (error) {
         console.error('Error in getAllSalidasMongo:', error);

@@ -13,25 +13,6 @@ export const contactWithGmail = async (
   error?: string;
 }> => {
   try {
-    // Rate limiting (opcional - comentado para simplificar)
-    // if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
-    //   const rateLimiter = createRateLimiter({
-    //     limiter: slidingWindow(1, '1d'),
-    //   });
-
-    //   const head = await headers();
-    //   const ip = head.get('x-forwarded-for');
-
-    //   const { success } = await rateLimiter.limit(`contact_form_${ip}`);
-
-    //   if (!success) {
-    //     throw new Error(
-    //       'You have reached your request limit. Please try again later.'
-    //     );
-    //   }
-    // }
-
-    // Validaciones básicas
     if (!name || !email || !message) {
       throw new Error('Todos los campos son requeridos.');
     }
@@ -40,11 +21,8 @@ export const contactWithGmail = async (
     if (!emailRegex.test(email)) {
       throw new Error('Por favor ingresa un email válido.');
     }
-
-    // Generar HTML del email
     const emailHTML = gmailService.generateContactEmailHTML(name, email, message);
 
-    // Enviar email usando Gmail
     const result = await gmailService.sendEmail({
       to: 'nicolascaliari28@gmail.com',
       subject: `Nuevo mensaje desde tu sitio web - ${name}`,
@@ -55,11 +33,8 @@ export const contactWithGmail = async (
     if (!result.success) {
       throw new Error(result.error || 'Error al enviar el email');
     }
-
-    console.log('✅ Email de contacto enviado exitosamente via Gmail');
     return {};
   } catch (error) {
-    console.error('❌ Error en contacto Gmail:', error);
     const errorMessage = parseError(error);
     return { error: errorMessage };
   }
@@ -73,8 +48,6 @@ export async function contactFormGmail(
   const email = formData.get('email') as string;
   const message = formData.get('message') as string;
   const honeypot = formData.get('honeypot') as string;
-
-  // Honeypot anti-spam
   if (honeypot) {
     return { error: 'Spam detected', success: false };
   }
@@ -90,7 +63,7 @@ export async function contactFormGmail(
 
   try {
     const result = await contactWithGmail(name, email, message);
-    
+
     if (result.error) {
       return { error: result.error, success: false };
     }

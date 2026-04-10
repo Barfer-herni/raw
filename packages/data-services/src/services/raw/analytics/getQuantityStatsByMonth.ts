@@ -116,126 +116,6 @@ const categorizeProduct = (productName: string, optionName: string): {
     return { category: 'otros', subcategory: 'otros' };
 };
 
-/**
- * Función de prueba simple para verificar productos
- */
-export async function testProductData(): Promise<void> {
-    try {
-        const collection = await getCollection('orders');
-
-        console.log('=== TEST: Verificando datos de productos ===');
-
-        // Obtener una orden de ejemplo
-        const sampleOrder = await collection.findOne({});
-
-        if (!sampleOrder) {
-            console.log('No se encontraron órdenes en la base de datos');
-            return;
-        }
-
-        console.log('Orden de ejemplo:', {
-            id: sampleOrder._id,
-            orderType: sampleOrder.orderType,
-            createdAt: sampleOrder.createdAt,
-            total: sampleOrder.total
-        });
-
-        if (sampleOrder.items && sampleOrder.items.length > 0) {
-            console.log('Productos en la orden:');
-            sampleOrder.items.forEach((item: any, index: number) => {
-                console.log(`  Producto ${index + 1}:`, {
-                    name: item.name,
-                    options: item.options?.length || 0
-                });
-
-                if (item.options) {
-                    item.options.forEach((option: any, optIndex: number) => {
-                        const weight = getProductWeight(item.name, option.name);
-                        const { category, subcategory } = categorizeProduct(item.name, option.name);
-
-                        console.log(`    Opción ${optIndex + 1}:`, {
-                            name: option.name,
-                            quantity: option.quantity,
-                            price: option.price,
-                            calculatedWeight: weight,
-                            category,
-                            subcategory
-                        });
-                    });
-                }
-            });
-        } else {
-            console.log('No hay productos en esta orden');
-        }
-
-    } catch (error) {
-        console.error('Error en test de productos:', error);
-        throw error;
-    }
-}
-
-/**
- * Función de debug para verificar los datos de cantidad
- */
-export async function debugQuantityStats(startDate?: Date, endDate?: Date): Promise<void> {
-    try {
-        const collection = await getCollection('orders');
-
-        console.log('=== DEBUG: Verificando datos de cantidad ===');
-        console.log('Fechas:', { startDate, endDate });
-
-        // 1. Verificar todas las órdenes en el período
-        const matchCondition: any = {};
-        if (startDate || endDate) {
-            matchCondition.createdAt = {};
-            if (startDate) matchCondition.createdAt.$gte = startDate;
-            if (endDate) matchCondition.createdAt.$lte = endDate;
-        }
-
-        const allOrders = await collection.find(matchCondition).limit(5).toArray();
-        console.log('Órdenes encontradas:', allOrders.length);
-
-        allOrders.forEach((order, index) => {
-            console.log(`Orden ${index + 1}:`, {
-                id: order._id,
-                orderType: order.orderType,
-                createdAt: order.createdAt,
-                total: order.total,
-                items: order.items?.length || 0
-            });
-
-            // Verificar items de la orden
-            if (order.items) {
-                order.items.forEach((item: any, itemIndex: number) => {
-                    console.log(`  Item ${itemIndex + 1}:`, {
-                        name: item.name,
-                        options: item.options?.length || 0
-                    });
-
-                    if (item.options) {
-                        item.options.forEach((option: any, optionIndex: number) => {
-                            const weight = getProductWeight(item.name, option.name);
-                            const { category, subcategory } = categorizeProduct(item.name, option.name);
-                            console.log(`    Option ${optionIndex + 1}:`, {
-                                name: option.name,
-                                quantity: option.quantity,
-                                price: option.price,
-                                calculatedWeight: weight,
-                                category,
-                                subcategory,
-                                totalWeight: weight * option.quantity
-                            });
-                        });
-                    }
-                });
-            }
-        });
-
-    } catch (error) {
-        console.error('Error en debug de cantidad:', error);
-        throw error;
-    }
-}
 
 export async function getQuantityStatsByMonth(startDate?: Date, endDate?: Date): Promise<QuantityStatsByType> {
     try {
@@ -372,9 +252,6 @@ export async function getQuantityStatsByMonth(startDate?: Date, endDate?: Date):
 
             // Categorizar producto
             const { subcategory } = categorizeProduct(productName, optionName);
-
-
-
             // Asignar peso a la categoría correspondiente
             switch (subcategory) {
                 case 'pollo':
@@ -412,33 +289,22 @@ export async function getQuantityStatsByMonth(startDate?: Date, endDate?: Date):
             groupedByMonth[month][clientType].totalMes += totalWeight;
         });
 
-
-
-        // Calcular totales y redondear
         Object.keys(groupedByMonth).forEach(month => {
             Object.keys(groupedByMonth[month]).forEach(clientType => {
                 const data = groupedByMonth[month][clientType];
 
-                // Calcular totales
                 data.totalPerro = data.pollo + data.vaca + data.cerdo + data.cordero + data.bigDogPollo + data.bigDogVaca;
                 data.totalGato = data.gatoPollo + data.gatoVaca + data.gatoCordero;
 
-                // Redondear a 2 decimales
                 Object.keys(data).forEach(key => {
                     if (key !== 'month' && typeof data[key as keyof ProductQuantity] === 'number') {
                         (data as any)[key] = Math.round((data as any)[key] * 100) / 100;
                     }
                 });
-
-                // Agregar a los datos procesados
                 processedData[clientType as keyof QuantityStatsByType].push(data);
             });
         });
-
-
-
         return processedData;
-
     } catch (error) {
         console.error('Error fetching quantity stats by month:', error);
         throw error;

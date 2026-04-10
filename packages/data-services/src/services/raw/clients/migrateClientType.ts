@@ -4,15 +4,11 @@ import { getCollection } from '@repo/database';
 export async function migrateClientType(): Promise<{ success: boolean; updatedCount: number; error?: string }> {
     try {
         const collection = await getCollection('orders');
-
         // Actualizar todas las órdenes que no tengan el campo orderType
         const result = await collection.updateMany(
             { orderType: { $exists: false } },
             { $set: { orderType: 'minorista' } }
         );
-
-        console.log(`Migración completada: ${result.modifiedCount} órdenes actualizadas`);
-
         return {
             success: true,
             updatedCount: result.modifiedCount

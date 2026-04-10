@@ -19,7 +19,6 @@ interface UserWithStripe {
 const getUserFromCustomerId = async (customerId: string): Promise<UserWithStripe | null> => {
   // Implementación temporal - en el futuro debería buscar por stripeCustomerId
   // Por ahora simplemente retornamos null, lo que hará que no se procese el evento
-  console.log('Stripe customer ID:', customerId);
   return null;
 
   // Implementación futura cuando se actualice el esquema:

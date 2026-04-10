@@ -31,27 +31,12 @@ class EmailJSService {
     try {
       emailjs.init(this.config.publicKey);
       this.isInitialized = true;
-      console.log('✅ EmailJS initialized successfully');
     } catch (error) {
       console.error('❌ Failed to initialize EmailJS:', error);
     }
   }
 
   async sendContactEmail(formData: ContactFormData): Promise<{ success: boolean; error?: string }> {
-    console.log('🔍 DEBUG: Intentando enviar email...', {
-      isInitialized: this.isInitialized,
-      config: {
-        serviceId: this.config.serviceId || 'NO CONFIGURADO',
-        templateId: this.config.templateId || 'NO CONFIGURADO', 
-        publicKey: this.config.publicKey ? 'CONFIGURADO' : 'NO CONFIGURADO'
-      },
-      formData: {
-        from_name: formData.from_name,
-        from_email: formData.from_email,
-        message: formData.message.substring(0, 50) + '...'
-      }
-    });
-
     if (!this.isInitialized) {
       console.error('❌ EmailJS no inicializado');
       return {
@@ -69,16 +54,11 @@ class EmailJSService {
         to_email: formData.to_email || 'nicolascaliari28@gmail.com',
         reply_to: formData.from_email,
       };
-
-      console.log('📧 Enviando email via EmailJS con params:', templateParams);
-      
       const response = await emailjs.send(
         this.config.serviceId,
         this.config.templateId,
         templateParams
       );
-
-      console.log('✅ Email enviado exitosamente:', response.status, response.text);
       return { success: true };
     } catch (error) {
       console.error('❌ Error enviando email:', error);
@@ -96,15 +76,6 @@ const emailJSConfig: EmailJSConfig = {
   templateId: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '', // Necesitas crear un template
   publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '', // Necesitas tu Public Key
 };
-
-// Log para debug (solo en desarrollo)
-if (process.env.NODE_ENV === 'development') {
-  console.log('📧 EmailJS Config:', {
-    serviceId: emailJSConfig.serviceId ? `${emailJSConfig.serviceId.slice(0, 10)}...` : 'NOT SET',
-    templateId: emailJSConfig.templateId ? `${emailJSConfig.templateId.slice(0, 10)}...` : 'NOT SET',
-    publicKey: emailJSConfig.publicKey ? `${emailJSConfig.publicKey.slice(0, 10)}...` : 'NOT SET',
-  });
-}
 
 // Instancia singleton
 export const emailJSService = new EmailJSService(emailJSConfig);

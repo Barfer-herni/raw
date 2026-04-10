@@ -1,5 +1,4 @@
 'use server';
-console.log('>>> ACTIONS MODULE LOADED <<<');
 
 import { revalidatePath } from 'next/cache';
 import {
@@ -270,20 +269,14 @@ export async function deleteUser(userId: string) {
 }
 
 export async function testAction() {
-    console.log('>>> TEST ACTION CALLED <<<');
     return { success: true, message: 'Test action successful' };
 }
 
 export async function updateDeliveryInfo(userId: string, formData: FormData) {
-    console.log('>>> SERVER ACTION: updateDeliveryInfo START <<<');
-    console.log('Parameters - userId:', userId);
     try {
-        // Verificar que el usuario esté autenticado y editando su propia información
         const currentUser = await getCurrentUser();
-        console.log('UpdateDeliveryInfo - currentUser ID:', currentUser?.id);
 
         if (!currentUser || currentUser.id !== userId) {
-            console.log('UpdateDeliveryInfo - AUTH FAILURE: currentUser.id !== userId');
             return { success: false, message: 'Solo puedes actualizar tu propia información.' };
         }
 
@@ -295,8 +288,6 @@ export async function updateDeliveryInfo(userId: string, formData: FormData) {
         const postalCode = formData.get('postalCode') as string;
         const notes = formData.get('notes') as string;
 
-        console.log('Form data received:', { phone, street, apartment, city, province, postalCode, notes });
-
         const missingFields = [];
         if (!phone) missingFields.push('teléfono');
         if (!street) missingFields.push('dirección');
@@ -305,7 +296,6 @@ export async function updateDeliveryInfo(userId: string, formData: FormData) {
         if (!postalCode) missingFields.push('código postal');
 
         if (missingFields.length > 0) {
-            console.log('UpdateDeliveryInfo - VALIDATION FAILURE: Missing fields:', missingFields.join(', '));
             return {
                 success: false,
                 message: `Por favor completa los siguientes campos obligatorios: ${missingFields.join(', ')}.`
@@ -325,13 +315,7 @@ export async function updateDeliveryInfo(userId: string, formData: FormData) {
             phone,
             address: addressData
         };
-
-        console.log('Calling updateUserProfile with:', JSON.stringify(updateData, null, 2));
-
-        // Actualizar usando el servicio de MongoDB (busca en ambas tablas)
         const result = await updateUserProfile(userId, updateData);
-
-        console.log('updateUserProfile Result:', result);
 
         if (!result.success) {
             return {
@@ -339,7 +323,6 @@ export async function updateDeliveryInfo(userId: string, formData: FormData) {
                 message: result.message || 'Error al actualizar la información de entrega'
             };
         }
-
         revalidatePath('/admin/account');
         revalidatePath('/[locale]/(authenticated)/admin/account', 'page');
 
@@ -349,7 +332,6 @@ export async function updateDeliveryInfo(userId: string, formData: FormData) {
         };
 
     } catch (error) {
-        console.error('Error updating delivery info:', error);
         return {
             success: false,
             message: 'Error al actualizar la información de entrega'

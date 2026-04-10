@@ -1,13 +1,6 @@
 import 'server-only';
 import { getCollection } from '@repo/database';
 
-/**
- * Extracts weight in kilograms from a product's option name.
- * Returns null if no weight is found or if the product is a complement.
- * @param productName - The name of the product.
- * @param optionName - The option name, e.g., "5KG".
- * @returns The weight in KG, or null.
- */
 const getWeightInKg = (productName: string, optionName: string): number | null => {
     const lowerProductName = productName.toLowerCase();
 
@@ -43,25 +36,8 @@ interface DeliveryTypeStats {
 export async function testWholesaleIssue(startDate?: Date, endDate?: Date): Promise<void> {
     try {
         const collection = await getCollection('orders');
-
-        console.log('=== TEST ESPECÍFICO: Problema con mayoristas ===');
-        console.log('Fechas de entrada:', { startDate, endDate });
-
         // 1. Verificar todas las órdenes mayoristas sin filtro de fecha
         const allWholesale = await collection.find({ orderType: "mayorista" }).toArray();
-        console.log('Todas las órdenes mayoristas:', allWholesale.length);
-
-        allWholesale.forEach((order, index) => {
-            console.log(`Orden mayorista ${index + 1}:`, {
-                id: order._id,
-                orderType: order.orderType,
-                createdAt: order.createdAt,
-                total: order.total,
-                status: order.status,
-                deliveryDay: order.deliveryDay
-            });
-        });
-
         // 2. Verificar si hay órdenes mayoristas en el período específico
         if (startDate && endDate) {
             const periodWholesale = await collection.find({
@@ -71,17 +47,6 @@ export async function testWholesaleIssue(startDate?: Date, endDate?: Date): Prom
                     $lte: endDate
                 }
             }).toArray();
-
-            console.log('Órdenes mayoristas en período específico:', periodWholesale.length);
-            periodWholesale.forEach((order, index) => {
-                console.log(`Orden mayorista en período ${index + 1}:`, {
-                    id: order._id,
-                    orderType: order.orderType,
-                    createdAt: order.createdAt,
-                    total: order.total,
-                    status: order.status
-                });
-            });
         }
 
         // 3. Verificar si el problema está en el pipeline de agregación
@@ -120,8 +85,6 @@ export async function testWholesaleIssue(startDate?: Date, endDate?: Date): Prom
         ];
 
         const testResult = await collection.aggregate(testPipeline).toArray();
-        console.log('Resultado de pipeline de prueba:', testResult);
-
     } catch (error) {
         console.error('Error en test específico:', error);
         throw error;
@@ -135,38 +98,15 @@ export async function debugWholesaleOrders(startDate?: Date, endDate?: Date): Pr
 }> {
     try {
         const collection = await getCollection('orders');
-
-        console.log('=== DEBUG SIMPLE: Verificando órdenes mayoristas ===');
-        console.log('Fechas:', { startDate, endDate });
-
-        // 1. Contar todas las órdenes mayoristas
         const totalWholesale = await collection.countDocuments({ orderType: "mayorista" });
-        console.log('Total órdenes mayoristas en BD:', totalWholesale);
-
-        // 2. Contar órdenes mayoristas en el período
         const matchCondition: any = { orderType: "mayorista" };
         if (startDate || endDate) {
             matchCondition.createdAt = {};
             if (startDate) matchCondition.createdAt.$gte = startDate;
             if (endDate) matchCondition.createdAt.$lte = endDate;
         }
-
         const periodWholesale = await collection.countDocuments(matchCondition);
-        console.log('Órdenes mayoristas en período:', periodWholesale);
-
-        // 3. Obtener algunas órdenes mayoristas para inspeccionar
         const sampleOrders = await collection.find(matchCondition).limit(5).toArray();
-        console.log('Muestra de órdenes mayoristas:');
-        sampleOrders.forEach((order, index) => {
-            console.log(`Orden ${index + 1}:`, {
-                id: order._id,
-                orderType: order.orderType,
-                createdAt: order.createdAt,
-                total: order.total,
-                status: order.status
-            });
-        });
-
         return { totalWholesale, periodWholesale, sampleOrders };
     } catch (error) {
         console.error('Error en debug:', error);
@@ -180,7 +120,6 @@ export async function getDeliveryTypeStatsByMonth(startDate?: Date, endDate?: Da
 
         const pipeline: any[] = [];
 
-        // Primero convertir createdAt a Date si es necesario
         pipeline.push({
             $addFields: {
                 createdAt: {
@@ -220,22 +159,6 @@ export async function getDeliveryTypeStatsByMonth(startDate?: Date, endDate?: Da
                 }
             }
         ];
-
-        console.log('=== DEBUG: Órdenes mayoristas en el período ===');
-        console.log('Fechas de filtro:', { startDate, endDate });
-
-        const debugResult = await collection.aggregate(debugPipeline).toArray();
-        console.log('Órdenes mayoristas encontradas:', debugResult.length);
-        debugResult.forEach((order, index) => {
-            console.log(`Orden ${index + 1}:`, {
-                id: order._id,
-                orderType: order.orderType,
-                createdAt: order.createdAt,
-                total: order.total,
-                status: order.status
-            });
-        });
-
         pipeline.push(
             // Agregar campos para clasificación
             {
@@ -351,9 +274,6 @@ export async function getDeliveryTypeStatsByMonth(startDate?: Date, endDate?: Da
 
         const result = await collection.aggregate(pipeline).toArray();
 
-        console.log('=== DEBUG: Resultado final ===');
-        console.log('Resultado de agregación:', result);
-
         // Calcular pesos después de la agregación
         const formattedResult = result.map((item: any) => {
             let sameDayWeight = 0;
@@ -392,10 +312,6 @@ export async function getDeliveryTypeStatsByMonth(startDate?: Date, endDate?: Da
                 wholesaleWeight: Math.round(wholesaleWeight * 100) / 100
             };
         });
-
-        console.log('=== DEBUG: Resultado formateado ===');
-        console.log('Resultado formateado:', formattedResult);
-
         return formattedResult as DeliveryTypeStats[];
 
     } catch (error) {

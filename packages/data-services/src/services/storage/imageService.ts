@@ -127,8 +127,6 @@ export async function deleteImage(imageId: string) {
     "use server";
     try {
         // MOCKUP: Replace with actual database call
-        console.log('Deleting image:', imageId);
-
         // Original implementation:
         // await db.media.delete({
         //     where: { id: imageId },

@@ -35,8 +35,6 @@ class GmailService {
           pass: this.config.gmail_password, // App Password
         },
       });
-
-      console.log('✅ Gmail service initialized successfully');
     } catch (error) {
       console.error('❌ Failed to initialize Gmail service:', error);
     }
@@ -58,10 +56,7 @@ class GmailService {
         html,
         replyTo,
       };
-
       const result = await this.transporter.sendMail(mailOptions);
-      console.log('📧 Email sent successfully:', result.messageId);
-
       return { success: true };
     } catch (error) {
       console.error('❌ Error sending email:', error);
