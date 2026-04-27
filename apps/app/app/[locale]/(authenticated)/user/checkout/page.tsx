@@ -328,7 +328,7 @@ ${customerData.notas ? `📝 *NOTAS:*\n${customerData.notas}` : ''}
 ¡Gracias!`;
 
             // Número de WhatsApp de Barfer
-            const numeroWhatsApp = '5491128678999';
+            const numeroWhatsApp = '5491144023100';
             const whatsappUrl = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
 
             // Limpiar carrito
