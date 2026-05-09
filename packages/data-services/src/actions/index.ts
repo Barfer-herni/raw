@@ -15,7 +15,7 @@ export {
     getCategoryByIdAction,
     updateCategoryAction,
     deleteCategoryAction
-} from '../services/raw/products/categoriesActions';
+} from '../services/raw/categories/categoriesActions';
 export {
     getShippingOptionsAction
 } from './enviaActions';
@@ -24,5 +24,5 @@ export {
 export * from '../services/raw/products';
 export * from '../services/storage';
 export type { AdminProduct, CreateAdminProduct } from '../types/barfer';
-export type { ProductCategory, CreateProductCategory } from '../services/raw/products/categoriesService';
+export type { ProductCategory, CreateProductCategory } from '../services/raw/categories/categoriesService';
 export { validateImageFile, generateCloudinaryUrl, compressImage } from '../utils/cloudinaryUtils';

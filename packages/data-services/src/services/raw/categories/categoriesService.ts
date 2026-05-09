@@ -83,7 +83,11 @@ export async function createProductCategory(categoryData: CreateProductCategory)
 
         const createdCategory: ProductCategory = {
             _id: result.insertedId.toString(),
-            ...newCategory
+            name: newCategory.name,
+            description: newCategory.description,
+            isActive: newCategory.isActive,
+            createdAt: newCategory.createdAt,
+            updatedAt: newCategory.updatedAt,
         };
 
         return {
