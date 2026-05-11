@@ -203,7 +203,7 @@ export const columns: ColumnDef<Order>[] = [
                     </div>
 
                     {/* Costo de envío */}
-                    {shippingPrice > 0 && (
+                    {shippingPrice !== 0 && (
                         <div className="flex justify-between items-center bg-orange-50 dark:bg-orange-900/20 px-1 py-0.5 rounded">
                             <span className="text-[8px] text-muted-foreground">Envío:</span>
                             <span className="font-medium">{formatCurrency(shippingPrice)}</span>

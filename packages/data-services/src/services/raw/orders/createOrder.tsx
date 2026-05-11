@@ -6,24 +6,24 @@ import type { Order } from '../../../types/barfer';
 
 const createOrderSchema = z.object({
     status: z.enum(['pending', 'confirmed', 'delivered', 'cancelled']).default('pending'),
-    total: z.coerce.number().positive(),
-    subTotal: z.coerce.number().min(0).optional().default(0),
-    shippingPrice: z.coerce.number().min(0).optional().default(0),
+    total: z.coerce.number({ invalid_type_error: "El total debe ser un número" }).positive("El total debe ser mayor a 0"),
+    subTotal: z.coerce.number({ invalid_type_error: "El subtotal debe ser un número" }).min(0, "El subtotal no puede ser negativo").optional().default(0),
+    shippingPrice: z.coerce.number({ invalid_type_error: "El costo de envío debe ser un número" }).min(0, "El costo de envío no puede ser negativo").optional().default(0),
     notes: z.string().optional(),
     notesOwn: z.string().optional(),
-    paymentMethod: z.string(),
+    paymentMethod: z.string({ required_error: "El método de pago es requerido" }),
     orderType: z.enum(['minorista', 'mayorista']).default('minorista'),
     address: z.object({
-        address: z.string(),
-        city: z.string(),
-        phone: z.string(),
+        address: z.string({ required_error: "La dirección es requerida" }).min(1, "La dirección es requerida"),
+        city: z.string({ required_error: "La ciudad es requerida" }).min(1, "La ciudad es requerida"),
+        phone: z.string({ required_error: "El teléfono es requerido" }).min(1, "El teléfono es requerido"),
         betweenStreets: z.string().optional(),
         floorNumber: z.string().optional(),
         departmentNumber: z.string().optional(),
     }),
     user: z.object({
-        name: z.string(),
-        lastName: z.string(),
+        name: z.string({ required_error: "El nombre es requerido" }).min(1, "El nombre es requerido"),
+        lastName: z.string({ required_error: "El apellido es requerido" }).min(1, "El apellido es requerido"),
         email: z.string().optional().or(z.literal('')),
     }),
     items: z.array(z.object({
@@ -33,13 +33,13 @@ const createOrderSchema = z.object({
         images: z.array(z.string()).optional(),
         options: z.array(z.object({
             name: z.string(),
-            price: z.coerce.number(),
-            quantity: z.coerce.number().positive(),
+            price: z.coerce.number().min(0, "El precio de la opción no puede ser negativo"),
+            quantity: z.coerce.number().positive("La cantidad debe ser mayor a 0"),
         })),
-        price: z.coerce.number(),
+        price: z.coerce.number().min(0, "El precio del producto no puede ser negativo"),
         salesCount: z.number().optional(),
         discountApllied: z.number().optional(),
-    })),
+    })).min(1, "La orden debe tener al menos un producto"),
     deliveryArea: z.object({
         _id: z.string(),
         description: z.string(),
@@ -97,7 +97,12 @@ function normalizeDeliveryDay(dateInput: string | Date | { $date: string }): Dat
 export async function createOrder(data: z.infer<typeof createOrderSchema>): Promise<{ success: boolean; order?: Order; error?: string }> {
     try {
         // Validar los datos de entrada
-        const validatedData = createOrderSchema.parse(data);
+        const parsed = createOrderSchema.safeParse(data);
+        if (!parsed.success) {
+            const errorMessages = parsed.error.errors.map(e => e.message).join(' | ');
+            return { success: false, error: `Revisa los datos: ${errorMessages}` };
+        }
+        const validatedData = parsed.data;
 
         // Validar precios y disponibilidad mayorista si corresponde
         if (validatedData.orderType === 'mayorista') {
@@ -168,8 +173,9 @@ export async function createOrder(data: z.infer<typeof createOrderSchema>): Prom
     } catch (error) {
         console.error('Error creating order:', error);
         if (error instanceof z.ZodError) {
-            return { success: false, error: `Validation error: ${error.errors.map(e => e.message).join(', ')}` };
+            const errorMessages = error.errors.map(e => e.message).join(' | ');
+            return { success: false, error: `Revisa los datos: ${errorMessages}` };
         }
-        return { success: false, error: 'Internal server error' };
+        return { success: false, error: error instanceof Error ? error.message : 'Error interno del servidor' };
     }
 }

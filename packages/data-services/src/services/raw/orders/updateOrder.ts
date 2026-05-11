@@ -15,9 +15,9 @@ const updateOrderSchema = z.object({
     coupon: z.any().optional(),
     deliveryArea: z.any().optional(),
     items: z.any().optional(),
-    total: z.number().optional(),
-    subTotal: z.number().optional(),
-    shippingPrice: z.number().optional(),
+    total: z.number({ invalid_type_error: "El total debe ser un número" }).positive("El total debe ser mayor a 0").optional(),
+    subTotal: z.number({ invalid_type_error: "El subtotal debe ser un número" }).min(0, "El subtotal no puede ser negativo").optional(),
+    shippingPrice: z.number({ invalid_type_error: "El costo de envío debe ser un número" }).min(0, "El costo de envío no puede ser negativo").optional(),
     updatedAt: z.string().optional(),
     deliveryDay: z.union([z.string(), z.date()]).optional(),
     // Agrega aquí otros campos editables si es necesario
@@ -58,7 +58,12 @@ function normalizeDeliveryDay(dateInput: string | Date | { $date: string }): Dat
 }
 
 export async function updateOrder(id: string, data: any) {
-    const updateData = updateOrderSchema.parse(data);
+    const parsed = updateOrderSchema.safeParse(data);
+    if (!parsed.success) {
+        const errorMessages = parsed.error.errors.map(e => e.message).join(' | ');
+        throw new Error(`Revisa los datos: ${errorMessages}`);
+    }
+    const updateData = parsed.data;
     updateData.updatedAt = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
 
     // Validar precios y disponibilidad mayorista si corresponde
