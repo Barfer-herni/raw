@@ -4,6 +4,12 @@ import { getCollection, ObjectId } from '@repo/database';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { OAuth2Client } from 'google-auth-library';
+import {
+    signSession,
+    verifySession,
+    SESSION_COOKIE_NAME,
+    sessionCookieOptions,
+} from './session';
 
 const googleClient = new OAuth2Client(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID);
 
@@ -453,30 +459,29 @@ export async function changePassword(userId: string, currentPassword: string, ne
 }
 
 /**
- * Obtener usuario actual desde la sesión/cookie
+ * Obtener usuario actual desde la sesión/cookie.
+ *
+ * La cookie `auth-token` es un JWT firmado (HS256). Si la firma no
+ * valida, está expirado o no tiene el shape esperado, `verifySession`
+ * devuelve null y tratamos al request como anónimo. Siempre se vuelve
+ * a leer al usuario desde la base de datos: la sesión solo prueba la
+ * identidad, NO es la fuente de verdad de role/permissions.
  */
 export async function getCurrentUser() {
     try {
         const cookieStore = await cookies();
-        const userSession = cookieStore.get('auth-token');
+        const userSession = cookieStore.get(SESSION_COOKIE_NAME);
 
         if (!userSession) {
             return null;
         }
 
-        // Parsear la sesión (asumiendo que contiene el ID del usuario)
-        let sessionData;
-        try {
-            sessionData = JSON.parse(userSession.value);
-        } catch {
+        const sessionData = await verifySession(userSession.value);
+
+        if (!sessionData?.userId) {
             return null;
         }
 
-        if (!sessionData.userId) {
-            return null;
-        }
-
-        // Obtener el usuario de la base de datos (buscar en ambas tablas)
         const usersCollection = await getCollection('users');
         const gestorUsersCollection = await getCollection('users_gestor');
 
@@ -517,7 +522,12 @@ export async function getCurrentUser() {
 }
 
 /**
- * Crear sesión de usuario (guardar en cookie)
+ * Crear sesión de usuario (guardar JWT firmado en cookie).
+ *
+ * El cookie es un JWT HS256 firmado con `SESSION_SECRET`. Cualquier
+ * intento de forjar la cookie a mano (p.ej. {"userId":"...","role":"admin"})
+ * fallará la verificación de firma y será rechazado por el middleware
+ * y por `getCurrentUser`.
  */
 export async function createUserSession(user: any) {
     try {
@@ -528,21 +538,16 @@ export async function createUserSession(user: any) {
             ? user.permissions
             : defaultPermissions;
 
-        const sessionData = {
+        const token = await signSession({
             id: user.id,
             userId: user.id,
             email: user.email,
             name: user.name,
             role: user.role,
-            permissions: userPermissions
-        };
-
-        cookieStore.set('auth-token', JSON.stringify(sessionData), {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 60 * 60 * 24 * 7 // 7 días
+            permissions: userPermissions,
         });
+
+        cookieStore.set(SESSION_COOKIE_NAME, token, sessionCookieOptions);
 
         return { success: true };
     } catch (error) {
@@ -557,7 +562,7 @@ export async function createUserSession(user: any) {
 export async function clearUserSession() {
     try {
         const cookieStore = await cookies();
-        cookieStore.delete('auth-token');
+        cookieStore.delete(SESSION_COOKIE_NAME);
         return { success: true };
     } catch (error) {
         console.error('Error al eliminar sesión:', error);

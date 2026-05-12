@@ -2,13 +2,10 @@
 
 import {
     // Servicios MongoDB
-    getAllSalidasMongo,
-    getAllSalidasWithPermissionFilterMongo,
     getSalidasPaginatedMongo,
     createSalidaMongo,
     updateSalidaMongo,
     deleteSalidaMongo,
-    getSalidasByDateRangeMongo,
     getAllCategoriasMongo,
     getAllMetodosPagoMongo,
     createCategoriaMongo,
@@ -36,8 +33,6 @@ import {
     getSalidasTypeAnalyticsMongo,
     getSalidasMonthlyAnalyticsMongo,
     getSalidasOverviewAnalyticsMongo,
-    // Servicios adicionales
-    getSalidasByCategoryMongo,
     // Tipos MongoDB
     type CreateSalidaMongoInput,
     type UpdateSalidaMongoInput,
@@ -55,12 +50,6 @@ import { hasPermission } from '@repo/auth/server-permissions';
 // Los tipos deben importarse directamente de @repo/data-services
 
 // Acciones usando los nuevos servicios
-
-// Obtener todas las salidas
-export async function getAllSalidasAction() {
-    const result = await getAllSalidasWithPermissionFilterMongo();
-    return result;
-}
 
 // Obtener salidas paginadas
 export async function getSalidasPaginatedAction({
@@ -137,16 +126,6 @@ export async function deleteSalidaAction(salidaId: string) {
         revalidatePath('/admin/salidas');
     }
     return result;
-}
-
-// Obtener salidas por rango de fechas
-export async function getSalidasByDateRangeAction(startDate: Date, endDate: Date) {
-    return await getSalidasByDateRangeMongo(startDate, endDate);
-}
-
-// Obtener salidas por categoría
-export async function getSalidasByCategoryAction(categoria: string) {
-    return await getSalidasByCategoryMongo(categoria);
 }
 
 // Nuevas acciones para categorías y métodos de pago
@@ -231,55 +210,24 @@ export async function getSalidasStatsByMonthAction(year: number, month: number) 
     return await getSalidasStatsByMonthMongo(year, month);
 }
 
-// ==========================================
-// ACCIONES DE ANALYTICS (PostgreSQL/Prisma)
-// ==========================================
-
-// Obtener estadísticas de salidas por categoría (MongoDB)
+// Obtener estadísticas de salidas por categoría
 export async function getSalidasCategoryAnalyticsAction(startDate?: Date, endDate?: Date) {
     return await getSalidasCategoryAnalyticsMongo(startDate, endDate);
 }
 
-// Obtener estadísticas de salidas por tipo (ordinario vs extraordinario) (MongoDB)
+// Obtener estadísticas de salidas por tipo (ordinario vs extraordinario)
 export async function getSalidasTypeAnalyticsAction(startDate?: Date, endDate?: Date) {
     return await getSalidasTypeAnalyticsMongo(startDate, endDate);
 }
 
-// Obtener estadísticas de salidas por mes (MongoDB)
+// Obtener estadísticas de salidas por mes
 export async function getSalidasMonthlyAnalyticsAction(categoriaId?: string, startDate?: Date, endDate?: Date) {
     return await getSalidasMonthlyAnalyticsMongo(categoriaId, startDate, endDate);
 }
 
-// Obtener resumen general de salidas (MongoDB)
+// Obtener resumen general de salidas
 export async function getSalidasOverviewAnalyticsAction(startDate?: Date, endDate?: Date) {
     return await getSalidasOverviewAnalyticsMongo(startDate, endDate);
-}
-
-// Obtener detalles de salidas por categoría
-export async function getSalidasDetailsByCategoryAction(categoriaId: string, startDate?: Date, endDate?: Date) {
-    // Usar servicio MongoDB en lugar de Prisma
-    const result = await getAllSalidasMongo();
-
-    if (!result.success || !result.salidas) {
-        return { success: false, salidas: [], error: result.error };
-    }
-
-    // Filtrar por categoría y rango de fechas
-    const filteredSalidas = result.salidas.filter(salida => {
-        const matchesCategory = salida.categoriaId === categoriaId;
-
-        if (!matchesCategory) return false;
-
-        if (startDate || endDate) {
-            const salidaDate = new Date(salida.fechaFactura);
-            if (startDate && salidaDate < startDate) return false;
-            if (endDate && salidaDate > endDate) return false;
-        }
-
-        return true;
-    });
-
-    return { success: true, salidas: filteredSalidas };
 }
 
 // ==========================================

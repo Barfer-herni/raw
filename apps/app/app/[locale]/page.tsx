@@ -1,6 +1,5 @@
 
 import { getDictionary } from '@repo/internationalization';
-import { cookies } from 'next/headers';
 import { getCurrentUser } from '@repo/auth/server';
 import { PublicHome } from './public-home';
 
@@ -11,9 +10,11 @@ export default async function Home({
 }) {
     const { locale } = await params;
     const dictionary = await getDictionary(locale);
-    const cookieStore = await cookies();
-    const isAuthenticated = !!cookieStore.get('auth-token');
+    // Usar el resultado de getCurrentUser (verifica JWT contra DB) en
+    // lugar de la mera presencia de la cookie, que podría estar forjada
+    // o corresponder a un usuario eliminado.
     const user = await getCurrentUser();
+    const isAuthenticated = !!user;
 
     return (
         <PublicHome

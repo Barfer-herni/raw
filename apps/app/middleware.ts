@@ -6,6 +6,10 @@ import {
 } from '@repo/security/middleware';
 import { env } from './env';
 import { internationalizationMiddleware } from '@repo/internationalization/middleware';
+import {
+  verifySession,
+  SESSION_COOKIE_NAME,
+} from '@repo/data-services/src/services/auth/session';
 // Dynamic role system - easily extendable
 const ROLES = {
   ADMIN: 'admin',
@@ -67,8 +71,9 @@ const PUBLIC_ROUTES = [
   '/producto',
 ];
 
-// Authentication cookie name
-const AUTH_COOKIE_NAME = 'auth-token';
+// Nombre del cookie de sesión (re-exportado desde el módulo de sesión
+// para evitar drift entre middleware y el resto del sistema).
+const AUTH_COOKIE_NAME = SESSION_COOKIE_NAME;
 
 // Security middleware
 const securityHeaders = env.FLAGS_SECRET
@@ -140,7 +145,7 @@ const getUserRole = (role?: string): Role => {
   return ROLES.USER;
 };
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   // Primero aplicar middleware de internacionalización
   const i18nResponse = internationalizationMiddleware({
     headers: req.headers,
@@ -167,21 +172,26 @@ export function middleware(req: NextRequest) {
   let userRole: Role = ROLES.USER;
   let userPermissions: string[] = [];
 
-  // Parse token if it exists and verify user authorization
+  // Verificar el JWT firmado. Cualquier cookie sin firma válida
+  // (incluyendo intentos de forjar `{"role":"admin"}`) devuelve null.
   if (tokenCookie) {
-    try {
-      const token = JSON.parse(tokenCookie.value);
-      userId = token.id;
-      userRole = getUserRole(token.role);
-      userPermissions = token.permissions || [];
+    const session = await verifySession(tokenCookie.value);
+
+    if (session) {
+      userId = session.userId;
+      userRole = getUserRole(session.role);
+      userPermissions = session.permissions ?? [];
 
       // Check if user has any permissions (except for admins who always have permissions)
       if (userRole !== ROLES.ADMIN && userPermissions.length === 0) {
-        // Usuario sin permisos - redirigir a access-denied
         return NextResponse.redirect(new URL(`/${locale}/access-denied`, req.url));
       }
-    } catch (error) {
-      console.error('Error parsing auth token:', error);
+    } else {
+      // Cookie inválida/expirada/manipulada: limpiar para forzar re-login
+      // y evitar que el cliente la siga reenviando.
+      const response = NextResponse.redirect(new URL(`/${locale}/sign-in`, req.url));
+      response.cookies.delete(AUTH_COOKIE_NAME);
+      return response;
     }
   }
 

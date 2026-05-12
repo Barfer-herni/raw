@@ -1,5 +1,4 @@
 import { getCollection, ObjectId } from '@repo/database';
-import { canViewSalidaCategory } from '@repo/auth/server-permissions';
 
 // Types for MongoDB Salidas
 export interface SalidaMongo {
@@ -74,67 +73,6 @@ export interface CreateCategoriaProveedorMongoInput {
 export interface UpdateCategoriaProveedorMongoInput extends Partial<CreateCategoriaProveedorMongoInput> { }
 
 // --- CRUD Salidas ---
-
-export async function getAllSalidasMongo(): Promise<{ success: boolean; salidas?: SalidaMongoData[]; error?: string }> {
-    try {
-        const collection = await getCollection('salidas');
-        const catCollection = await getCollection('categorias_salidas');
-        const mpCollection = await getCollection('metodos_pago');
-        const provCollection = await getCollection('proveedores');
-
-        const rawSalidas = await collection.find({}).sort({ fechaFactura: -1 }).toArray();
-        const categorias = await catCollection.find({}).toArray();
-        const metodosPago = await mpCollection.find({}).toArray();
-        const proveedores = await provCollection.find({}).toArray();
-
-        const catMap = new Map(categorias.map(c => [c._id.toString(), c]));
-        const mpMap = new Map(metodosPago.map(m => [m._id.toString(), m]));
-        const provMap = new Map(proveedores.map(p => [p._id.toString(), p]));
-
-        const salidas: SalidaMongoData[] = rawSalidas.map(s => ({
-            ...s,
-            _id: s._id.toString(),
-            categoria: catMap.has(s.categoriaId?.toString())
-                ? { _id: s.categoriaId.toString(), nombre: catMap.get(s.categoriaId.toString())?.nombre || '' }
-                : undefined,
-            metodoPago: mpMap.has(s.metodoPagoId?.toString())
-                ? { _id: s.metodoPagoId.toString(), nombre: mpMap.get(s.metodoPagoId.toString())?.nombre || '' }
-                : undefined,
-            proveedor: s.proveedorId && provMap.has(s.proveedorId.toString())
-                ? {
-                    _id: s.proveedorId.toString(),
-                    nombre: provMap.get(s.proveedorId.toString())?.nombre || '',
-                    detalle: provMap.get(s.proveedorId.toString())?.detalle,
-                    registro: provMap.get(s.proveedorId.toString())?.registro || 'BLANCO'
-                }
-                : undefined
-        })) as unknown as SalidaMongoData[];
-        return { success: true, salidas };
-    } catch (error) {
-        console.error('Error in getAllSalidasMongo:', error);
-        return { success: false, error: 'Error al obtener salidas' };
-    }
-}
-
-export async function getAllSalidasWithPermissionFilterMongo(): Promise<{ success: boolean; salidas?: SalidaMongoData[]; error?: string }> {
-    try {
-        const result = await getAllSalidasMongo();
-        if (!result.success || !result.salidas) return result;
-
-        const filteredSalidas = [];
-        for (const salida of result.salidas) {
-            const catName = salida.categoria?.nombre || 'Sin Categoría';
-            if (await canViewSalidaCategory(catName)) {
-                filteredSalidas.push(salida);
-            }
-        }
-
-        return { success: true, salidas: filteredSalidas };
-    } catch (error) {
-        console.error('Error in getAllSalidasWithPermissionFilterMongo:', error);
-        return { success: false, error: 'Error al filtrar salidas' };
-    }
-}
 
 export async function getSalidasPaginatedMongo({ pageIndex = 0, pageSize = 50, filters = {} }: any): Promise<{ success: boolean; salidas?: SalidaMongoData[]; total?: number; pageCount?: number; error?: string }> {
     try {
@@ -238,34 +176,6 @@ export async function deleteSalidaMongo(id: string): Promise<{ success: boolean;
     } catch (error) {
         console.error('Error in deleteSalidaMongo:', error);
         return { success: false, error: 'Error al eliminar salida' };
-    }
-}
-
-export async function getSalidasByDateRangeMongo(startDate: Date, endDate: Date): Promise<{ success: boolean; salidas?: any[]; error?: string }> {
-    try {
-        const collection = await getCollection('salidas');
-        const salidas = await collection.find({
-            fechaFactura: { $gte: startDate, $lte: endDate }
-        }).sort({ fechaFactura: -1 }).toArray();
-        return { success: true, salidas };
-    } catch (error) {
-        console.error('Error in getSalidasByDateRangeMongo:', error);
-        return { success: false, error: 'Error al obtener salidas por fecha' };
-    }
-}
-
-export async function getSalidasByCategoryMongo(categoria: string): Promise<{ success: boolean; salidas?: any[]; error?: string }> {
-    try {
-        const collection = await getCollection('salidas');
-        const catCollection = await getCollection('categorias_salidas');
-        const catDoc = await catCollection.findOne({ nombre: categoria });
-        if (!catDoc) return { success: true, salidas: [] };
-
-        const salidas = await collection.find({ categoriaId: catDoc._id.toString() }).toArray();
-        return { success: true, salidas };
-    } catch (error) {
-        console.error('Error in getSalidasByCategoryMongo:', error);
-        return { success: false, error: 'Error al obtener salidas por categoría' };
     }
 }
 

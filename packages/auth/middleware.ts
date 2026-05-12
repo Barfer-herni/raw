@@ -1,23 +1,25 @@
-// Local auth middleware implementation
+// Local auth middleware implementation.
+//
+// Verifica el JWT firmado de la cookie `auth-token` y entrega el
+// payload de sesión al middleware del consumidor. Si la cookie no
+// es un JWT válido firmado con `SESSION_SECRET`, `auth` será null
+// (equivalente a "anónimo"). Nunca confiamos en el contenido sin
+// verificar la firma.
 import { NextRequest, NextResponse } from 'next/server';
+import {
+    verifySession,
+    SESSION_COOKIE_NAME,
+    type SessionPayload,
+} from '@repo/data-services/src/services/auth/session';
 
 
-export function authMiddleware(middleware: (auth: any, req: NextRequest) => NextResponse | Promise<NextResponse>) {
+export function authMiddleware(
+    middleware: (auth: SessionPayload | null, req: NextRequest) => NextResponse | Promise<NextResponse>
+) {
     return async (req: NextRequest) => {
-        // Get the auth token cookie
-        const tokenCookie = req.cookies.get('auth-token');
-        let auth = null;
+        const tokenCookie = req.cookies.get(SESSION_COOKIE_NAME);
+        const auth = await verifySession(tokenCookie?.value);
 
-        // If we have a token, parse it and set auth
-        if (tokenCookie) {
-            try {
-                auth = JSON.parse(tokenCookie.value);
-            } catch (error) {
-                console.error('Error parsing auth token:', error);
-            }
-        }
-
-        // Pass auth to the middleware
         return middleware(auth, req);
     };
 }

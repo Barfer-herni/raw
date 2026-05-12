@@ -3,8 +3,6 @@ import type { Locale } from '@repo/internationalization';
 import { getSalidasPaginatedAction } from './actions';
 import { SalidasPageClient } from './components/SalidasPageClient';
 import { getCurrentUserWithPermissions, canViewSalidaStatistics } from '@repo/auth/server-permissions';
-import { subDays } from 'date-fns';
-
 interface SalidasPageProps {
     params: Promise<{ locale: Locale }>;
     searchParams: Promise<{
@@ -26,13 +24,12 @@ export default async function SalidasPage({ params, searchParams }: SalidasPageP
     const currentPage = Number(searchParamsResolved.page) || 1;
     const currentPageSize = Number(searchParamsResolved.pageSize) || 50;
 
-    // Convertir searchParams a fechas o usar un rango por defecto
-    const dateFilter = searchParamsResolved.from && searchParamsResolved.to ? {
+    // Convertir searchParams a fechas (sin filtro por defecto para mostrar todas las salidas)
+    const dateFilter = searchParamsResolved.from ? {
         from: new Date(searchParamsResolved.from + 'T00:00:00.000Z'),
-        to: new Date(searchParamsResolved.to + 'T23:59:59.999Z')
+        to: searchParamsResolved.to ? new Date(searchParamsResolved.to + 'T23:59:59.999Z') : undefined
     } : {
-        // Por defecto: últimos 30 días y sin límite superior para ver pagos futuros
-        from: subDays(new Date(), 30),
+        from: undefined,
         to: undefined
     };
 
