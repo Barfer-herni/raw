@@ -67,16 +67,18 @@ export function SalidasTable({ salidas = [], onRefreshSalidas, userPermissions =
     // Función para aplicar filtros y navegar
     const applyFilters = useCallback((newFilters: Record<string, string | undefined>) => {
         startTransition(() => {
-            const params = new URLSearchParams();
+            const params = new URLSearchParams(window.location.search);
 
             // Restablecer a página 1 cuando se cambian filtros
             params.set('page', '1');
             params.set('pageSize', pagination.pageSize.toString());
 
-            // Agregar filtros no vacíos
+            // Agregar filtros no vacíos o eliminar si son undefined/vacíos
             Object.entries(newFilters).forEach(([key, value]) => {
                 if (value && value.trim() !== '') {
                     params.set(key, value);
+                } else {
+                    params.delete(key);
                 }
             });
 

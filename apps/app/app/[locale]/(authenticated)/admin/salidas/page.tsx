@@ -25,9 +25,10 @@ export default async function SalidasPage({ params, searchParams }: SalidasPageP
     const currentPageSize = Number(searchParamsResolved.pageSize) || 50;
 
     // Convertir searchParams a fechas (sin filtro por defecto para mostrar todas las salidas)
+    // Se usa el huso horario de Argentina (-03:00) para asegurar que el inicio y fin del día sean correctos
     const dateFilter = searchParamsResolved.from ? {
-        from: new Date(searchParamsResolved.from + 'T00:00:00.000Z'),
-        to: searchParamsResolved.to ? new Date(searchParamsResolved.to + 'T23:59:59.999Z') : undefined
+        from: new Date(searchParamsResolved.from + 'T00:00:00.000-03:00'),
+        to: searchParamsResolved.to ? new Date(searchParamsResolved.to + 'T23:59:59.999-03:00') : undefined
     } : {
         from: undefined,
         to: undefined

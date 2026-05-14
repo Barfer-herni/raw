@@ -12,6 +12,7 @@ import { CategoriasManager } from './CategoriasManager';
 import { ProveedoresManager } from './ProveedoresManager';
 import { SalidaMongoData } from '@repo/data-services';
 import type { PaginationState } from '@tanstack/react-table';
+import { DateRangeFilter } from './DateRangeFilter';
 
 interface SalidasPageClientProps {
     salidas: SalidaMongoData[];
@@ -49,7 +50,10 @@ export function SalidasPageClient({
 
     return (
         <>
-            {/* Filtro de fechas - Removido por falta de componente en este proyecto */}
+            {/* Filtro de fechas */}
+            <div className="mb-4 px-5">
+                <DateRangeFilter />
+            </div>
 
             {/* Botones de navegación */}
             <div className="mb-6 px-5">
