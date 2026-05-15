@@ -23,7 +23,7 @@ const createOrderSchema = z.object({
     }),
     user: z.object({
         name: z.string({ required_error: "El nombre es requerido" }).min(1, "El nombre es requerido"),
-        lastName: z.string({ required_error: "El apellido es requerido" }).min(1, "El apellido es requerido"),
+        lastName: z.string().optional().or(z.literal('')),
         email: z.string().optional().or(z.literal('')),
     }),
     items: z.array(z.object({
